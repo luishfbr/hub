@@ -5,14 +5,7 @@ const nameSchema = string()
   .max(255, "O nome não pode ter mais de 255 caracteres")
   .trim();
 
-const usernameSchema = string()
-  .min(3, "O nome de usuário deve ter pelo menos 3 caracteres")
-  .max(255, "O nome de usuário não pode ter mais de 255 caracteres")
-  .regex(
-    /^[a-zA-Z0-9_]+$/,
-    "O nome de usuário deve conter apenas letras, números e underscores"
-  )
-  .trim();
+const emailSchema = string().email("Email inválido").trim();
 
 const passwordSchema = z
   .string({ required_error: "Senha obrigatória!" })
@@ -24,7 +17,7 @@ const passwordSchema = z
 
 export const RegisterSchema = object({
   name: nameSchema,
-  username: usernameSchema,
+  email: emailSchema,
   password: passwordSchema,
   passwordConfirm: passwordSchema,
 }).refine((data) => data.password === data.passwordConfirm, {
@@ -33,6 +26,6 @@ export const RegisterSchema = object({
 });
 
 export const LoginSchema = object({
-  username: usernameSchema,
+  email: emailSchema,
   password: passwordSchema,
 });
