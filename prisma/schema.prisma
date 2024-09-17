@@ -20,6 +20,8 @@ model User {
   password      String?
   emailVerified DateTime?
   image         String?
+  otpSecret     String?
+  otpEnabled    Boolean         @default(false)
   role          Role            @default(USER)
   accounts      Account[]
   sessions      Session[]

@@ -8,13 +8,15 @@ import {
   DashboardSidebarNavMain,
   DashboardSidebarNavLink,
   DashboardSidebarFooter,
+  DashboardSidebarNavHeader,
+  DashboardSidebarNavHeaderTitle,
 } from "@/components/dashboard/sidebar";
 import { usePathname } from "next/navigation";
 import { Logo } from "@/components/logo";
 import { Session } from "next-auth";
 import { UserDropdown } from "./user-dropdown";
 import { useEffect, useState } from "react";
-import { GetUser } from "../_actions/app-actions";
+import { GetRoleById } from "../_actions/app-actions";
 
 type MainSidebarProps = {
   user: Session["user"];
@@ -26,18 +28,20 @@ interface UserRole {
 
 export function MainSidebar({ user }: MainSidebarProps) {
   const [userRole, setUserRole] = useState<UserRole | null>(null);
+  const id = user?.id as string;
   const pathname = usePathname();
-
   const isActive = (path: string) => pathname === path;
 
-  useEffect(() => {
-    const fetchUserRole = async () => {
-      const userRole = await GetUser();
-      setUserRole(userRole);
-    };
+  async function getUserRole() {
+    const role = await GetRoleById(id);
+    setUserRole(role);
+  }
 
-    fetchUserRole();
+  useEffect(() => {
+    getUserRole();
   }, []);
+
+
   return (
     <DashboardSidebar>
       <DashboardSidebarHeader>
@@ -53,17 +57,25 @@ export function MainSidebar({ user }: MainSidebarProps) {
               Tabela de Arquivos
             </DashboardSidebarNavLink>
           </DashboardSidebarNavMain>
-          {userRole?.role === "ADMIN" && (
+        </DashboardSidebarNav>
+
+        {userRole?.role === "ADMIN" && (
+          <DashboardSidebarNav className="mt-auto">
+            <DashboardSidebarNavHeader>
+              <DashboardSidebarNavHeaderTitle>
+                Somente Administrador
+              </DashboardSidebarNavHeaderTitle>
+            </DashboardSidebarNavHeader>
             <DashboardSidebarNavMain>
               <DashboardSidebarNavLink
                 href="/app/sistems/admin"
                 active={isActive("/app/sistems/admin")}
               >
-                Configurações de Administrador
+                Painel de Administração
               </DashboardSidebarNavLink>
             </DashboardSidebarNavMain>
-          )}
-        </DashboardSidebarNav>
+          </DashboardSidebarNav>
+        )}
       </DashboardSidebarMain>
       <DashboardSidebarFooter>
         <UserDropdown user={user} />
