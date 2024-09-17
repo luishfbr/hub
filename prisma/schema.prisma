@@ -8,20 +8,19 @@ generator client {
 }
 
 enum Role {
-  USER
   ADMIN
+  USER
+  CREATOR
 }
 
 model User {
   id            String          @id @default(cuid())
   name          String?
   email         String          @unique
+  password      String?
   emailVerified DateTime?
-  password      String
-  role          Role            @default(USER)
-  otpSecret     String?
-  otpEnabled    Boolean         @default(false)
   image         String?
+  role          Role            @default(USER)
   accounts      Account[]
   sessions      Session[]
   // Optional for WebAuthn support
@@ -29,6 +28,7 @@ model User {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  sectors   Sector[]
 }
 
 model Account {
@@ -84,4 +84,58 @@ model Authenticator {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, credentialID])
+}
+
+model Sector {
+  id   String @id @default(cuid())
+  name String @unique
+
+  users     User[]
+  templates FileTemplate[]
+}
+
+model FileTemplate {
+  id        String @id @default(cuid())
+  modelName String
+  sector    Sector @relation(onDelete: Cascade, fields: [sectorId], references: [id])
+
+  fields   Field[]
+  files    File[]
+  sectorId String
+}
+
+model Field {
+  id             String       @id @default(cuid())
+  fieldType      FieldType
+  fieldLabel     String
+  fileTemplate   FileTemplate @relation(onDelete: Cascade, fields: [fileTemplateId], references: [id])
+  fileTemplateId String
+  File           File[]
+}
+
+enum FieldType {
+  nomecompleto
+  cpf
+  cnpj
+  datadeadmissao
+  dataderecisao
+  data
+  dia
+  mes
+  ano
+  prateleira
+  caixa
+  pasta
+}
+
+model File {
+  id             String @id @default(cuid())
+  value          String
+  fileTemplateId String
+  fieldId        String
+  commonId       String
+
+  field Field @relation(onDelete: Cascade, fields: [fieldId], references: [id])
+
+  FileTemplate FileTemplate? @relation(fields: [fileTemplateId], references: [id])
 }
