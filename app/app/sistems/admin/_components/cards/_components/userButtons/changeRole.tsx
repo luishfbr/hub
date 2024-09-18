@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { updateRoleUser } from "../../_actions/users";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useToast } from "@/app/utils/ToastContext";
+import { useToast } from "@/hooks/use-toast";
 
 interface ChangeRoleProps {
   email: string;
@@ -28,7 +28,7 @@ export const ChangeRole: React.FC<ChangeRoleProps> = ({
   email,
   onChangeSuccess,
 }) => {
-  const { showToast } = useToast();
+  const { toast } = useToast();
   const {
     register,
     handleSubmit,
@@ -42,7 +42,6 @@ export const ChangeRole: React.FC<ChangeRoleProps> = ({
 
   const [roleSelected, setRoleSelected] = useState<string>("user");
 
-  // Set roleSelected and update the form value
   const selectRole = (role: string) => {
     setRoleSelected(role);
     setValue("role", role);
@@ -52,10 +51,17 @@ export const ChangeRole: React.FC<ChangeRoleProps> = ({
     try {
       await updateRoleUser(email, data);
       onChangeSuccess();
-      showToast("Troca de permissão realizada com sucesso!");
+      toast({
+        title: "Sucesso",
+        description: "Troca de permissão realizada com sucesso!",
+        variant: "success",
+      });
     } catch (error) {
-      console.error("Erro ao atualizar a permissão do usuário:", error);
-      showToast("Erro ao atualizar a permissão do usuário");
+      toast({
+        title: "Erro",
+        description: "Erro ao atualizar a permissão do usuário",
+        variant: "destructive",
+      });
     }
   };
 

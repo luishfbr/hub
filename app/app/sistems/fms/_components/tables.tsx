@@ -1,97 +1,138 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+"use client";
+
+import { useEffect, useState, useCallback } from "react";
 import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { useState } from "react";
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { debounce } from "lodash";
+import { getSectors } from "../../admin/_components/cards/_actions/users";
+import { TableContainer } from "./table/table-component";
+import { getModelsBySectorId } from "../_actions/fms-actions";
+import { Model, Sector } from "@/app/types/types";
 
-const invoices = [
-  {
-    invoice: "INV001",
-    paymentStatus: "Paid",
-    totalAmount: "$250.00",
-    paymentMethod: "Credit Card",
-  },
-  {
-    invoice: "INV002",
-    paymentStatus: "Pending",
-    totalAmount: "$150.00",
-    paymentMethod: "PayPal",
-  },
-  {
-    invoice: "INV003",
-    paymentStatus: "Unpaid",
-    totalAmount: "$350.00",
-    paymentMethod: "Bank Transfer",
-  },
-  {
-    invoice: "INV004",
-    paymentStatus: "Paid",
-    totalAmount: "$450.00",
-    paymentMethod: "Credit Card",
-  },
-  {
-    invoice: "INV005",
-    paymentStatus: "Paid",
-    totalAmount: "$550.00",
-    paymentMethod: "PayPal",
-  },
-  {
-    invoice: "INV006",
-    paymentStatus: "Pending",
-    totalAmount: "$200.00",
-    paymentMethod: "Bank Transfer",
-  },
-  {
-    invoice: "INV007",
-    paymentStatus: "Unpaid",
-    totalAmount: "$300.00",
-    paymentMethod: "Credit Card",
-  },
-];
+export const ContainerTables = () => {
+  const [sectors, setSectors] = useState<Sector[]>([]);
+  const [selectedSector, setSelectedSector] = useState<Sector | null>(null);
+  const [models, setModels] = useState<Model[]>([]);
+  const [selectedModel, setSelectedModel] = useState<Model | null>(null);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
-export function Tables() {
+  const fetchSectors = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const response = await getSectors();
+      setSectors(response ?? []);
+    } catch (error) {
+      console.error("Error fetching sectors:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  const handleChangeSector = useCallback(
+    async (sectorId: string) => {
+      const sector = sectors.find((sector) => sector.id === sectorId) || null;
+      setSelectedSector(sector);
+      setSelectedModel(null);
+      try {
+        setIsLoading(true);
+        const models = await getModelsBySectorId(sectorId);
+        setModels(models.filter((model) => model.modelName !== null));
+      } catch (error) {
+        console.error("Error fetching models:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [sectors]
+  );
+
+  const handleChangeModel = useCallback(
+    (modelId: string) => {
+      const model = models.find((model) => model.id === modelId) || null;
+      setSelectedModel(model);
+    },
+    [models]
+  );
+
+  const debouncedSearch = useCallback(
+    debounce((value: string) => {
+      setSearchTerm(value);
+    }, 300),
+    []
+  );
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    debouncedSearch(event.target.value);
+  };
+
+  useEffect(() => {
+    fetchSectors();
+  }, [fetchSectors]);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex gap-6 items-center">
-        <Input type="text" placeholder="Pesquise por um arquivo..." />
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-col md:flex-row justify-center items-center gap-6">
+        <Select
+          onValueChange={handleChangeSector}
+          value={selectedSector?.id || ""}
+        >
+          <SelectTrigger className="w-full md:w-[200px]">
+            <SelectValue placeholder="Selecione o Setor" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              {sectors.map((sector) => (
+                <SelectItem key={sector.id} value={sector.id}>
+                  {sector.name}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+
+        {selectedSector && (
+          <Select
+            onValueChange={handleChangeModel}
+            value={selectedModel?.id || ""}
+          >
+            <SelectTrigger className="w-full md:w-[200px]">
+              <SelectValue placeholder="Selecione o Modelo" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {models.map((model) => (
+                  <SelectItem key={model.id} value={model.id}>
+                    {model.modelName}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        )}
+
+        <Input
+          type="text"
+          placeholder="Pesquisar..."
+          onChange={handleSearchChange}
+          className="w-full md:w-64"
+        />
       </div>
-      <Table>
-        <TableCaption>A list of your recent invoices.</TableCaption>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-[100px]">Invoice</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Method</TableHead>
-            <TableHead className="text-right">Amount</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {invoices.map((invoice) => (
-            <TableRow key={invoice.invoice}>
-              <TableCell className="font-medium">{invoice.invoice}</TableCell>
-              <TableCell>{invoice.paymentStatus}</TableCell>
-              <TableCell>{invoice.paymentMethod}</TableCell>
-              <TableCell className="text-right">
-                {invoice.totalAmount}
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-        <TableFooter>
-          <TableRow>
-            <TableCell colSpan={3}>Total</TableCell>
-            <TableCell className="text-right">$2,500.00</TableCell>
-          </TableRow>
-        </TableFooter>
-      </Table>
+
+      {selectedModel && (
+        <TableContainer modelId={selectedModel.id} searchTerm={searchTerm} />
+      )}
     </div>
   );
-}
+};

@@ -10,7 +10,6 @@ import { ContainerAdmin } from "./_components/container-main";
 
 export default function Page() {
   return (
-
     <DashboardPage>
       <DashboardPageHeader>
         <DashboardPageHeaderTitle>
@@ -21,6 +20,5 @@ export default function Page() {
         <ContainerAdmin />
       </DashboardPageMain>
     </DashboardPage>
-
   );
 }

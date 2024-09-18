@@ -27,3 +27,13 @@ export const loginSchema = z.object({
   email: z.string().email("Email inválido"),
   password: passwordSchema,
 });
+
+export const editPasswordSchema = z
+  .object({
+    password: passwordSchema,
+    confirmPassword: z.string().min(1, "A confirmação de senha é obrigatória"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "As senhas não coincidem",
+    path: ["confirmPassword"],
+  });

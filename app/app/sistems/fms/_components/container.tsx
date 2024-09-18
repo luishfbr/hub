@@ -1,10 +1,11 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useState, useMemo, useCallback } from "react";
-import { Tables } from "./tables";
-import { Archive } from "./archive";
-import { Model } from "./model";
+import { useState } from "react";
+
+import { Archive } from "./new-archive/archive";
+import { Model } from "./new-model/model";
+import { ContainerTables } from "./tables";
 
 const tabs = [
   { id: "tables", label: "Tabelas" },
@@ -13,7 +14,7 @@ const tabs = [
 ];
 
 export default function ContainerTabs() {
-  const [selectedTab, setSelectedTab] = useState<string | null>(null);
+  const [selectedTab, setSelectedTab] = useState<string | null>("tables");
 
   const SelectTab = (id: string) => {
     setSelectedTab(id);
@@ -21,18 +22,19 @@ export default function ContainerTabs() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="pb-6 grid grid-cols-3 gap-4 items-center justify-center">
+      <div className=" grid grid-cols-3 gap-4 items-center justify-center">
         {tabs.map((tab, index) => (
           <Button
             className="text-center"
             key={index}
+            variant={selectedTab === tab.id ? "default" : "outline"}
             onClick={() => SelectTab(tab.id)}
           >
             {tab.label}
           </Button>
         ))}
       </div>
-      {selectedTab === "tables" && <Tables />}
+      {selectedTab === "tables" && <ContainerTables />}
       {selectedTab === "models" && <Model />}
       {selectedTab === "files" && <Archive />}
     </div>

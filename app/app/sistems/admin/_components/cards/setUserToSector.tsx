@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import {
   Card,
   CardContent,
@@ -12,7 +11,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import styles from "@/app/app/styles/main.module.css";
 import { getUsers } from "./_actions/users";
-import { DeleteButton } from "./_components/usersButtons/deleteButton";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,9 +20,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal } from "lucide-react";
-import { EditButton } from "./_components/usersButtons/editButton";
-import { ChangeRole } from "./_components/usersButtons/changeRole";
+
 import { CreateNewUser } from "./createNewUser";
+import { useEffect, useState } from "react";
+
+import { ChangeRole } from "./_components/userButtons/changeRole";
+import { EditButton } from "./_components/userButtons/editButton";
+import { DeleteButton } from "./_components/userButtons/deleteButton";
 
 export type User = {
   name: string;
@@ -32,8 +35,8 @@ export type User = {
 };
 
 export function CardUsers() {
-  const [user, setUser] = React.useState<User[]>([]);
-  const [searchTerm, setSearchTerm] = React.useState<string>("");
+  const [user, setUser] = useState<User[]>([]);
+  const [searchTerm, setSearchTerm] = useState<string>("");
 
   const fetchData = async () => {
     try {
@@ -44,7 +47,7 @@ export function CardUsers() {
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     fetchData();
   }, []);
 
@@ -72,9 +75,13 @@ export function CardUsers() {
             className={styles.searchInput}
           />
         </div>
-        <ScrollArea className={`${styles.scrollArea} h-[60vh] max-h-[100vh] rounded-md border`}>
+        <ScrollArea
+          className={`${styles.scrollArea} h-[60vh] max-h-[100vh] rounded-md border`}
+        >
           <div className="overflow-x-auto">
-            <table className={`${styles.table} min-w-full divide-y divide-gray-200`}>
+            <table
+              className={`${styles.table} min-w-full divide-y divide-gray-200`}
+            >
               <thead className={styles.tableHeader}>
                 <tr>
                   <th className={styles.th}>Nome</th>
@@ -104,7 +111,10 @@ export function CardUsers() {
                               onDeleteSuccess={fetchData}
                             />
                             <DropdownMenuSeparator />
-                            <ChangeRole email={user.email} onChangeSuccess={fetchData} />
+                            <ChangeRole
+                              email={user.email}
+                              onChangeSuccess={fetchData}
+                            />
                             <DropdownMenuSeparator />
                             <EditButton email={user.email} />
                           </DropdownMenuContent>

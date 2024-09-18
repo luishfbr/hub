@@ -15,7 +15,7 @@ import { Label } from "@/components/ui/label";
 import { createSector } from "./_actions/users";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import { useToast } from "../../../../utils/ToastContext";
+import { useToast } from "@/hooks/use-toast";
 
 type FormData = {
   name: string;
@@ -28,7 +28,7 @@ interface CreateButtonProps {
 export const CreateNewSector: React.FC<CreateButtonProps> = ({
   onCreateSuccess,
 }) => {
-  const { showToast } = useToast();
+  const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
@@ -49,12 +49,20 @@ export const CreateNewSector: React.FC<CreateButtonProps> = ({
       if (createSectorResponse === true) {
         onCreateSuccess();
         reset();
-        showToast("Setor criado com sucesso!");
+        toast({
+          title: "Sucesso",
+          description: "Setor criado com sucesso!",
+          variant: "success",
+        });
       }
       setIsSubmitting(false);
     } catch (error) {
       setIsSubmitting(false);
-      showToast("Erro ao criar setor!");
+      toast({
+        title: "Erro",
+        description: "Erro ao criar setor!",
+        variant: "destructive",
+      });
     }
   };
 
@@ -67,11 +75,20 @@ export const CreateNewSector: React.FC<CreateButtonProps> = ({
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="mb-6">
             <Label htmlFor="name">Nome do Setor</Label>
-            <Input type="text" required {...register("name")} className="w-full" />
+            <Input
+              type="text"
+              required
+              {...register("name")}
+              className="w-full"
+            />
           </div>
           <DialogFooter>
             <DialogClose>
-              <Button type="submit" disabled={isSubmitting || !isValid} className="w-full sm:w-auto">
+              <Button
+                type="submit"
+                disabled={isSubmitting || !isValid}
+                className="w-full sm:w-auto"
+              >
                 {isSubmitting ? "Criando..." : "Criar Setor"}
               </Button>
             </DialogClose>

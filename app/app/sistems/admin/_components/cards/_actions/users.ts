@@ -10,7 +10,7 @@ export const getUsers = async () => {
     name: user.name ?? "",
     role: user.role ?? "",
     email: user.email ?? "",
-    totpIsEnabled: user.totpIsEnabled ?? false,
+    otpEnabled: user.otpEnabled ?? false,
   }));
 };
 

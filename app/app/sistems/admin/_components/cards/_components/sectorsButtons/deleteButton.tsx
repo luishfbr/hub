@@ -1,5 +1,4 @@
-"use client";
-
+import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,35 +10,41 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
-import { deleteUser } from "../../_actions/users";
+import { deleteSector } from "../../_actions/users";
 import { useToast } from "@/hooks/use-toast";
 
 interface DeleteButtonProps {
-  email: string;
-  onDeleteSuccess: () => void;
+  id: string;
+  onSuccess: () => void;
 }
 
 export const DeleteButton: React.FC<DeleteButtonProps> = ({
-  email,
-  onDeleteSuccess,
+  id,
+  onSuccess,
 }) => {
   const { toast } = useToast();
+
   const handleDelete = async () => {
     try {
-      const response = await deleteUser(email);
+      const response = await deleteSector(id);
       if (response === true) {
-        onDeleteSuccess();
+        onSuccess();
         toast({
           title: "Sucesso",
-          description: "Usuário excluído com sucesso!",
+          description: "Setor excluído com sucesso!",
           variant: "success",
+        });
+      } else {
+        toast({
+          title: "Erro",
+          description: "Falha ao excluir o setor.",
+          variant: "destructive",
         });
       }
     } catch (error) {
       toast({
         title: "Erro",
-        description: "Erro ao deletar usuário!",
+        description: "Falha ao excluir o setor.",
         variant: "destructive",
       });
     }
@@ -49,15 +54,15 @@ export const DeleteButton: React.FC<DeleteButtonProps> = ({
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button className="w-full sm:w-40" variant={"destructive"}>
-          Excluir Usuário
+          Excluir Setor
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
           <AlertDialogDescription>
-            Ao clicar em CONTINUAR, o usuário será excluído permanentemente.
-            Esta ação não pode ser desfeita.
+            Ao clicar em OK, você irá excluir o setor permanentemente. Esta ação
+            não pode ser desfeita.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
