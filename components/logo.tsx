@@ -6,7 +6,7 @@ export function Logo() {
       <div className="bg-primary h-8 w-8 flex items-center justify-center rounded-md">
         <FaFileDownload className="w-6 h-6 text-primary-foreground" />
       </div>
-      <p className="font-bold text-xl">FMS DeVfont</p>
+      <p className="font-bold text-xl text-primary">FMS DeVfont</p>
     </div>
   );
 }

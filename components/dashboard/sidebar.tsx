@@ -14,7 +14,7 @@ export function DashboardSidebar({
   return (
     <aside
       className={cn([
-        "border-r border-border flex flex-col space-y-6 bg-secondary/5",
+        "border-r border-border flex flex-col space-y-6 bg-secondary/80",
         className,
       ])}
     >
@@ -57,7 +57,7 @@ export function DashboardSidebarNav({
   className,
   children,
 }: DashboardSidebarGenericProps) {
-  return <nav className={cn(["", className])}>{children}</nav>;
+  return <nav className={cn(["flex flex-col gap-2", className])}>{children}</nav>;
 }
 
 export function DashboardSidebarNavHeader({
@@ -105,8 +105,8 @@ export function DashboardSidebarNavLink({
     <Link
       href={href}
       className={cn([
-        "flex items-center text-sm px-4 py-3 rounded-md",
-        active && "bg-secondary",
+        "flex items-center text-sm px-4 py-3 rounded-md text-primary",
+        active && "bg-primary text-secondary",
         className,
       ])}
     >

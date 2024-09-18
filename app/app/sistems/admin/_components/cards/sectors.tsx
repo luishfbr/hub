@@ -147,26 +147,27 @@ export const CardSectors = () => {
         </span>
       </div>
       <div className="flex flex-col gap-6">
-        <ScrollArea className="h-[80vh] max-h-[800px] rounded-md border shadow-md">
+        <ScrollArea className="max-h-[800px] rounded-md border shadow-md">
           <div className="overflow-x-auto">
             <Table
               className={`${styles.table} min-w-full divide-y divide-gray-200`}
             >
               <TableHeader>
                 <TableRow>
-                  <TableHead className={styles.th}>Setor</TableHead>
-                  <TableHead className={styles.th}>Usuários</TableHead>
-                  <TableHead className={styles.th}>Ações</TableHead>
+                  <TableHead className="text-center">Setor</TableHead>
+                  <TableHead className="text-center">Usuários</TableHead>
+                  <TableHead className="text-center">Ações</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {sectors.length > 0 ? (
                   sectors.map((sector) => (
                     <TableRow key={sector.id}>
-                      <TableCell className={styles.td}>
+                      <TableCell className="text-center">
                         <span>{sector.name}</span>
                       </TableCell>
-                      <TableCell className={styles.td}>
+                      <TableCell className="text-center">
+                        {/* Exclusão de usuários do setor */}
                         <Dialog>
                           <DialogTrigger asChild>
                             <Button
@@ -206,9 +207,9 @@ export const CardSectors = () => {
                                 </span>
                               )}
                             </div>
-                            <DialogFooter></DialogFooter>
                           </DialogContent>
                         </Dialog>
+                        {/* Visualização de usuários do setor */}
                         <Popover>
                           <PopoverTrigger asChild>
                             <Button
@@ -246,6 +247,7 @@ export const CardSectors = () => {
                             </ScrollArea>
                           </PopoverContent>
                         </Popover>
+                        {/* Inclusão de usuários do setor */}
                         <Dialog>
                           <DialogTrigger asChild>
                             <Button
@@ -288,8 +290,9 @@ export const CardSectors = () => {
                             <DialogFooter></DialogFooter>
                           </DialogContent>
                         </Dialog>
+
                       </TableCell>
-                      <TableCell className={styles.td}>
+                      <TableCell className="text-center">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" className="h-8 w-8 p-0">

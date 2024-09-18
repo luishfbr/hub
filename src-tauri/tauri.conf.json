@@ -56,10 +56,14 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 600,
+        "center": true,
+        "height": 720,
         "resizable": true,
         "title": "hub",
-        "width": 800
+        "width": 1280,
+        "decorations": true,
+        "alwaysOnTop": false,
+        "theme": "Dark"
       }
     ]
   }

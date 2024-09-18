@@ -1,15 +1,6 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import styles from "@/app/styles/main.module.css";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -73,7 +64,7 @@ export function CardUsers() {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
-        <ScrollArea className="h-[80vh] max-h-[740px] rounded-md border shadow-md">
+        <ScrollArea className="max-h-[700px] rounded-md border shadow-md">
           <Table className="min-w-full">
             <TableHeader>
               <TableRow>

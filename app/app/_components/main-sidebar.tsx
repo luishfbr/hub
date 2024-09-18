@@ -41,13 +41,22 @@ export function MainSidebar({ user }: MainSidebarProps) {
     getUserRole();
   }, []);
 
-
   return (
     <DashboardSidebar>
       <DashboardSidebarHeader>
         <Logo />
       </DashboardSidebarHeader>
       <DashboardSidebarMain className="flex flex-col flex-grow">
+        <DashboardSidebarNav>
+          <DashboardSidebarNavMain>
+            <DashboardSidebarNavLink
+              href="/app/sistems"
+              active={isActive("/app/sistems")}
+            >
+              Página Inicial
+            </DashboardSidebarNavLink>
+          </DashboardSidebarNavMain>
+        </DashboardSidebarNav>
         <DashboardSidebarNav>
           <DashboardSidebarNavMain>
             <DashboardSidebarNavLink

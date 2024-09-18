@@ -1,6 +1,5 @@
 "use server";
 
-import { auth } from "@/services/auth";
 import { prisma } from "@/services/prisma";
 
 export const GetRoleById = async (id: string) => {

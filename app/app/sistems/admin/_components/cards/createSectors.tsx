@@ -69,7 +69,9 @@ export const CreateNewSector: React.FC<CreateButtonProps> = ({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="w-full sm:w-auto">Criar novo setor</Button>
+        <Button variant={"default"} className="w-full sm:w-auto">
+          Criar novo setor
+        </Button>
       </DialogTrigger>
       <DialogContent className="w-full max-w-lg p-4 sm:p-6">
         <form onSubmit={handleSubmit(onSubmit)}>

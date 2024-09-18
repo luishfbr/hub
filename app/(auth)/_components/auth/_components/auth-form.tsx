@@ -6,7 +6,7 @@ import RegisterTab from "./tabs/register";
 
 export default function AuthForm() {
   return (
-    <div className="bg-primary h-screen w-full flex items-center justify-center">
+    <div className="h-screen w-full flex items-center justify-center">
       <Tabs defaultValue="login" className="w-[400px]">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="login">Login</TabsTrigger>

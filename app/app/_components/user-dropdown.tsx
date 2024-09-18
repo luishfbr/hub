@@ -1,3 +1,7 @@
+"use client";
+
+import * as React from "react";
+import { useTheme } from "next-themes";
 import { Logout } from "@/app/(auth)/_actions/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -9,7 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LockClosedIcon } from "@radix-ui/react-icons";
+import { LockClosedIcon, MoonIcon, SunIcon } from "@radix-ui/react-icons";
 import { Session } from "next-auth";
 
 type UserDropdownProps = {
@@ -17,6 +21,7 @@ type UserDropdownProps = {
 };
 
 export function UserDropdown({ user }: UserDropdownProps) {
+  const { setTheme } = useTheme();
   if (!user) return null;
 
   return (
@@ -53,6 +58,29 @@ export function UserDropdown({ user }: UserDropdownProps) {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
+        <div className="flex items-center justify-between px-4 py-2">
+          <span className="text-sm font-medium">Selecione um tema</span>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="icon">
+                <SunIcon className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                <MoonIcon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                <span className="sr-only">Toggle theme</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => setTheme("light")}>
+                Light
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setTheme("dark")}>
+                Dark
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setTheme("system")}>
+                System
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => Logout()}>
           <LockClosedIcon className="w-3 h-3 mr-3" />
