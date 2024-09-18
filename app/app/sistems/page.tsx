@@ -13,7 +13,6 @@ import {
   CardContent,
   CardDescription,
 } from "@/components/ui/card";
-import Link from "next/link";
 
 export default function Page() {
   return (
@@ -53,7 +52,8 @@ export default function Page() {
               <span className="text-sm text-muted-foreground">
                 A idéia é criar um sistema que possa ser utilizado por todos os
                 setores da Cooperativa. Centralizando o máximo de sistemas
-                possíveis, como por exemplo gerenciador de arquivos, gerador de placa pix, otimizador de pdf etc.
+                possíveis, como por exemplo gerenciador de arquivos, gerador de
+                placa pix, otimizador de pdf etc.
               </span>
             </div>
           </CardContent>

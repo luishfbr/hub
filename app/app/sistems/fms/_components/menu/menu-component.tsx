@@ -76,6 +76,7 @@ export function MenuComponent({ fileId, onUpdate }: MenuComponentProps) {
         toast({
           title: "Sucesso",
           description: "Arquivo deletado com sucesso",
+          variant: "success",
         });
         onUpdate();
       } else {

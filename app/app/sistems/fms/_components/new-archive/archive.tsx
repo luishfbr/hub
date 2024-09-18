@@ -74,14 +74,14 @@ export function Archive() {
   );
 
   return (
-    <div className="flex flex-col gap-6 items-center justify-center text-center">
-      <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-6 max-h-[75vh] h-[80vh] overflow-y-auto">
+      <div className="flex flex-col gap-2 text-center items-center justify-center">
         <h1 className="text-2xl font-bold">Crie seu novo arquivo</h1>
         <span className="text-sm text-muted-foreground">
           Selecione o setor e o modelo que deseja criar.
         </span>
       </div>
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-6 items-center justify-center">
         <Select onValueChange={handleChangeSector} disabled={isLoading}>
           <SelectTrigger className="w-auto">
             <SelectValue

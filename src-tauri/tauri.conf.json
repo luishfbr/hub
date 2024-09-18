@@ -56,13 +56,10 @@
     "windows": [
       {
         "fullscreen": false,
-        "center": true,
-        "height": 720,
+        "height": 600,
         "resizable": true,
-        "title": "hub",
-        "width": 1280,
-        "decorations": true,
-        "alwaysOnTop": false,
+        "title": "Hub de Sistemas",
+        "width": 800,
         "theme": "Dark"
       }
     ]

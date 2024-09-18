@@ -38,8 +38,6 @@ export const TableContainer = ({
   const [fields, setFields] = useState<Field[]>([]);
   const [files, setFiles] = useState<Record<string, string | undefined>[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [filesPerPage] = useState(10);
   const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
 
   const getModel = useCallback(async () => {
@@ -119,12 +117,6 @@ export const TableContainer = ({
     );
   }, [files, searchTerm]);
 
-  const indexOfLastFile = currentPage * filesPerPage;
-  const indexOfFirstFile = indexOfLastFile - filesPerPage;
-  const currentFiles = filteredFiles.slice(indexOfFirstFile, indexOfLastFile);
-
-  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
-
   const handleSelectFile = (fileId: string) => {
     setSelectedFiles((prevSelectedFiles) =>
       prevSelectedFiles.includes(fileId)
@@ -159,7 +151,7 @@ export const TableContainer = ({
   }
 
   return (
-    <div className="overflow-x-auto">
+    <div className="max-h-[69vh] overflow-y-auto">
       <div className="flex justify-end mb-4">
         {selectedFiles.length > 0 && (
           <Button onClick={handleDeleteSelected} variant="destructive">
@@ -172,11 +164,11 @@ export const TableContainer = ({
           <TableRow>
             <TableHead className="text-center">
               <Checkbox
-                checked={selectedFiles.length === currentFiles.length}
+                checked={selectedFiles.length === filteredFiles.length}
                 onCheckedChange={(checked) =>
                   setSelectedFiles(
                     checked
-                      ? currentFiles
+                      ? filteredFiles
                           .map((file) => file.id)
                           .filter((id): id is string => id !== undefined)
                       : []
@@ -193,14 +185,14 @@ export const TableContainer = ({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {currentFiles.length === 0 ? (
+          {filteredFiles.length === 0 ? (
             <TableRow>
               <TableCell colSpan={fields.length + 2} className="text-center">
                 Nenhum resultado encontrado
               </TableCell>
             </TableRow>
           ) : (
-            currentFiles.map((fileRow, rowIndex) => (
+            filteredFiles.map((fileRow, rowIndex) => (
               <TableRow key={rowIndex}>
                 <TableCell className="text-center">
                   <Checkbox
@@ -224,23 +216,6 @@ export const TableContainer = ({
           )}
         </TableBody>
       </Table>
-      {filteredFiles.length > filesPerPage && (
-        <div className="flex justify-center mt-4">
-          {Array.from(
-            { length: Math.ceil(filteredFiles.length / filesPerPage) },
-            (_, index) => (
-              <Button
-                key={index + 1}
-                onClick={() => paginate(index + 1)}
-                variant={currentPage === index + 1 ? "default" : "outline"}
-                className="mx-1"
-              >
-                {index + 1}
-              </Button>
-            )
-          )}
-        </div>
-      )}
     </div>
   );
 };

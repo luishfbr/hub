@@ -1,6 +1,6 @@
 "use server";
 
-import { NewModelProps } from "@/app/types/types";
+import { Model, NewModelProps } from "@/app/types/types";
 import { auth } from "@/services/auth";
 import { prisma } from "@/services/prisma";
 import { FieldType } from "@prisma/client";
@@ -188,6 +188,14 @@ export const updateFile = async (fileId: string, fileInfos: FileInfo[]) => {
   );
 
   await Promise.all(updatePromises);
+};
+
+export const UpdateModel = async (data: Model) => {
+  const { id, modelName } = data;
+  return await prisma.fileTemplate.update({
+    where: { id },
+    data: { modelName },
+  });
 };
 
 export const GetModelsById = async (id: string) => {

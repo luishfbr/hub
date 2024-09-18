@@ -53,7 +53,7 @@ export function DashboardPageMain({
   children,
 }: DashboardPageGenericProps) {
   return (
-    <main className={cn(["p-6 h-screen", className])}>
+    <main className={cn(["p-6", className])}>
       {children}
     </main>
   );

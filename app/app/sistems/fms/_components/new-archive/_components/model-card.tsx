@@ -14,6 +14,7 @@ import {
   createNewFile,
   fieldsByFiletemplateId,
 } from "../../../_actions/fms-actions";
+import styles from "@/app/styles/main.module.css";
 
 export const SelectedModelForm = ({ modelId }: { modelId: string }) => {
   const { toast } = useToast();
@@ -92,10 +93,7 @@ export const SelectedModelForm = ({ modelId }: { modelId: string }) => {
 
       return (
         <div className="mb-4">
-          <Label
-            htmlFor={field.id}
-            className="block mb-2 text-sm text-left font-medium text-gray-900 dark:text-white"
-          >
+          <Label className="pl-4" htmlFor={field.id}>
             {label}
           </Label>
           <Controller
@@ -106,22 +104,23 @@ export const SelectedModelForm = ({ modelId }: { modelId: string }) => {
             render={({ field: { onChange, value } }) =>
               mask && field.type !== "dataderecisao" ? (
                 <InputMask
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  className={styles.inputStyles}
                   id={field.id}
                   mask={mask}
                   value={value}
                   onChange={onChange}
+                  placeholder={`Digite ${label.toLowerCase()}`}
                   autoComplete="off"
                 />
               ) : (
                 <Input
+                  className={styles.inputStyles}
                   type={
                     ["dia", "mes", "ano"].includes(field.type)
                       ? "number"
                       : "text"
                   }
                   id={field.id}
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder={`Digite ${label.toLowerCase()}`}
                   autoComplete="off"
                   {...register(field.id, {
@@ -165,7 +164,6 @@ export const SelectedModelForm = ({ modelId }: { modelId: string }) => {
       reset();
       router.refresh();
     } catch (error) {
-      console.error("Erro ao criar arquivo:", error);
       toast({
         title: "Erro",
         description: "Erro ao criar arquivo. Por favor, tente novamente.",

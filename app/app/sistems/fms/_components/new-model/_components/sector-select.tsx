@@ -8,10 +8,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Sectors } from "../sheet-new-model";
+import { Sector } from "@/app/types/types";
 
 interface SectorSelectProps {
-  sectors: Sectors[];
+  sectors: Sector[];
   selectedSector: string | null;
   setSelectedSector: (sector: string) => void;
 }
@@ -31,7 +31,7 @@ export const SectorSelect: React.FC<SectorSelectProps> = ({
       onValueChange={setSelectedSector}
       value={selectedSector || undefined}
     >
-      <SelectTrigger className="w-full sm:w-48 md:w-64 lg:w-80">
+      <SelectTrigger className="w-auto">
         <SelectValue placeholder="Selecione um Setor" />
       </SelectTrigger>
       <SelectContent>

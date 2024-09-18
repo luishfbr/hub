@@ -3,11 +3,9 @@
 import { Button } from "@/components/ui/button";
 import { useEffect, useState, useCallback } from "react";
 
-import { MoveDown, Trash } from "lucide-react";
+import { Trash } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useForm } from "react-hook-form";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 import { FieldType } from "@prisma/client";
 import { useToast } from "@/hooks/use-toast";
@@ -32,7 +30,6 @@ export function Model() {
   const [disabledFields, setDisabledFields] = useState<Record<string, boolean>>(
     {}
   );
-  const [isOpen, setIsOpen] = useState(false);
 
   const { register, handleSubmit, reset } = useForm<FormDataProps>();
 
@@ -95,7 +92,6 @@ export function Model() {
             variant: "success",
           });
           resetForm();
-          setIsOpen(false);
         }
       } catch (error) {
         toast({
@@ -136,83 +132,74 @@ export function Model() {
   }, [toast]);
 
   return (
-    <div className="flex flex-col gap-6 items-center justify-center text-center">
-      <div className="flex flex-col items-center justify-center text-center">
-        <h1 className="text-2xl font-bold">Crie um novo modelo</h1>
-        <p className="text-sm text-muted-foreground">
-          Primeiro selecione o setor.
-        </p>
-      </div>
-
-      <div className="flex flex-col gap-6 items-center justify-center text-center w-full">
-        <SectorSelect
-          sectors={sectors}
-          selectedSector={selectedSector}
-          setSelectedSector={setSelectedSector}
-        />
-
-        {selectedSector && (
-          <form onSubmit={handleSubmit(onSubmit)} className="w-full">
-            <div className="flex flex-col gap-6 items-center justify-center text-center">
-              <Input
-                id="modelName"
-                {...register("modelName")}
-                className="text-center w-96 max-w-96"
-                placeholder="Qual será o nome do seu modelo?"
-                type="text"
-                required
-              />
-              <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-2 w-full">
-                {fieldTypes.map((fieldType) => (
-                  <Button
-                    key={fieldType.type}
-                    type="button"
-                    onClick={() => addField(fieldType.label, fieldType.type)}
-                    disabled={disabledFields[fieldType.type]}
-                  >
-                    {fieldType.label}
-                  </Button>
-                ))}
-              </div>
-
-              <ScrollArea className="w-full xl:max-h-[500px] xl:h-[1000px] sm:max-h-[300px] sm:h-[300px]">
-                <div className="grid grid-cols-2 gap-4 m-4">
-                  {["Prateleira", "Caixa"].map((label) => (
-                    <div
-                      key={label}
-                      className="flex items-center justify-center bg-secondary p-6 rounded shadow-md"
+    <div className="flex flex-col gap-6 max-h-[75vh] h-[80vh] justify-between overflow-y-auto">
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 items-center justify-center text-center h-full">
+          <h1 className="text-2xl font-bold">Crie um novo modelo</h1>
+          <p className="text-sm text-muted-foreground">
+            Primeiro selecione o setor.
+          </p>
+          <div>
+            <SectorSelect
+              sectors={sectors}
+              selectedSector={selectedSector}
+              setSelectedSector={setSelectedSector}
+            />
+          </div>
+          {selectedSector && (
+            <form onSubmit={handleSubmit(onSubmit)} className="w-full">
+              <div className="flex flex-col gap-6 items-center justify-center text-center">
+                <Input
+                  id="modelName"
+                  {...register("modelName")}
+                  className="text-center w-96"
+                  placeholder="Qual será o nome do seu modelo?"
+                  type="text"
+                  required
+                />
+                <div className="grid sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-7 gap-2 w-full">
+                  {fieldTypes.map((fieldType) => (
+                    <Button
+                      key={fieldType.type}
+                      type="button"
+                      onClick={() => addField(fieldType.label, fieldType.type)}
+                      disabled={disabledFields[fieldType.type]}
                     >
-                      <span className="font-semibold text-muted-foreground">
-                        {label} (Valor Fixo)
-                      </span>
-                    </div>
+                      {fieldType.label}
+                    </Button>
                   ))}
                 </div>
-                {fields.length > 0 && (
-                  <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4 m-4">
-                    {fields.map((field) => (
-                      <div
-                        key={field.id}
-                        className="flex items-center justify-between bg-secondary p-4 rounded shadow-md"
-                      >
-                        <span className="font-semibold">{field.value}</span>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => removeField(field.id, field.type)}
-                        >
-                          <Trash className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </ScrollArea>
-              <Button type="submit">Criar Modelo</Button>
+              </div>
+            </form>
+          )}
+        </div>
+        <div>
+          {fields.length > 0 && (
+            <div className="grid grid-cols-4 gap-4">
+              {fields.map((field) => (
+                <div
+                  key={field.id}
+                  className="flex items-center justify-between text-sm bg-secondary h-10 px-4 py-2 rounded shadow-md"
+                >
+                  <span className="font-semibold">{field.value}</span>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => removeField(field.id, field.type)}
+                  >
+                    <Trash className="w-4 h-4" />
+                  </Button>
+                </div>
+              ))}
             </div>
-          </form>
-        )}
+          )}
+        </div>
+      </div>
+      <div className="flex justify-center">
+        <Button type="submit" disabled={fields.length === 0}>
+          Criar Modelo
+        </Button>
       </div>
     </div>
   );

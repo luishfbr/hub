@@ -1,6 +1,6 @@
 import { PropsWithChildren } from "react";
 import { auth } from "@/services/auth";
-
+import styles from "@/app/styles/main.module.css";
 import { redirect } from "next/navigation";
 import { MainSidebar } from "./_components/main-sidebar";
 
@@ -11,9 +11,9 @@ export default async function Layout({ children }: PropsWithChildren) {
   }
 
   return (
-    <div className="h-screen grid grid-cols-[18rem_1fr] overflow-hidden">
+    <div className={styles.layout}>
       <MainSidebar user={session?.user} />
-      <main className="overflow-hidden">{children}</main>
+      <main>{children}</main>
     </div>
   );
 }
