@@ -155,7 +155,6 @@ export function Model() {
                   className="text-center w-96"
                   placeholder="Qual será o nome do seu modelo?"
                   type="text"
-                  required
                 />
                 <div className="grid sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-7 gap-2 w-full">
                   {fieldTypes.map((fieldType) => (
@@ -169,6 +168,11 @@ export function Model() {
                     </Button>
                   ))}
                 </div>
+              </div>
+              <div className="flex justify-center my-10">
+                <Button type="submit" disabled={fields.length === 0}>
+                  Criar Modelo
+                </Button>
               </div>
             </form>
           )}
@@ -196,11 +200,7 @@ export function Model() {
           )}
         </div>
       </div>
-      <div className="flex justify-center">
-        <Button type="submit" disabled={fields.length === 0}>
-          Criar Modelo
-        </Button>
-      </div>
+
     </div>
   );
 }

@@ -24,11 +24,11 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { Input } from "@/components/ui/input";
 import LoadingButton from "../../../loading-button";
-import { Login } from "@/app/(auth)/_actions/auth";
+import { LoginWithCredentials } from "@/app/(auth)/_actions/auth";
 
 const inputs = [
   {
@@ -44,8 +44,8 @@ const inputs = [
 ];
 
 export default function LoginTab() {
-  const [globalError, setGlobalError] = useState<string>("");
   const { toast } = useToast();
+  const router = useRouter();
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -56,15 +56,21 @@ export default function LoginTab() {
 
   const onSubmit = async (values: z.infer<typeof loginSchema>) => {
     try {
-      const result = await Login(values);
-      if (result?.message) {
-        setGlobalError(result.message);
+      const response = await LoginWithCredentials(values);
+      if (response && 'id' in response) {
         toast({
-          title: "Erro",
-          description: result.message,
+          title: "Login efetuado com sucesso",
+          description: "Você será redirecionado para verificar o QR Code.",
+          variant: "success",
+        });
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        router.push(`/qrcode?id=${response.id}`);
+      } else {
+        toast({
+          title: "Erro ao efetuar login",
+          description: response.message,    
           variant: "destructive",
         });
-        form.reset();
       }
     } catch (error) {
       console.log("Ocorreu um erro inesperado. Por favor, tente novamente.");

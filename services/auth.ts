@@ -12,7 +12,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       name: "Credentials",
       credentials: {
         email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
       },
       authorize: async (credentials) => {
         let user = null;
@@ -31,16 +30,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         if (!user) {
           console.log("Usuário não encontrado");
-          return null;
-        }
-
-        const comparePassword = compareSync(
-          parsedCredentials.data.password,
-          user.password as string
-        );
-
-        if (!comparePassword) {
-          console.log("Senha incorreta");
           return null;
         }
 

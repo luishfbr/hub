@@ -204,3 +204,19 @@ export const GetModelsById = async (id: string) => {
     select: { id: true, modelName: true },
   });
 };
+
+export const deleteModel = async (id: string) => {
+  const modelId = id as string;
+
+  await prisma.file.deleteMany({
+    where: {
+      fileTemplateId: modelId,
+    },
+  });
+
+  return await prisma.fileTemplate.delete({
+    where: {
+      id: modelId,
+    },
+  });
+};
