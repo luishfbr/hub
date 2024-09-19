@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import Image from "next/image";
 import {
   Card,
   CardContent,
@@ -15,6 +15,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema } from "@/app/types/zod";
 import { LoginForm } from "@/app/types/types";
 import { useToast } from "@/hooks/use-toast";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSeparator,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
 
 import {
   Form,
@@ -24,11 +30,12 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { Input } from "@/components/ui/input";
 import LoadingButton from "../../../loading-button";
-import { LoginWithCredentials } from "@/app/(auth)/_actions/auth";
+import { Login, VerifyUser } from "@/app/(auth)/_actions/auth";
+import { useState } from "react";
+import { QrCodeForm } from "../qrcode/qrcode-form";
 
 const inputs = [
   {
@@ -43,9 +50,16 @@ const inputs = [
   },
 ];
 
+export interface PrivateUser {
+  email: string;
+  password: string;
+}
+
 export default function LoginTab() {
+  const [globalError, setGlobalError] = useState<string>("");
+  const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
   const { toast } = useToast();
-  const router = useRouter();
+  const [user, setUser] = useState<PrivateUser | null>(null);
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -56,20 +70,22 @@ export default function LoginTab() {
 
   const onSubmit = async (values: z.infer<typeof loginSchema>) => {
     try {
-      const response = await LoginWithCredentials(values);
-      if (response && 'id' in response) {
+      setUser(values);
+      const result = await VerifyUser(values);
+      if (result?.qrCodeUrl) {
+        setQrCodeUrl(result.qrCodeUrl);
+      }
+      if (result?.message) {
+        setGlobalError(result.message);
         toast({
-          title: "Login efetuado com sucesso",
-          description: "Você será redirecionado para verificar o QR Code.",
-          variant: "success",
-        });
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-        router.push(`/qrcode?id=${response.id}`);
-      } else {
-        toast({
-          title: "Erro ao efetuar login",
-          description: response.message,    
-          variant: "destructive",
+          title: result.title,
+          description: result.message,
+          variant: result.variant as
+            | "destructive"
+            | "success"
+            | "default"
+            | null
+            | undefined,
         });
       }
     } catch (error) {
@@ -106,11 +122,15 @@ export default function LoginTab() {
                 />
               ))}
               <div className="mt-4">
-                <LoadingButton pending={form.formState.isSubmitting} />
+                <LoadingButton
+                  pending={form.formState.isSubmitting}
+                  disabled={!!qrCodeUrl}
+                />
               </div>
             </form>
           </Form>
         </CardContent>
+        {qrCodeUrl && <QrCodeForm user={user!} qrCodeUrl={qrCodeUrl} />}
       </Card>
     </TabsContent>
   );

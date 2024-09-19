@@ -20,8 +20,9 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { MenuComponent } from "../menu/menu-component";
+import { GenerateReport } from "../pdfs-generate/generate-report";
 
-interface Field {
+export interface Field {
   id: string;
   fieldLabel: string;
   fieldType: string;
@@ -51,7 +52,7 @@ export const TableContainer = ({
         variant: "destructive",
       });
     }
-  }, [modelId]);
+  }, [modelId, toast]);
 
   const getHeaders = useCallback(async (fileTemplateId: string) => {
     try {
@@ -67,7 +68,7 @@ export const TableContainer = ({
         variant: "destructive",
       });
     }
-  }, []);
+  }, [toast]);
 
   const getFiles = useCallback(async (fieldIds: string[]) => {
     try {
@@ -82,7 +83,7 @@ export const TableContainer = ({
         variant: "destructive",
       });
     }
-  }, []);
+  }, [toast]);
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
@@ -103,7 +104,7 @@ export const TableContainer = ({
     } finally {
       setIsLoading(false);
     }
-  }, [getModel, getHeaders, getFiles]);
+  }, [getModel, getHeaders, getFiles, toast]);
 
   useEffect(() => {
     fetchData();
@@ -152,11 +153,14 @@ export const TableContainer = ({
 
   return (
     <div className="max-h-[69vh] overflow-y-auto">
-      <div className="flex justify-end mb-4">
+      <div className="flex justify-center mb-4">
         {selectedFiles.length > 0 && (
-          <Button onClick={handleDeleteSelected} variant="destructive">
-            Excluir Selecionados
-          </Button>
+          <div className="flex gap-6">
+            <GenerateReport selectedFiles={selectedFiles} />
+            <Button onClick={handleDeleteSelected} variant="destructive">
+              Excluir Selecionados
+            </Button>
+          </div>
         )}
       </div>
       <Table>

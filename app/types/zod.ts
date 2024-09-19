@@ -28,6 +28,11 @@ export const loginSchema = z.object({
   password: passwordSchema,
 });
 
+export const qrCodeSchema = z.object({
+  ...loginSchema.shape,
+  code: z.string().min(6, "O código deve ter 6 dígitos"),
+});
+
 export const editPasswordSchema = z
   .object({
     password: passwordSchema,

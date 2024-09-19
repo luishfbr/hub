@@ -11,7 +11,10 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { debounce } from "lodash";
-import { getSectors } from "../../admin/_components/cards/_actions/users";
+import {
+  getSectors,
+  getSectorsByUserId,
+} from "../../admin/_components/cards/_actions/users";
 import { TableContainer } from "./table/table-component";
 import { getModelsBySectorId } from "../_actions/fms-actions";
 import { Model, Sector } from "@/app/types/types";
@@ -27,8 +30,8 @@ export const ContainerTables = () => {
   const fetchSectors = useCallback(async () => {
     try {
       setIsLoading(true);
-      const response = await getSectors();
-      setSectors(response ?? []);
+      const response = await getSectorsByUserId();
+      setSectors(response?.sectors ?? []);
     } catch (error) {
       console.error("Error fetching sectors:", error);
     } finally {

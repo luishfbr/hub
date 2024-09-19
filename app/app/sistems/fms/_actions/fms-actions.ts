@@ -20,6 +20,7 @@ const GetUseriD = async () => {
 
 export const GetUser = async () => {
   const session = await auth();
+
   const user = await prisma.user.findUnique({
     where: {
       id: session?.user?.id,
@@ -70,7 +71,6 @@ export const createNewModel = async (formData: NewModelProps) => {
     const standardFields = [
       { fieldType: FieldType.prateleira, fieldLabel: "Prateleira" },
       { fieldType: FieldType.caixa, fieldLabel: "Caixa" },
-      { fieldType: FieldType.pasta, fieldLabel: "Pasta" },
     ];
 
     const allFields = [
@@ -219,4 +219,64 @@ export const deleteModel = async (id: string) => {
       id: modelId,
     },
   });
+};
+
+export const getHeadersByIdFiles = async (id: string) => {
+  const fileTemplateId = await prisma.file.findUnique({
+    where: { id },
+    select: { fileTemplateId: true },
+  });
+  return fileTemplateId;
+};
+
+export const GetHeaders = async (id: string) => {
+  const modelId = await prisma.file.findUnique({
+    where: {
+      id: id,
+    },
+    select: {
+      fileTemplateId: true,
+    },
+  });
+
+  if (modelId?.fileTemplateId) {
+    const headers = await prisma.field.findMany({
+      where: {
+        fileTemplateId: modelId.fileTemplateId,
+      },
+      select: {
+        id: true,
+        fieldLabel: true,
+      },
+    });
+
+    return headers;
+  }
+  return null;
+};
+
+export const GetFilesByHeadersId = async (headersId: string[]) => {
+  const files = await prisma.file.findMany({
+    where: { fieldId: { in: headersId } },
+    select: { id: true, value: true, fieldId: true },
+  });
+
+  const groupedFiles = files.reduce((acc, file) => {
+    if (!acc[file.fieldId]) acc[file.fieldId] = [];
+    acc[file.fieldId].push(file);
+    return acc;
+  }, {} as Record<string, typeof files>);
+
+  return (
+    Object.values(groupedFiles)[0]?.map((_, index) =>
+      headersId.reduce((acc, fieldId) => {
+        const file = groupedFiles[fieldId]?.[index];
+        if (file) {
+          acc[fieldId] = file.value;
+          acc.id = file.id;
+        }
+        return acc;
+      }, {} as Record<string, string>)
+    ) || []
+  );
 };

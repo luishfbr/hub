@@ -1,5 +1,6 @@
 "use server";
 
+import { auth } from "@/services/auth";
 import { prisma } from "@/services/prisma";
 import { genSaltSync, hashSync } from "bcrypt-ts";
 
@@ -12,6 +13,18 @@ export const getUsers = async () => {
     email: user.email ?? "",
     otpEnabled: user.otpEnabled ?? false,
   }));
+};
+
+export const getSectorsByUserId = async () => {
+  const session = await auth();
+  const id = session?.user?.id;
+
+  const user = await prisma.user.findUnique({
+    where: { id },
+    select: { sectors: true },
+  });
+
+  return user;
 };
 
 export const getSectors = async () => {

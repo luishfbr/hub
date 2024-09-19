@@ -1,11 +1,13 @@
 "use client";
 
+import { Logout } from "@/app/(auth)/_actions/auth";
 import {
   DashboardPage,
   DashboardPageHeader,
   DashboardPageHeaderTitle,
   DashboardPageMain,
 } from "@/components/dashboard/page";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardHeader,

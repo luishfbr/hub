@@ -61,3 +61,9 @@ export const fieldTypes: { label: string; type: keyof typeof FieldType }[] = [
   { label: "Mês", type: "mes" },
   { label: "Ano", type: "ano" },
 ];
+
+export type LoginWithCode = {
+  email: string;
+  password: string;
+  code: string;
+};

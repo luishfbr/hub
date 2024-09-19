@@ -1,18 +1,22 @@
 "use server";
 
-import { LoginForm, RegisterForm } from "@/app/types/types";
+import { LoginForm, LoginWithCode, RegisterForm } from "@/app/types/types";
 import { signIn, signOut } from "@/services/auth";
 import { prisma } from "@/services/prisma";
 import { compareSync, hash } from "bcrypt-ts";
-import { AuthError } from "next-auth";
 import qrcode from "qrcode";
 import { authenticator } from "otplib";
+import { randomBytes } from "crypto";
+import base32 from "hi-base32";
+import { AuthError } from "next-auth";
 
 const saltRounds = 10;
 
 export async function Register(data: RegisterForm) {
   const { name, email, password } = data;
 
+  const secretBuffer = randomBytes(20);
+  const otpSecret = base32.encode(secretBuffer).replace(/=/g, "");
   const hashedPassword = await hash(password, saltRounds);
 
   const user = await prisma.user.create({
@@ -20,37 +24,12 @@ export async function Register(data: RegisterForm) {
       name,
       email,
       password: hashedPassword,
+      otpSecret,
     },
   });
 
   if (!user) {
     throw new Error("User not created");
-  }
-
-  return user;
-}
-
-export async function LoginWithCredentials(data: LoginForm) {
-  const { email, password } = data;
-
-  const user = await prisma.user.findUnique({
-    where: {
-      email,
-    },
-  });
-
-  if (!user) {
-    return {
-      message: "Usuário não encontrado",
-    };
-  }
-
-  const comparePassword = compareSync(password, user.password as string);
-
-  if (!comparePassword) {
-    return {
-      message: "Senha incorreta",
-    };
   }
 
   return user;
@@ -70,16 +49,55 @@ export async function Login({
       switch (error.type) {
         case "CredentialsSignin":
           return {
-            message: "Credenciais inválidas",
+            title: "Credenciais inválidas",
+            message: "Email ou senha incorretos.",
           };
         default:
           return {
+            title: "Problemas com o servidor",
             message: "Ocorreu um erro inesperado. Por favor, tente novamente.",
           };
       }
     }
     throw error;
   }
+}
+
+export async function VerifyUser(values: LoginForm) {
+  const { email, password } = values;
+  const user = await prisma.user.findUnique({
+    where: {
+      email,
+    },
+  });
+
+  if (!user) {
+    return {
+      title: "Email não encontrado",
+      message: "Verifique o email digitado e tente novamente.",
+      variant: "destructive",
+    };
+  }
+
+  const isPasswordMatches = compareSync(password, user.password as string);
+
+  if (!isPasswordMatches) {
+    return {
+      title: "Senha incorreta",
+      message: "Verifique a senha digitada e tente novamente.",
+      variant: "destructive",
+    };
+  }
+
+  const id = user.id as string;
+
+  const qrCodeUrl = await GenerateQrCode(id);
+  return {
+    qrCodeUrl,
+    title: "Usuário encontrado",
+    message: "Verifique o código QR e insira o código de verificação.",
+    variant: "success",
+  };
 }
 
 export async function GenerateQrCode(id: string) {
@@ -102,10 +120,11 @@ export async function GenerateQrCode(id: string) {
   return await qrcode.toDataURL(otpUrl);
 }
 
-export async function VerifyQrCode(id: string, code: string) {
+export async function VerifyQrCode(values: LoginWithCode) {
+  const { email, password, code } = values;
   const user = await prisma.user.findUnique({
     where: {
-      id,
+      email,
     },
   });
 
@@ -134,4 +153,47 @@ export async function VerifyQrCode(id: string, code: string) {
 
 export async function Logout() {
   await signOut();
+}
+
+export async function getUserFromDb(email: string, password: string) {
+  try {
+    const existedUser = await prisma.user.findUnique({
+      where: {
+        email,
+      },
+    });
+
+    if (!existedUser) {
+      return {
+        success: false,
+        message: "User not found.",
+      };
+    }
+
+    if (!existedUser.password) {
+      return {
+        success: false,
+        message: "Password is required.",
+      };
+    }
+
+    const isPasswordMatches = compareSync(password, existedUser.password);
+
+    if (!isPasswordMatches) {
+      return {
+        success: false,
+        message: "Password is incorrect.",
+      };
+    }
+
+    return {
+      success: true,
+      data: existedUser,
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message,
+    };
+  }
 }
