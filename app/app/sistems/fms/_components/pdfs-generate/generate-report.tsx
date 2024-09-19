@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback, useMemo } from "react";
 import {
+  GetFileByCommonId,
   GetFilesByFieldIds,
   GetHeaders,
 } from "@/app/app/sistems/fms/_actions/fms-actions";
@@ -26,14 +27,15 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
+import jsPDF from "jspdf";
+import autoTable from 'jspdf-autotable'
 
-interface GenerateReportProps {
+export interface GenerateReportProps {
   selectedFiles: string[];
 }
 
-interface CustomHeader {
+export interface CustomHeader {
   id: string;
   fieldLabel: string;
 }
@@ -43,7 +45,6 @@ export const GenerateReport: React.FC<GenerateReportProps> = ({
 }) => {
   const [headers, setHeaders] = useState<CustomHeader[]>([]);
   const [files, setFiles] = useState<Record<string, string | undefined>[]>([]);
-  const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
@@ -55,11 +56,7 @@ export const GenerateReport: React.FC<GenerateReportProps> = ({
       const response = await GetHeaders(selectedFiles[0]);
       if (!response) throw new Error("No headers found");
 
-      setHeaders(response);
-      const headerIds = response.map((header) => header.id);
-      const fileData = await GetFilesByFieldIds(headerIds);
-      setFiles(fileData);
-      setSelectedRows(new Set(fileData.map((file) => file.id)));
+      setHeaders(response.headers);
     } catch (error) {
       toast({
         title: "Error",
@@ -71,45 +68,53 @@ export const GenerateReport: React.FC<GenerateReportProps> = ({
     }
   }, [selectedFiles, toast]);
 
+  const fetchFiles = useCallback(async () => {
+    if (selectedFiles.length === 0) return;
+
+    const response = await GetFileByCommonId(selectedFiles);
+    if (!response) throw new Error("No files found");
+
+    setFiles(response);
+  }, [selectedFiles])
+
   useEffect(() => {
+    fetchFiles();
     fetchHeaders();
-  }, [fetchHeaders]);
-
-  const handleRowSelection = useCallback((id: string) => {
-    setSelectedRows((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(id)) {
-        newSet.delete(id);
-      } else {
-        newSet.add(id);
-      }
-      return newSet;
-    });
-  }, []);
-
-  const selectedFilesData = useMemo(
-    () => files.filter((file) => selectedRows.has(file.id)),
-    [files, selectedRows]
-  );
+  }, [fetchHeaders, fetchFiles]);
 
   const handleGenerateReport = useCallback(() => {
-    // Implement report generation logic here
-    console.log("Generating report for:", selectedFilesData);
+    const doc = new jsPDF('p', 'mm', 'a4');
+    const tableColumn = headers.map((header) => header.fieldLabel);
+    const tableRows = files.map((file) =>
+      headers.map((header) => file[header.id] || "")
+    );
+
+    autoTable(doc, {
+      head: [tableColumn],
+      body: tableRows,
+      styles: { fontSize: 8, halign: 'center', valign: 'middle' },
+    });
+
+    doc.setLineWidth(0.5);
+    doc.rect(5, 5, doc.internal.pageSize.getWidth() - 10, doc.internal.pageSize.getHeight() - 10);
+
+    doc.save(`relatorio-${new Date().toLocaleDateString()}.pdf`);
+
     toast({
-      title: "Success",
-      description: "Report generated successfully",
+      title: "Sucesso",
+      description: "Relatório gerado com sucesso",
       variant: "success",
     });
-  }, [selectedFilesData, toast]);
+  }, [headers, files, toast]);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div>Carregando...</div>;
   }
 
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button disabled={selectedFiles.length === 0}>Gerar Relatórios</Button>
+        <Button disabled={selectedFiles.length === 0}>Gerar Relatório</Button>
       </AlertDialogTrigger>
       <AlertDialogContent className="max-w-4xl">
         <AlertDialogHeader>
@@ -122,7 +127,6 @@ export const GenerateReport: React.FC<GenerateReportProps> = ({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[50px]">Select</TableHead>
                 {headers.map((header) => (
                   <TableHead
                     key={header.id}
@@ -136,12 +140,6 @@ export const GenerateReport: React.FC<GenerateReportProps> = ({
             <TableBody>
               {files.map((file) => (
                 <TableRow key={file.id}>
-                  <TableCell>
-                    <Checkbox
-                      checked={selectedRows.has(file.id)}
-                      onCheckedChange={() => handleRowSelection(file.id)}
-                    />
-                  </TableCell>
                   {headers.map((header) => (
                     <TableCell
                       key={header.id}
@@ -158,7 +156,7 @@ export const GenerateReport: React.FC<GenerateReportProps> = ({
         <AlertDialogFooter>
           <AlertDialogCancel>Cancelar</AlertDialogCancel>
           <AlertDialogAction onClick={handleGenerateReport}>
-            Gerar
+            Gerar PDF
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

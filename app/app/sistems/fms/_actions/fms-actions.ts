@@ -235,6 +235,7 @@ export const GetHeaders = async (id: string) => {
       id: id,
     },
     select: {
+      commonId: true,
       fileTemplateId: true,
     },
   });
@@ -250,7 +251,7 @@ export const GetHeaders = async (id: string) => {
       },
     });
 
-    return headers;
+    return { headers, commonId: modelId.commonId };
   }
   return null;
 };
@@ -270,6 +271,50 @@ export const GetFilesByHeadersId = async (headersId: string[]) => {
   return (
     Object.values(groupedFiles)[0]?.map((_, index) =>
       headersId.reduce((acc, fieldId) => {
+        const file = groupedFiles[fieldId]?.[index];
+        if (file) {
+          acc[fieldId] = file.value;
+          acc.id = file.id;
+        }
+        return acc;
+      }, {} as Record<string, string>)
+    ) || []
+  );
+};
+
+export const GetFileByCommonId = async (selectedFiles: string[]) => {
+  const filesWithCommonId = await prisma.file.findMany({
+    where: {
+      id: { in: selectedFiles },
+    },
+    select: {
+      commonId: true,
+    },
+  });
+
+  const commonIds = filesWithCommonId.map((file) => file.commonId);
+
+  const files = await prisma.file.findMany({
+    where: {
+      commonId: { in: commonIds },
+    },
+    select: {
+      id: true,
+      value: true,
+      commonId: true,
+      fieldId: true,
+    },
+  });
+
+  const groupedFiles = files.reduce((acc, file) => {
+    if (!acc[file.fieldId]) acc[file.fieldId] = [];
+    acc[file.fieldId].push(file);
+    return acc;
+  }, {} as Record<string, typeof files>);
+
+  return (
+    Object.values(groupedFiles)[0]?.map((_, index) =>
+      Object.keys(groupedFiles).reduce((acc, fieldId) => {
         const file = groupedFiles[fieldId]?.[index];
         if (file) {
           acc[fieldId] = file.value;

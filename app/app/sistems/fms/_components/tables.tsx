@@ -12,7 +12,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { debounce } from "lodash";
 import {
-  getSectors,
   getSectorsByUserId,
 } from "../../admin/_components/cards/_actions/users";
 import { TableContainer } from "./table/table-component";

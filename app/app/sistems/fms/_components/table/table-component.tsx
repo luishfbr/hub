@@ -21,6 +21,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { MenuComponent } from "../menu/menu-component";
 import { GenerateReport } from "../pdfs-generate/generate-report";
+import { GenerateLabels } from "../pdfs-generate/generate-labels";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export interface Field {
   id: string;
@@ -160,66 +162,73 @@ export const TableContainer = ({
             <Button onClick={handleDeleteSelected} variant="destructive">
               Excluir Selecionados
             </Button>
+            <GenerateLabels selectedFiles={selectedFiles} />
           </div>
         )}
       </div>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="text-center">
-              <Checkbox
-                checked={selectedFiles.length === filteredFiles.length}
-                onCheckedChange={(checked) =>
-                  setSelectedFiles(
-                    checked
-                      ? filteredFiles
-                          .map((file) => file.id)
-                          .filter((id): id is string => id !== undefined)
-                      : []
-                  )
-                }
-              />
-            </TableHead>
-            {fields.map((field) => (
-              <TableHead className="text-center" key={field.id}>
-                {field.fieldLabel}
-              </TableHead>
-            ))}
-            <TableHead className="text-center">Ações</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {filteredFiles.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={fields.length + 2} className="text-center">
-                Nenhum resultado encontrado
-              </TableCell>
-            </TableRow>
-          ) : (
-            filteredFiles.map((fileRow, rowIndex) => (
-              <TableRow key={rowIndex}>
-                <TableCell className="text-center">
+      <ScrollArea className="w-full overflow-auto">
+        <div className="min-w-max">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="text-center sticky left-0 bg-background z-20">
                   <Checkbox
-                    checked={selectedFiles.includes(fileRow.id || "")}
-                    onCheckedChange={() => handleSelectFile(fileRow.id || "")}
+                    checked={selectedFiles.length === filteredFiles.length}
+                    onCheckedChange={(checked) =>
+                      setSelectedFiles(
+                        checked
+                          ? filteredFiles
+                            .map((file) => file.id)
+                            .filter((id): id is string => id !== undefined)
+                          : []
+                      )
+                    }
                   />
-                </TableCell>
+                </TableHead>
                 {fields.map((field) => (
-                  <TableCell key={field.id} className="text-center">
-                    {fileRow[field.id] || "-"}
-                  </TableCell>
+                  <TableHead className="text-center whitespace-nowrap" key={field.id}>
+                    {field.fieldLabel}
+                  </TableHead>
                 ))}
-                <TableCell className="flex justify-center items-center">
-                  <MenuComponent
-                    fileId={fileRow.id || ""}
-                    onUpdate={fetchData}
-                  />
-                </TableCell>
+                <TableHead className="text-center sticky right-0 bg-background z-20">Ações</TableHead>
               </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
+            </TableHeader>
+            <TableBody>
+              {filteredFiles.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={fields.length + 2} className="text-center">
+                    Nenhum resultado encontrado
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filteredFiles.map((fileRow, rowIndex) => (
+                  <TableRow key={rowIndex}>
+                    <TableCell className="text-center sticky left-0 bg-background z-10">
+                      <Checkbox
+                        checked={selectedFiles.includes(fileRow.id || "")}
+                        onCheckedChange={() => handleSelectFile(fileRow.id || "")}
+                      />
+                    </TableCell>
+                    {fields.map((field) => (
+                      <TableCell key={field.id} className="text-center whitespace-nowrap">
+                        {fileRow[field.id] || "-"}
+                      </TableCell>
+                    ))}
+                    <TableCell className="sticky right-0 bg-background z-10">
+                      <div className="flex justify-center items-center">
+                        <MenuComponent
+                          fileId={fileRow.id || ""}
+                          onUpdate={fetchData}
+                        />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      </ScrollArea>
     </div>
   );
 };

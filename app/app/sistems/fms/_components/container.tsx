@@ -8,12 +8,14 @@ import { Model } from "./new-model/model";
 import { ContainerTables } from "./tables";
 import { GetUser } from "../_actions/fms-actions";
 import EditModel from "./edit-model/edit-model";
+import { ImportModel } from "./import-model/import-model";
 
 const tabs = [
   { id: "tables", label: "Tabelas" },
   { id: "models", label: "Criação de Modelos" },
   { id: "files", label: "Criação de Arquivos" },
-  { id: "edit", label: "Edição de Modelos" },
+  { id: "edit", label: "Edição de Modelos" }, 
+  { id: "import", label: "Importação de Modelos" },
 ];
 
 export default function ContainerTabs() {
@@ -35,7 +37,7 @@ export default function ContainerTabs() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className=" grid grid-cols-4 gap-4 items-center justify-center">
+      <div className=" grid grid-cols-5 gap-4 items-center justify-center">
         {tabs.map((tab, index) =>
           (role === "USER" && tab.id === "tables") || role !== "USER" ? (
             <Button
@@ -53,6 +55,7 @@ export default function ContainerTabs() {
       {selectedTab === "models" && role !== "USER" && <Model />}
       {selectedTab === "files" && role !== "USER" && <Archive />}
       {selectedTab === "edit" && role !== "USER" && <EditModel />}
+      {selectedTab === "import" && role !== "USER" && <ImportModel />}
     </div>
   );
 }
