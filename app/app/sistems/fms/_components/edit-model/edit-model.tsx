@@ -18,7 +18,6 @@ import { Edit, Trash } from "lucide-react";
 import EditButton from "./_components/edit-button";
 import { DeleteButton } from "./_components/delete-button";
 
-
 export default function EditModel() {
   const [sectors, setSectors] = useState<Sector[]>([]);
   const [selectedSector, setSelectedSector] = useState<Sector | null>(null);
@@ -81,7 +80,10 @@ export default function EditModel() {
                       />
                     </TableCell>
                     <TableCell className="text-center">
-                      <DeleteButton modelId={model.id} />
+                      <DeleteButton
+                        modelId={model.id}
+                        onDelete={() => handleUpdate()}
+                      />
                     </TableCell>
                   </TableRow>
                 ))

@@ -39,6 +39,12 @@ export interface Field {
   type: keyof typeof FieldType;
 }
 
+export interface FieldImported {
+  id: string;
+  value: string;
+  type: "imported";
+}
+
 export interface FormDataProps {
   modelName: string;
   fields: Field[];
@@ -48,6 +54,12 @@ export interface NewModelProps {
   modelName: string;
   sectorId: string;
   fields: Field[];
+}
+
+export interface NewModelImportedProps {
+  modelName: string;
+  sectorId: string;
+  fields: FieldImported[];
 }
 
 export const fieldTypes: { label: string; type: keyof typeof FieldType }[] = [

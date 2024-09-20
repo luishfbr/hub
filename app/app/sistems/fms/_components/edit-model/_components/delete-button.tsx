@@ -8,13 +8,19 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-import { Button } from "@/components/ui/button"
-import { Trash } from "lucide-react"
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { Trash } from "lucide-react";
 import { deleteModel } from "../../../_actions/fms-actions";
 import { useToast } from "@/hooks/use-toast";
 
-export function DeleteButton({ modelId }: { modelId: string }) {
+export function DeleteButton({
+  modelId,
+  onDelete,
+}: {
+  modelId: string;
+  onDelete: () => void;
+}) {
   const { toast } = useToast();
 
   const handleDelete = async () => {
@@ -25,6 +31,7 @@ export function DeleteButton({ modelId }: { modelId: string }) {
         description: "O modelo foi deletado com sucesso",
         variant: "success",
       });
+      onDelete();
     } else {
       toast({
         title: "Erro ao deletar o modelo",
@@ -43,16 +50,20 @@ export function DeleteButton({ modelId }: { modelId: string }) {
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Você tem certeza que deseja deletar este modelo?</AlertDialogTitle>
+          <AlertDialogTitle>
+            Você tem certeza que deseja deletar este modelo?
+          </AlertDialogTitle>
           <AlertDialogDescription>
             Ao deletar o modelo, todos os dados associados a ele serão perdidos.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancelar</AlertDialogCancel>
-          <AlertDialogAction onClick={handleDelete}>Continuar</AlertDialogAction>
+          <AlertDialogAction onClick={handleDelete}>
+            Continuar
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-  )
+  );
 }

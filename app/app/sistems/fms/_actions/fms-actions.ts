@@ -1,6 +1,6 @@
 "use server";
 
-import { Model, NewModelProps } from "@/app/types/types";
+import { Model, NewModelImportedProps, NewModelProps } from "@/app/types/types";
 import { auth } from "@/services/auth";
 import { prisma } from "@/services/prisma";
 import { FieldType } from "@prisma/client";
@@ -44,7 +44,6 @@ export const GetSectors = async () => {
       sectors: true,
     },
   });
-  console.log(sectors);
   return sectors;
 };
 
@@ -81,7 +80,12 @@ export const createNewModel = async (formData: NewModelProps) => {
       })),
     ].map((field) => ({ ...field, fileTemplateId: newModel.id }));
 
-    await prisma.field.createMany({ data: allFields });
+    await prisma.field.createMany({
+      data: allFields.map((field) => ({
+        ...field,
+        fieldType: field.fieldType as FieldType,
+      })),
+    });
     return newModel;
   }
   return null;
@@ -90,6 +94,7 @@ export const createNewModel = async (formData: NewModelProps) => {
 export const createNewFile = async (data: any) => {
   const commonId = uuidv4();
   const dataWithCommonId = data.map((item: any) => ({ ...item, commonId }));
+  console.log(dataWithCommonId);
   return await prisma.file.createMany({ data: dataWithCommonId });
 };
 
@@ -324,4 +329,38 @@ export const GetFileByCommonId = async (selectedFiles: string[]) => {
       }, {} as Record<string, string>)
     ) || []
   );
+};
+
+export const createNewModelByImporting = async (
+  formData: NewModelImportedProps,
+  dataFiles: any
+) => {
+  const { modelName, sectorId, fields } = formData;
+
+  try {
+    const newModel = await prisma.fileTemplate.create({
+      data: { modelName, sectorId },
+    });
+
+    if (newModel) {
+      const allFields = fields.map((field) => ({
+        fieldType: "imported" as FieldType,
+        fieldLabel: "Meus ovo",
+        fileTemplateId: newModel.id,
+      }));
+
+      console.log(allFields);
+
+      await prisma.field.createMany({
+        data: allFields,
+      });
+
+      return newModel;
+    }
+  } catch (error) {
+    console.error("Error creating new model by importing:", error);
+    throw new Error("Failed to create new model by importing");
+  }
+
+  return null;
 };
