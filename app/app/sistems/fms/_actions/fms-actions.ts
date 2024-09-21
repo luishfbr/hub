@@ -94,7 +94,6 @@ export const createNewModel = async (formData: NewModelProps) => {
 export const createNewFile = async (data: any) => {
   const commonId = uuidv4();
   const dataWithCommonId = data.map((item: any) => ({ ...item, commonId }));
-  console.log(dataWithCommonId);
   return await prisma.file.createMany({ data: dataWithCommonId });
 };
 
@@ -336,31 +335,72 @@ export const createNewModelByImporting = async (
   dataFiles: any
 ) => {
   const { modelName, sectorId, fields } = formData;
+  const newModel = await prisma.fileTemplate.create({
+    data: { modelName, sectorId },
+  });
 
-  try {
-    const newModel = await prisma.fileTemplate.create({
-      data: { modelName, sectorId },
+  if (newModel) {
+    const allFields = [
+      ...fields.map((field) => ({
+        fieldType: field.type as FieldType,
+        fieldLabel: field.value,
+      })),
+    ].map((field) => ({ ...field, fileTemplateId: newModel.id }));
+
+    const fieldsIn = await prisma.field.createMany({
+      data: allFields.map((field) => ({
+        ...field,
+        fieldType: field.fieldType as FieldType,
+      })),
     });
 
-    if (newModel) {
-      const allFields = fields.map((field) => ({
-        fieldType: "imported" as FieldType,
-        fieldLabel: "Meus ovo",
-        fileTemplateId: newModel.id,
-      }));
-
-      console.log(allFields);
-
-      await prisma.field.createMany({
-        data: allFields,
+    if (fieldsIn) {
+      const fieldsId = await prisma.field.findMany({
+        where: { fileTemplateId: newModel.id },
+        select: { id: true },
       });
 
-      return newModel;
-    }
-  } catch (error) {
-    console.error("Error creating new model by importing:", error);
-    throw new Error("Failed to create new model by importing");
-  }
+      const fieldIds = fieldsId.map((field) => field.id);
+      const fieldCount = fieldIds.length;
 
+      const formattingData = dataFiles.map((data: Record<string, unknown>) => {
+        const formattedData: DataObject = {};
+        for (const key in data) {
+          if (data.hasOwnProperty(key)) {
+            const { idRow, ...rest } = data[key] as Record<string, unknown>;
+            formattedData[key] = rest;
+          }
+        }
+        return formattedData;
+      });
+
+      let fieldIndex = 0;
+      const complete = formattingData.flatMap((data: DataObject) =>
+        Object.values(data)
+          .filter((value) => Object.keys(value).length > 0)
+          .map((value) => {
+            const stringifiedValue = Object.fromEntries(
+              Object.entries(value).map(([key, val]) => [key, String(val)])
+            );
+            const fileData = {
+              ...stringifiedValue,
+              fileTemplateId: newModel.id,
+              fieldId: fieldIds[fieldIndex],
+            };
+            fieldIndex = (fieldIndex + 1) % fieldCount;
+            return fileData;
+          })
+      );
+
+      const newFileByImporting = await prisma.file.createMany({
+        data: complete,
+      });
+      return newFileByImporting;
+    }
+  }
   return null;
 };
+
+interface DataObject {
+  [key: string]: any;
+}

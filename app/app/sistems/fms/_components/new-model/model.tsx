@@ -200,7 +200,6 @@ export function Model() {
           )}
         </div>
       </div>
-
     </div>
   );
 }

@@ -79,3 +79,7 @@ export type LoginWithCode = {
   password: string;
   code: string;
 };
+
+export interface NewModelName {
+  modelName: string;
+}

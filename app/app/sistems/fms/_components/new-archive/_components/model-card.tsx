@@ -154,6 +154,8 @@ export const SelectedModelForm = ({ modelId }: { modelId: string }) => {
       value: data[field.id],
     }));
 
+    console.log(formattedFields);
+
     try {
       await createNewFile(formattedFields);
       toast({

@@ -18,11 +18,13 @@ import {
   createNewModelByImporting,
   GetSectors,
 } from "../../_actions/fms-actions";
-import { Sector } from "@/app/types/types";
+import { NewModelName, Sector } from "@/app/types/types";
 import { SectorSelect } from "../new-model/_components/sector-select";
 import { DescriptionHelp } from "./_components/description";
+import { useForm } from "react-hook-form";
 
 export function ImportModel() {
+  const { register, handleSubmit, setValue, watch } = useForm<NewModelName>();
   const { toast } = useToast();
   const [headers, setHeaders] = useState<string[]>([]);
   const [rows, setRows] = useState<(string | number | null)[][]>([]);
@@ -35,7 +37,7 @@ export function ImportModel() {
   const fetchSectors = useCallback(async () => {
     try {
       const response = await GetSectors();
-      if (response && response.sectors) {
+      if (response?.sectors) {
         setSectors(response.sectors);
       }
     } catch (error) {
@@ -63,6 +65,7 @@ export function ImportModel() {
       setIsLoading(true);
       const nameFile = file.name.split(".")[0];
       setFileName(nameFile);
+      setValue("modelName", nameFile);
       const workbook = new ExcelJS.Workbook();
       try {
         await workbook.xlsx.load(await file.arrayBuffer());
@@ -111,21 +114,54 @@ export function ImportModel() {
     }
   };
 
+  const changeModelName = (data: { modelName: string }) => {
+    if (data.modelName) {
+      setFileName(data.modelName);
+    }
+  };
+
   const handleImport = async () => {
+    const fields = headers.map((header) => ({
+      id: header.toLowerCase(),
+      value: header,
+      type: "imported",
+    }));
+
     const formData = {
-      modelName: fileName,
+      modelName: watch("modelName"),
       sectorId: selectedSector as string,
-      fields: headers,
+      fields: fields,
     };
 
     const dataFiles = rowsFormatted;
-    const res = await createNewModelByImporting(formData, dataFiles);
-    
-    toast({
-      title: "Sucesso",
-      description: "Modelo importado com sucesso!",
-      variant: "success",
-    });
+
+    try {
+      const newModel = await createNewModelByImporting(
+        {
+          ...formData,
+          fields: formData.fields.map((field) => ({
+            ...field,
+            type: "imported" as const,
+          })),
+        },
+        dataFiles
+      );
+
+      if (newModel) {
+        toast({
+          title: "Sucesso",
+          description: "Modelo importado com sucesso!",
+          variant: "success",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Erro ao importar modelo. Por favor, tente novamente.",
+        variant: "destructive",
+      });
+      console.error("Error importing model:", error);
+    }
   };
 
   return (
@@ -147,12 +183,15 @@ export function ImportModel() {
               className="w-full sm:w-auto cursor-pointer"
             />
             <DescriptionHelp />
-            <Input
-              id="file-name-input"
-              defaultValue={fileName}
-              placeholder={fileName ? fileName : "Insira um arquivo"}
-              className="text-center w-full sm:w-auto"
-            />
+            <form onSubmit={handleSubmit(changeModelName)}>
+              <Input
+                id="file-name-input"
+                defaultValue={fileName}
+                {...register("modelName")}
+                placeholder={fileName ? fileName : "Insira um arquivo"}
+                className="text-center w-full sm:w-auto"
+              />
+            </form>
           </Card>
           {isLoading ? (
             <div>Carregando...</div>
@@ -160,7 +199,7 @@ export function ImportModel() {
             headers.length > 0 && (
               <Card className="w-full">
                 <CardContent className="p-4">
-                  <ScrollArea className="h-[600px] sm:max-h-[30vh] lg:max-h-[57vh] xl:max-h-[60vh] w-full">
+                  <ScrollArea className="h-[30vh] sm:max-h-[30vh] lg:max-h-[57vh] xl:max-h-[60vh] w-full">
                     <Table>
                       <TableHeader>
                         <TableRow>
@@ -194,6 +233,7 @@ export function ImportModel() {
           <Button
             onClick={handleImport}
             disabled={headers.length === 0 || isLoading}
+            type="submit"
           >
             Importar
           </Button>
