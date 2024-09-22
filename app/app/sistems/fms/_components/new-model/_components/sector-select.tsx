@@ -8,13 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Sector } from "@/app/types/types";
-
-interface SectorSelectProps {
-  sectors: Sector[];
-  selectedSector: string | null;
-  setSelectedSector: (sector: string) => void;
-}
+import { SectorSelectProps } from "@/app/types/types";
 
 export const SectorSelect: React.FC<SectorSelectProps> = ({
   sectors,

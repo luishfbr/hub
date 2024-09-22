@@ -108,27 +108,19 @@ model FileTemplate {
 
 model Field {
   id             String       @id @default(cuid())
-  fieldType      FieldType
+  fieldType      String
   fieldLabel     String
+  options        Options[]
   fileTemplate   FileTemplate @relation(onDelete: Cascade, fields: [fileTemplateId], references: [id])
   fileTemplateId String
   File           File[]
 }
 
-enum FieldType {
-  nomecompleto
-  cpf
-  cnpj
-  datadeadmissao
-  dataderecisao
-  data
-  dia
-  mes
-  ano
-  prateleira
-  caixa
-  pasta
-  imported
+model Options {
+  id      String  @id @default(cuid())
+  value   String
+  Field   Field?  @relation(fields: [fieldId], references: [id])
+  fieldId String?
 }
 
 model File {
@@ -138,8 +130,6 @@ model File {
   fieldId        String
   commonId       String
 
-  field Field @relation(onDelete: Cascade, fields: [fieldId], references: [id])
-
+  field        Field         @relation(onDelete: Cascade, fields: [fieldId], references: [id])
   FileTemplate FileTemplate? @relation(fields: [fileTemplateId], references: [id])
 }
-

@@ -1,5 +1,3 @@
-import { FieldType } from "@prisma/client";
-
 export type RegisterForm = {
   name: string;
   email: string;
@@ -36,13 +34,7 @@ export type Model = {
 export interface Field {
   id: string;
   value: string;
-  type: keyof typeof FieldType;
-}
-
-export interface FieldImported {
-  id: string;
-  value: string;
-  type: "imported";
+  type: FieldType;
 }
 
 export interface FormDataProps {
@@ -56,24 +48,6 @@ export interface NewModelProps {
   fields: Field[];
 }
 
-export interface NewModelImportedProps {
-  modelName: string;
-  sectorId: string;
-  fields: FieldImported[];
-}
-
-export const fieldTypes: { label: string; type: keyof typeof FieldType }[] = [
-  { label: "Nome Completo", type: "nomecompleto" },
-  { label: "CPF", type: "cpf" },
-  { label: "CNPJ", type: "cnpj" },
-  { label: "Data de Admissão", type: "datadeadmissao" },
-  { label: "Data de Rescisão", type: "dataderecisao" },
-  { label: "Data", type: "data" },
-  { label: "Dia", type: "dia" },
-  { label: "Mês", type: "mes" },
-  { label: "Ano", type: "ano" },
-];
-
 export type LoginWithCode = {
   email: string;
   password: string;
@@ -83,3 +57,19 @@ export type LoginWithCode = {
 export interface NewModelName {
   modelName: string;
 }
+
+export interface SectorSelectProps {
+  sectors: Sector[];
+  selectedSector: string | null;
+  setSelectedSector: (sector: string) => void;
+}
+
+export type FieldType = "text" | "number" | "date" | "checkbox" | "select";
+
+export const FieldTypeOptions = [
+  { id: "text", value: "Campo de Texto" },
+  { id: "number", value: "Campo de Número" },
+  { id: "date", value: "Campo de Data" },
+  { id: "checkbox", value: "Checkbox" },
+  { id: "select", value: "Campo de Seleção" },
+];

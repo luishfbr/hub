@@ -1,9 +1,8 @@
 "use server";
 
-import { Model, NewModelImportedProps, NewModelProps } from "@/app/types/types";
+import { Model, NewModelProps } from "@/app/types/types";
 import { auth } from "@/services/auth";
 import { prisma } from "@/services/prisma";
-import { FieldType } from "@prisma/client";
 import { v4 as uuidv4 } from "uuid";
 import { FileInfo } from "../_components/menu/menu-component";
 
