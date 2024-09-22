@@ -1,6 +1,6 @@
 "use client";
 
-import { Model } from "@/app/types/types";
+import { Field, Model } from "@/app/types/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -10,9 +10,21 @@ import {
 } from "@/components/ui/popover";
 import { Edit } from "lucide-react";
 import { useState, useEffect } from "react";
-import { GetModelsById, UpdateModel } from "../../../_actions/fms-actions";
+import {
+  GetHeadersByFileTemplateId,
+  GetModelsById,
+  UpdateModel,
+} from "../../../_actions/fms-actions";
 import { useForm } from "react-hook-form";
 import { useToast } from "@/hooks/use-toast";
+import { FieldType } from "@prisma/client";
+import { Table, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+
+interface FieldToEdit {
+  id: string;
+  fieldLabel: string;
+  type: keyof typeof FieldType;
+}
 
 export default function EditButton({
   modelId,
@@ -23,12 +35,20 @@ export default function EditButton({
 }) {
   const { toast } = useToast();
   const [model, setModel] = useState<Model>();
+  const [headers, setHeaders] = useState<FieldToEdit[]>([]);
   const { register, handleSubmit } = useForm<Model>();
 
   useEffect(() => {
     const fetchModel = async () => {
       const response = await GetModelsById(modelId);
-      if (response) setModel(response);
+      if (response) {
+        setModel(response);
+        const headers = await GetHeadersByFileTemplateId(modelId);
+        console.log(headers);
+        setHeaders(
+          headers.map((h) => ({ ...h, value: "", type: h.fieldType }))
+        );
+      }
     };
     fetchModel();
   }, [modelId]);
@@ -58,20 +78,23 @@ export default function EditButton({
           <Edit className="h-4 w-4" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-80">
+      <PopoverContent className="w-auto">
         <div className="grid gap-4">
           <div className="space-y-2">
-            <h4 className="font-medium leading-none">Dimensions</h4>
+            <h4 className="font-medium leading-none">
+              Editar Modelo - {model?.modelName}
+            </h4>
             <p className="text-sm text-muted-foreground">
-              Set the dimensions for the layer.
+              Aqui você consegue alterar totalmente o modelo.
             </p>
           </div>
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="flex gap-2">
               <Input
+                className="w-full"
                 type="text"
                 defaultValue={model?.modelName}
-                placeholder={`Escolha um novo nome: ${model?.modelName}`}
+                placeholder={`Escolha um novo nome para o modelo: ${model?.modelName}`}
                 {...register("modelName")}
                 autoComplete="off"
               />
@@ -79,6 +102,15 @@ export default function EditButton({
               <Button type="submit">Salvar</Button>
             </div>
           </form>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                {headers.map((value) => (
+                  <TableHead key={value.id}>{value.fieldLabel}</TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+          </Table>
         </div>
       </PopoverContent>
     </Popover>

@@ -23,6 +23,7 @@ import { MenuComponent } from "../menu/menu-component";
 import { GenerateReport } from "../pdfs-generate/generate-report";
 import { GenerateLabels } from "../pdfs-generate/generate-labels";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { DeleteSelectedArchives } from "../delete-all/delete-selected-archives";
 
 export interface Field {
   id: string;
@@ -56,36 +57,42 @@ export const TableContainer = ({
     }
   }, [modelId, toast]);
 
-  const getHeaders = useCallback(async (fileTemplateId: string) => {
-    try {
-      const response = await GetHeadersByFileTemplateId(fileTemplateId);
-      if (response) {
-        setFields(response as Field[]);
-        return response.map((field: Field) => field.id);
+  const getHeaders = useCallback(
+    async (fileTemplateId: string) => {
+      try {
+        const response = await GetHeadersByFileTemplateId(fileTemplateId);
+        if (response) {
+          setFields(response as Field[]);
+          return response.map((field: Field) => field.id);
+        }
+      } catch (error) {
+        toast({
+          title: "Erro",
+          description: "Erro ao carregar informações do arquivo",
+          variant: "destructive",
+        });
       }
-    } catch (error) {
-      toast({
-        title: "Erro",
-        description: "Erro ao carregar informações do arquivo",
-        variant: "destructive",
-      });
-    }
-  }, [toast]);
+    },
+    [toast]
+  );
 
-  const getFiles = useCallback(async (fieldIds: string[]) => {
-    try {
-      const response = await GetFilesByFieldIds(fieldIds);
-      if (response) {
-        setFiles(response);
+  const getFiles = useCallback(
+    async (fieldIds: string[]) => {
+      try {
+        const response = await GetFilesByFieldIds(fieldIds);
+        if (response) {
+          setFiles(response);
+        }
+      } catch (error) {
+        toast({
+          title: "Erro",
+          description: "Erro ao carregar informações do arquivo",
+          variant: "destructive",
+        });
       }
-    } catch (error) {
-      toast({
-        title: "Erro",
-        description: "Erro ao carregar informações do arquivo",
-        variant: "destructive",
-      });
-    }
-  }, [toast]);
+    },
+    [toast]
+  );
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
@@ -128,25 +135,9 @@ export const TableContainer = ({
     );
   };
 
-  const handleDeleteSelected = async () => {
-    try {
-      for (const fileId of selectedFiles) {
-        await deleteFile(fileId);
-      }
-      toast({
-        title: "Sucesso",
-        description: "Arquivos deletados com sucesso",
-        variant: "success",
-      });
-      setSelectedFiles([]);
-      fetchData();
-    } catch (error) {
-      toast({
-        title: "Erro",
-        description: "Erro ao deletar arquivos",
-        variant: "destructive",
-      });
-    }
+  const attDataResetSelectedFiles = () => {
+    setSelectedFiles([]);
+    fetchData();
   };
 
   if (isLoading) {
@@ -159,9 +150,10 @@ export const TableContainer = ({
         {selectedFiles.length > 0 && (
           <div className="flex gap-6">
             <GenerateReport selectedFiles={selectedFiles} />
-            <Button onClick={handleDeleteSelected} variant="destructive">
-              Excluir Selecionados
-            </Button>
+            <DeleteSelectedArchives
+              selectedFiles={selectedFiles}
+              onDelete={attDataResetSelectedFiles}
+            />
             <GenerateLabels selectedFiles={selectedFiles} />
           </div>
         )}
@@ -178,25 +170,33 @@ export const TableContainer = ({
                       setSelectedFiles(
                         checked
                           ? filteredFiles
-                            .map((file) => file.id)
-                            .filter((id): id is string => id !== undefined)
+                              .map((file) => file.id)
+                              .filter((id): id is string => id !== undefined)
                           : []
                       )
                     }
                   />
                 </TableHead>
                 {fields.map((field) => (
-                  <TableHead className="text-center whitespace-nowrap" key={field.id}>
+                  <TableHead
+                    className="text-center whitespace-nowrap"
+                    key={field.id}
+                  >
                     {field.fieldLabel}
                   </TableHead>
                 ))}
-                <TableHead className="text-center sticky right-0 bg-background z-20">Ações</TableHead>
+                <TableHead className="text-center sticky right-0 bg-background z-20">
+                  Ações
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredFiles.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={fields.length + 2} className="text-center">
+                  <TableCell
+                    colSpan={fields.length + 2}
+                    className="text-center"
+                  >
                     Nenhum resultado encontrado
                   </TableCell>
                 </TableRow>
@@ -206,11 +206,16 @@ export const TableContainer = ({
                     <TableCell className="text-center sticky left-0 bg-background z-10">
                       <Checkbox
                         checked={selectedFiles.includes(fileRow.id || "")}
-                        onCheckedChange={() => handleSelectFile(fileRow.id || "")}
+                        onCheckedChange={() =>
+                          handleSelectFile(fileRow.id || "")
+                        }
                       />
                     </TableCell>
                     {fields.map((field) => (
-                      <TableCell key={field.id} className="text-center whitespace-nowrap">
+                      <TableCell
+                        key={field.id}
+                        className="text-center whitespace-nowrap"
+                      >
                         {fileRow[field.id] || "-"}
                       </TableCell>
                     ))}
