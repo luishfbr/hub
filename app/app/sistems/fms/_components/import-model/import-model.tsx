@@ -1,3 +1,5 @@
+"use client";
+
 import { v4 as uuidv4 } from "uuid";
 import { useEffect, useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
@@ -18,7 +20,7 @@ import {
   createNewModelByImporting,
   GetSectors,
 } from "../../_actions/fms-actions";
-import { NewModelName, Sector } from "@/app/types/types";
+import { FieldType, NewModelName, Sector } from "@/app/types/types";
 import { SectorSelect } from "../new-model/_components/sector-select";
 import { DescriptionHelp } from "./_components/description";
 import { useForm } from "react-hook-form";
@@ -124,7 +126,7 @@ export function ImportModel() {
     const fields = headers.map((header) => ({
       id: header.toLowerCase(),
       value: header,
-      type: "imported",
+      type: "imported" as FieldType,
     }));
 
     const formData = {
@@ -141,7 +143,8 @@ export function ImportModel() {
           ...formData,
           fields: formData.fields.map((field) => ({
             ...field,
-            type: "imported" as const,
+            type: "imported" as FieldType,
+            fieldLabel: field.value,
           })),
         },
         dataFiles
@@ -173,23 +176,23 @@ export function ImportModel() {
       />
       {selectedSector && (
         <div className="flex flex-col gap-6 items-center justify-center w-full">
-          <Card className="p-2 grid grid-cols-3 gap-2">
+          <Card className="p-2 grid grid-cols-1 sm:grid-cols-3 gap-2 w-full">
             <Input
               id="excel-file-input"
               type="file"
               accept=".xlsx, .xls"
               onChange={handleFileUpload}
               disabled={isLoading}
-              className="w-full sm:w-auto cursor-pointer"
+              className="w-full cursor-pointer"
             />
             <DescriptionHelp />
-            <form onSubmit={handleSubmit(changeModelName)}>
+            <form onSubmit={handleSubmit(changeModelName)} className="w-full">
               <Input
                 id="file-name-input"
                 defaultValue={fileName}
                 {...register("modelName")}
                 placeholder={fileName ? fileName : "Insira um arquivo"}
-                className="text-center w-full sm:w-auto"
+                className="text-center w-full"
               />
             </form>
           </Card>
@@ -199,32 +202,37 @@ export function ImportModel() {
             headers.length > 0 && (
               <Card className="w-full">
                 <CardContent className="p-4">
-                  <ScrollArea className="h-[30vh] sm:max-h-[30vh] lg:max-h-[57vh] xl:max-h-[60vh] w-full">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          {headers.map((header, index) => (
-                            <TableHead className="text-center" key={index}>
-                              {header}
-                            </TableHead>
-                          ))}
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {rows.map((row, rowIndex) => (
-                          <TableRow key={rowIndex}>
-                            {row.map((cell, cellIndex) => (
-                              <TableCell
-                                className="text-center"
-                                key={cellIndex}
+                  <ScrollArea className="h-[900px] sm:max-h-[6vh] lg:max-h-[50vh] xl:max-h-[50vh] w-full">
+                    <div className="overflow-x-auto">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            {headers.map((header, index) => (
+                              <TableHead
+                                className="text-center whitespace-nowrap"
+                                key={index}
                               >
-                                {cell !== null ? cell.toString() : ""}
-                              </TableCell>
+                                {header}
+                              </TableHead>
                             ))}
                           </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
+                        </TableHeader>
+                        <TableBody>
+                          {rows.map((row, rowIndex) => (
+                            <TableRow key={rowIndex}>
+                              {row.map((cell, cellIndex) => (
+                                <TableCell
+                                  className="text-center whitespace-nowrap"
+                                  key={cellIndex}
+                                >
+                                  {cell !== null ? cell.toString() : ""}
+                                </TableCell>
+                              ))}
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
                   </ScrollArea>
                 </CardContent>
               </Card>
@@ -234,6 +242,7 @@ export function ImportModel() {
             onClick={handleImport}
             disabled={headers.length === 0 || isLoading}
             type="submit"
+            className="w-full sm:w-auto"
           >
             Importar
           </Button>

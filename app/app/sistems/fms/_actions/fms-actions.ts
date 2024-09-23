@@ -73,32 +73,60 @@ export const createNewModel = async (formData: NewModelProps) => {
       data: { modelName, sectorId },
     });
 
-    if (newModel) {
-      const standardFields = [
-        { fieldType: "text", fieldLabel: "Prateleira" },
-        { fieldType: "text", fieldLabel: "Caixa" },
-      ];
+    if (!newModel) {
+      throw new Error("Falha ao criar novo modelo");
+    }
 
-      const allFields = [
-        ...standardFields,
-        ...fields.map((field) => ({
-          fieldType: field.type,
-          fieldLabel: field.value,
-        })),
-      ].map((field) => ({ ...field, fileTemplateId: newModel.id }));
+    const standardFields = [
+      { fieldType: "text", fieldLabel: "Prateleira" },
+      { fieldType: "text", fieldLabel: "Caixa" },
+    ];
 
-      await prisma.field.createMany({
-        data: allFields,
+    const allFields = [
+      ...standardFields,
+      ...fields.map((field) => ({
+        fieldType: field.type,
+        fieldLabel: field.value,
+        fileTemplateId: newModel.id,
+      })),
+    ];
+
+    const createdFields = await prisma.field.createMany({
+      data: allFields.map((field) => ({
+        ...field,
+        fileTemplateId: newModel.id,
+      })),
+    });
+
+    if (createdFields) {
+      const createdFieldRecords = await prisma.field.findMany({
+        where: { fileTemplateId: newModel.id },
+        select: { id: true, fieldLabel: true },
       });
 
-      return newModel;
+      for (const field of fields) {
+        if (field.type === "select" && field.options) {
+          const correspondingField = createdFieldRecords.find(
+            (createdField) => createdField.fieldLabel === field.value
+          );
+
+          if (correspondingField) {
+            await prisma.options.createMany({
+              data: field.options.map((option) => ({
+                value: option.value,
+                fieldId: correspondingField.id,
+              })),
+            });
+          }
+        }
+      }
     }
+
+    return newModel;
   } catch (error) {
     console.error("Error creating new model:", error);
     throw new Error("Failed to create new model");
   }
-
-  return null;
 };
 
 export const createNewFile = async (data: any) => {
@@ -115,7 +143,16 @@ export const getModelsBySectorId = async (sectorId: string) => {
 };
 
 export const fieldsByFiletemplateId = async (fileTemplateId: string) => {
-  return await prisma.field.findMany({ where: { fileTemplateId } });
+  const res = await prisma.field.findMany({
+    where: { fileTemplateId },
+    select: {
+      id: true,
+      fieldType: true,
+      fieldLabel: true,
+      options: true,
+    },
+  });
+  return res;
 };
 
 export const GetHeadersByFileTemplateId = async (id: string) => {
@@ -360,7 +397,7 @@ export const createNewModelByImporting = async (
     const fieldsIn = await prisma.field.createMany({
       data: allFields.map((field) => ({
         ...field,
-        fieldType: field.fieldType as FieldType,
+        fileTemplateId: newModel.id,
       })),
     });
 

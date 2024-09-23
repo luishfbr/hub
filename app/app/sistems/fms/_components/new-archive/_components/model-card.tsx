@@ -10,7 +10,7 @@ import { Progress } from "@/components/ui/progress";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-import { Field, FieldType } from "@/app/types/types";
+import { Field, FieldType, Option } from "@/app/types/types";
 import { createNewFile, fieldsByFiletemplateId } from "../../../_actions/fms-actions";
 import styles from "@/app/styles/main.module.css";
 
@@ -32,7 +32,7 @@ export const SelectedModelForm = ({ modelId }: { modelId: string }) => {
             value: "",
             commonId: "",
             type: field.fieldType as FieldType,
-            options: field.options,
+            options: field.options as Option[] | undefined,
           }))
         );
       }

@@ -1,3 +1,5 @@
+import { Session } from "next-auth";
+
 export type RegisterForm = {
   name: string;
   email: string;
@@ -86,3 +88,20 @@ export const FieldTypeOptions = [
   { id: "checkbox", value: "Checkbox" },
   { id: "select", value: "Campo de Seleção" },
 ];
+
+export interface GenerateReportProps {
+  selectedFiles: string[];
+}
+
+export interface CustomHeader {
+  id: string;
+  fieldLabel: string;
+}
+
+export type MainSidebarProps = {
+  user: Session["user"];
+};
+
+export interface UserRole {
+  role: string;
+}

@@ -50,22 +50,27 @@ export function CardUsers() {
   );
 
   return (
-    <div className="flex flex-col gap-6 h-full ">
+    <div className="flex flex-col gap-6 h-full p-4 sm:p-6 lg:p-8">
       <div className="flex flex-col text-center gap-2">
-        <h1 className="text-2xl font-bold">Lista de Usuários Cadastrados</h1>
-        <span className="text-sm text-muted-foreground">
+        <h1 className="text-lg sm:text-2xl font-bold">Lista de Usuários</h1>
+        <span className="text-xs sm:text-sm text-muted-foreground">
           Pesquise pelo nome, email ou permissão do colaborador.
         </span>
       </div>
-      <div className="flex flex-col gap-6">
+
+      {/* Campo de pesquisa */}
+      <div className="flex flex-col gap-4">
         <Input
           type="text"
           placeholder="Pesquisar..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full sm:w-auto"
         />
-        <ScrollArea className="max-h-[700px] rounded-md border shadow-md">
-          <Table className="min-w-full">
+
+        {/* Tabela responsiva com Scroll */}
+        <ScrollArea className="max-h-[50vh] sm:max-h-[60vh] lg:max-h-[70vh] overflow-auto rounded-md border shadow-md">
+          <Table className="table-auto min-w-full">
             <TableHeader>
               <TableRow>
                 <TableHead className="text-center">Nome</TableHead>
@@ -120,6 +125,8 @@ export function CardUsers() {
           </Table>
         </ScrollArea>
       </div>
+
+      {/* Botão de criação de novo usuário */}
       <CreateNewUser onCreateSuccess={fetchData} />
     </div>
   );

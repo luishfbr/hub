@@ -89,15 +89,20 @@ export const Model = () => {
       });
       return;
     }
+
     const formData = {
       modelName,
       selectedSector,
-      fields,
+      fields: fields.map(field => ({
+        ...field,
+        ...(field.type === 'select' ? { options: field.options } : {})
+      })),
     };
     const formDataWithSectorId = {
       ...formData,
       sectorId: formData.selectedSector
     };
+
     const res = await createNewModel(formDataWithSectorId);
     if (res) {
       toast({
@@ -161,8 +166,6 @@ export const Model = () => {
                     <PlusIcon className="w-5 h-5" />
                   </Button>
                 </div>
-
-                {/* Adicionar opções no caso de um campo select */}
                 {newField.type === 'select' && (
                   <div className="flex flex-col gap-6 w-full">
                     <div className="flex flex-col md:flex-row gap-6">
@@ -205,8 +208,6 @@ export const Model = () => {
                 )}
               </Card>
             </div>
-
-            {/* Visualização de campos adicionados */}
             <div className="flex flex-col gap-6 w-full max-w-lg">
               {fields.length > 0 && (
                 <ScrollArea className="w-full h-[200px] overflow-y-auto">
@@ -215,10 +216,10 @@ export const Model = () => {
                       <TableRow>
                         <TableHead>Campo</TableHead>
                         <TableHead>Tipo</TableHead>
+                        <TableHead>Excluir</TableHead>
                         {fields.some(field => field.type === 'select') && (
                           <TableHead>Opções</TableHead>
                         )}
-                        <TableHead>Excluir</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -226,6 +227,11 @@ export const Model = () => {
                         <TableRow key={field.id}>
                           <TableCell>{field.value}</TableCell>
                           <TableCell>{field.type}</TableCell>
+                          <TableCell>
+                            <Button variant="ghost" onClick={() => handleDeleteField(field.id)}>
+                              <TrashIcon className="w-5 h-5" />
+                            </Button>
+                          </TableCell>
                           {field.type === 'select' && (
                             <TableCell>
                               <Select>
@@ -244,11 +250,6 @@ export const Model = () => {
                               </Select>
                             </TableCell>
                           )}
-                          <TableCell>
-                            <Button variant="ghost" onClick={() => handleDeleteField(field.id)}>
-                              <TrashIcon className="w-5 h-5" />
-                            </Button>
-                          </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>

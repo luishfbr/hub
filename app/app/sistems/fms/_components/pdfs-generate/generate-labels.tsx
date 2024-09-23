@@ -29,15 +29,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import jsPDF from "jspdf";
 import autoTable from 'jspdf-autotable';
-
-export interface GenerateReportProps {
-    selectedFiles: string[];
-}
-
-export interface CustomHeader {
-    id: string;
-    fieldLabel: string;
-}
+import { CustomHeader, GenerateReportProps } from "@/app/types/types";
 
 export const GenerateLabels: React.FC<GenerateReportProps> = ({
     selectedFiles,

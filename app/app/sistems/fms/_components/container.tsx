@@ -14,7 +14,7 @@ const tabs = [
   { id: "tables", label: "Tabelas" },
   { id: "models", label: "Criação de Modelos" },
   { id: "files", label: "Criação de Arquivos" },
-  { id: "edit", label: "Edição de Modelos" }, 
+  { id: "edit", label: "Edição de Modelos" },
   { id: "import", label: "Importação de Modelos" },
 ];
 
@@ -37,7 +37,7 @@ export default function ContainerTabs() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className=" grid grid-cols-5 gap-4 items-center justify-center">
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 items-center justify-center">
         {tabs.map((tab, index) =>
           (role === "USER" && tab.id === "tables") || role !== "USER" ? (
             <Button

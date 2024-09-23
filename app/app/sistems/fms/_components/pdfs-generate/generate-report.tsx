@@ -3,7 +3,6 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import {
   GetFileByCommonId,
-  GetFilesByFieldIds,
   GetHeaders,
 } from "@/app/app/sistems/fms/_actions/fms-actions";
 import { Button } from "@/components/ui/button";
@@ -30,15 +29,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import jsPDF from "jspdf";
 import autoTable from 'jspdf-autotable'
-
-export interface GenerateReportProps {
-  selectedFiles: string[];
-}
-
-export interface CustomHeader {
-  id: string;
-  fieldLabel: string;
-}
+import { CustomHeader, GenerateReportProps } from "@/app/types/types";
 
 export const GenerateReport: React.FC<GenerateReportProps> = ({
   selectedFiles,
@@ -94,9 +85,6 @@ export const GenerateReport: React.FC<GenerateReportProps> = ({
       body: tableRows,
       styles: { fontSize: 8, halign: 'center', valign: 'middle' },
     });
-
-    doc.setLineWidth(0.5);
-    doc.rect(5, 5, doc.internal.pageSize.getWidth() - 10, doc.internal.pageSize.getHeight() - 10);
 
     doc.save(`relatorio-${new Date().toLocaleDateString()}.pdf`);
 
