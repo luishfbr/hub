@@ -46,11 +46,34 @@ export function MainSidebar({ user }: MainSidebarProps) {
     return <div>Carregando informações do usuário...</div>;
   }
 
-  const allowedSectors = ["tecnologiadainformacao", "credito", "recursoshumanos", "departamentopessoal", "cedoc", "cadastro"];
+  const allowedSectorsFMS = [
+    "tecnologiadainformacao",
+    "credito",
+    "recursoshumanos",
+    "departamentopessoal",
+    "cedoc",
+    "cadastro",
+  ];
 
-  const normalizeString = (str: string) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "").toLowerCase();
+  const allowedSectorsPIX = ["tecnologiadainformacao", "linhadefrente"];
 
-  const hasAccessToFMS = userRole.role === "ADMIN" || userSectors.some(sector => allowedSectors.includes(normalizeString(sector.name)));
+  const normalizeString = (str: string) =>
+    str
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/\s+/g, "")
+      .toLowerCase();
+
+  const hasAccessToFMS =
+    userRole.role === "ADMIN" ||
+    userSectors.some((sector) =>
+      allowedSectorsFMS.includes(normalizeString(sector.name))
+    );
+  const hasAccessToPIX =
+    userRole.role === "ADMIN" ||
+    userSectors.some((sector) =>
+      allowedSectorsPIX.includes(normalizeString(sector.name))
+    );
 
   return (
     <DashboardSidebar>
@@ -80,6 +103,18 @@ export function MainSidebar({ user }: MainSidebarProps) {
             </DashboardSidebarNavMain>
           </DashboardSidebarNav>
         )}
+        {/* {hasAccessToPIX && (
+          <DashboardSidebarNav>
+            <DashboardSidebarNavMain>
+              <DashboardSidebarNavLink
+                href="/app/sistems/pix"
+                active={isActive("/app/sistems/pix")}
+              >
+                Gerador de Placa Pix
+              </DashboardSidebarNavLink>
+            </DashboardSidebarNavMain>
+          </DashboardSidebarNav>
+        )} */}
         {userRole?.role === "ADMIN" && (
           <DashboardSidebarNav className="mt-auto">
             <DashboardSidebarNavHeader>

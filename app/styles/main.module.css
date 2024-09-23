@@ -5,3 +5,12 @@
 .layout {
   @apply grid grid-cols-[auto_1fr];
 }
+.folha {
+  width: 100%;
+  max-width: 500px; /* 210mm * 3.78px/mm */
+  height: auto;
+  aspect-ratio: 210 / 297; /* Maintain aspect ratio of A4 */
+  background-color: white;
+  border: 1px solid black; /* Opcional: para visualizar a área da folha */
+  margin: 20px auto; /* Margens para o conteúdo */
+}

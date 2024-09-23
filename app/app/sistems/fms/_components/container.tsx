@@ -19,7 +19,7 @@ const tabs = [
 ];
 
 export default function ContainerTabs() {
-  const [selectedTab, setSelectedTab] = useState<string | null>("import");
+  const [selectedTab, setSelectedTab] = useState<string | null>("tables");
   const [role, setRole] = useState<string | null>(null);
 
   const SelectTab = (id: string) => {
