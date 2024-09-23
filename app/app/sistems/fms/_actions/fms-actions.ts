@@ -1,10 +1,16 @@
 "use server";
 
-import { Model, NewModelProps } from "@/app/types/types";
+import {
+  FieldType,
+  FieldTypeOptions,
+  Model,
+  NewModelProps,
+} from "@/app/types/types";
 import { auth } from "@/services/auth";
 import { prisma } from "@/services/prisma";
 import { v4 as uuidv4 } from "uuid";
 import { FileInfo } from "../_components/menu/menu-component";
+import { newHeader } from "../_components/edit-model/_components/dialog-edit";
 
 const GetUseriD = async () => {
   const session = await auth();
@@ -61,32 +67,37 @@ export const GetModels = async (sectorId: string) => {
 
 export const createNewModel = async (formData: NewModelProps) => {
   const { modelName, sectorId, fields } = formData;
-  const newModel = await prisma.fileTemplate.create({
-    data: { modelName, sectorId },
-  });
 
-  if (newModel) {
-    const standardFields = [
-      { fieldType: FieldType.prateleira, fieldLabel: "Prateleira" },
-      { fieldType: FieldType.caixa, fieldLabel: "Caixa" },
-    ];
-
-    const allFields = [
-      ...standardFields,
-      ...fields.map((field) => ({
-        fieldType: field.type as FieldType,
-        fieldLabel: field.value,
-      })),
-    ].map((field) => ({ ...field, fileTemplateId: newModel.id }));
-
-    await prisma.field.createMany({
-      data: allFields.map((field) => ({
-        ...field,
-        fieldType: field.fieldType as FieldType,
-      })),
+  try {
+    const newModel = await prisma.fileTemplate.create({
+      data: { modelName, sectorId },
     });
-    return newModel;
+
+    if (newModel) {
+      const standardFields = [
+        { fieldType: "text", fieldLabel: "Prateleira" },
+        { fieldType: "text", fieldLabel: "Caixa" },
+      ];
+
+      const allFields = [
+        ...standardFields,
+        ...fields.map((field) => ({
+          fieldType: field.type,
+          fieldLabel: field.value,
+        })),
+      ].map((field) => ({ ...field, fileTemplateId: newModel.id }));
+
+      await prisma.field.createMany({
+        data: allFields,
+      });
+
+      return newModel;
+    }
+  } catch (error) {
+    console.error("Error creating new model:", error);
+    throw new Error("Failed to create new model");
   }
+
   return null;
 };
 
@@ -110,7 +121,7 @@ export const fieldsByFiletemplateId = async (fileTemplateId: string) => {
 export const GetHeadersByFileTemplateId = async (id: string) => {
   return await prisma.field.findMany({
     where: { fileTemplateId: id },
-    select: { fieldType: true, fieldLabel: true, id: true },
+    select: { fieldType: true, fieldLabel: true, id: true, options: true },
   });
 };
 
@@ -330,7 +341,7 @@ export const GetFileByCommonId = async (selectedFiles: string[]) => {
 };
 
 export const createNewModelByImporting = async (
-  formData: NewModelImportedProps,
+  formData: NewModelProps,
   dataFiles: any
 ) => {
   const { modelName, sectorId, fields } = formData;
@@ -403,3 +414,17 @@ export const createNewModelByImporting = async (
 interface DataObject {
   [key: string]: any;
 }
+
+export const deleteHeader = async (id: string) => {
+  return await prisma.field.delete({
+    where: { id },
+  });
+};
+
+export const EditHeader = async (data: newHeader) => {
+  const { id, fieldLabel } = data;
+  return await prisma.field.update({
+    where: { id },
+    data: { fieldLabel: fieldLabel },
+  });
+};

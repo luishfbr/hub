@@ -23,6 +23,13 @@ export function DeleteSelectedArchives({
   const { toast } = useToast();
   const handleDeleteSelected = async () => {
     try {
+      if (selectedFiles.length > 10) {
+        toast({
+          title: "Aviso",
+          description: "Deletando muitos arquivos, isso pode levar algum tempo.",
+          variant: "edit",
+        });
+      }
       for (const fileId of selectedFiles) {
         await deleteFile(fileId);
       }

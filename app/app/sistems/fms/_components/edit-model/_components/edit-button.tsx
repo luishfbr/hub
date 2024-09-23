@@ -1,6 +1,6 @@
-"use client";
+"use client"
 
-import { Field, Model } from "@/app/types/types";
+import { Model, FieldToEdit, FieldType } from "@/app/types/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -17,14 +17,16 @@ import {
 } from "../../../_actions/fms-actions";
 import { useForm } from "react-hook-form";
 import { useToast } from "@/hooks/use-toast";
-import { FieldType } from "@prisma/client";
-import { Table, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-
-interface FieldToEdit {
-  id: string;
-  fieldLabel: string;
-  type: keyof typeof FieldType;
-}
+import {
+  Table,
+  TableHead,
+  TableHeader,
+  TableRow,
+  TableBody,
+  TableCell,
+} from "@/components/ui/table";
+import { DialogEdit } from "./dialog-edit";
+import { DeleteAlertDialog } from "./delete-alert-dialog";
 
 export default function EditButton({
   modelId,
@@ -34,24 +36,32 @@ export default function EditButton({
   onUpdate: () => void;
 }) {
   const { toast } = useToast();
-  const [model, setModel] = useState<Model>();
+  const [model, setModel] = useState<Model | null>(null);
   const [headers, setHeaders] = useState<FieldToEdit[]>([]);
-  const { register, handleSubmit } = useForm<Model>();
+  const { register, handleSubmit, reset } = useForm<Model>();
+
+  const fetchHeaders = async () => {
+    const headers = await GetHeadersByFileTemplateId(modelId);
+    setHeaders(
+      headers.map((h) => ({
+        id: h.id,
+        fieldLabel: h.fieldLabel,
+        type: h.fieldType as FieldType,
+      }))
+    );
+  };
 
   useEffect(() => {
     const fetchModel = async () => {
       const response = await GetModelsById(modelId);
       if (response) {
         setModel(response);
-        const headers = await GetHeadersByFileTemplateId(modelId);
-        console.log(headers);
-        setHeaders(
-          headers.map((h) => ({ ...h, value: "", type: h.fieldType }))
-        );
+        await fetchHeaders();
+        reset(response);
       }
     };
     fetchModel();
-  }, [modelId]);
+  }, [modelId, reset]);
 
   const onSubmit = async (data: Model) => {
     const response = await UpdateModel(data);
@@ -89,7 +99,7 @@ export default function EditButton({
             </p>
           </div>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="flex gap-2">
+            <div className="flex gap-2 items-center justify-center w-96">
               <Input
                 className="w-full"
                 type="text"
@@ -105,11 +115,23 @@ export default function EditButton({
           <Table>
             <TableHeader>
               <TableRow>
-                {headers.map((value) => (
-                  <TableHead key={value.id}>{value.fieldLabel}</TableHead>
-                ))}
+                <TableHead className="w-44">Campo</TableHead>
+                <TableHead className="w-44">Ações</TableHead>
               </TableRow>
             </TableHeader>
+            <TableBody>
+              {headers.map((header) => (
+                <TableRow key={header.id}>
+                  <TableCell>{header.fieldLabel}</TableCell>
+                  <TableCell className="flex gap-2 items-center justify-center">
+                    <DeleteAlertDialog id={header.id} onDelete={() => {
+                      setHeaders(headers.filter((h) => h.id !== header.id));
+                    }} />
+                    <DialogEdit id={header.id} onEdit={fetchHeaders} />
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
           </Table>
         </div>
       </PopoverContent>

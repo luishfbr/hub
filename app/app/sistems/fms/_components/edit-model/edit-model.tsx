@@ -14,7 +14,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Edit, Trash } from "lucide-react";
 import EditButton from "./_components/edit-button";
 import { DeleteButton } from "./_components/delete-button";
 

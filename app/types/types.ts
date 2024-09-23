@@ -32,9 +32,16 @@ export type Model = {
 };
 
 export interface Field {
+  fieldLabel: string;
   id: string;
   value: string;
+  options?: Option[];
   type: FieldType;
+}
+
+export interface Option {
+  id: string;
+  value: string;
 }
 
 export interface FormDataProps {
@@ -62,6 +69,12 @@ export interface SectorSelectProps {
   sectors: Sector[];
   selectedSector: string | null;
   setSelectedSector: (sector: string) => void;
+}
+
+export interface FieldToEdit {
+  id: string;
+  fieldLabel: string;
+  type: FieldType;
 }
 
 export type FieldType = "text" | "number" | "date" | "checkbox" | "select";
