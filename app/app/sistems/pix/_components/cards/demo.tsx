@@ -1,12 +1,11 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import styles from "@/app/styles/main.module.css";
-import { QrCode } from "lucide-react";
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
@@ -22,54 +21,98 @@ const GridItem: React.FC<GridItemProps> = ({ children }) => (
   <div className="border-2 border-black p-4 aspect-square">{children}</div>
 );
 
-export const Demo = () => {
-  const name = "Luis Henrique Fonte Boa Romualdo";
-  const key = "703.157.656-31";
+interface DemoProps {
+  qrCodeData: {
+    nome: string;
+    chave: string;
+    quantidade: number;
+    qrCodeData: string;
+  } | null;
+}
 
-  const truncatedName = name.length > 25 ? name.slice(0, 25) + "..." : name;
-  const truncatedKey = key.length > 25 ? key.slice(0, 25) + "..." : key;
+export const Demo: React.FC<DemoProps> = ({ qrCodeData }) => {
+  const name = qrCodeData?.nome || "";
+  const key = qrCodeData?.chave || "";
+  const itemsPerPage = 6;
+
+  const truncatedName = name.length > 25 ? `${name.slice(0, 25)}...` : name;
+  const truncatedKey = key.length > 25 ? `${key.slice(0, 25)}...` : key;
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
+  useEffect(() => {
+    if (qrCodeData?.quantidade) {
+      setTotalPages(Math.ceil(qrCodeData.quantidade / itemsPerPage));
+    }
+  }, [qrCodeData]);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const renderQrCodes = () => {
+    if (!qrCodeData?.quantidade) return null;
+
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const qrCodesToShow = Array.from({ length: qrCodeData.quantidade }).slice(
+      startIndex,
+      endIndex
+    );
+
+    return qrCodesToShow.map((_, index) => (
+      <GridItem key={index}>
+        <div className="w-full h-full flex flex-col items-center justify-center gap-1">
+          <img
+            src={qrCodeData.qrCodeData}
+            alt="QR Code"
+            className="w-[75%] h-[75%] object-contain"
+          />
+          <span className="text-black text-sm whitespace-nowrap overflow-hidden text-ellipsis">
+            {truncatedName}
+          </span>
+          <span className="text-black text-sm whitespace-nowrap overflow-hidden text-ellipsis">
+            {truncatedKey}
+          </span>
+        </div>
+      </GridItem>
+    ));
+  };
 
   return (
     <Card className="p-4">
       <div className={styles.folha}>
-        <div className="grid grid-cols-2 gap-8 p-8">
-          {[...Array(6)].map((_, index) => (
-            <GridItem key={index}>
-              <div className="w-full h-full flex flex-col items-center justify-center gap-1">
-                <QrCode className="text-black w-[85%] h-[85%]" />
-                <span className="text-black text-sm whitespace-nowrap overflow-hidden text-ellipsis">
-                  {truncatedName}
-                </span>
-                <span className="text-black text-sm whitespace-nowrap overflow-hidden text-ellipsis">
-                  {truncatedKey}
-                </span>
-              </div>
-            </GridItem>
-          ))}
-        </div>
+        <div className="grid grid-cols-2 gap-8 p-8">{renderQrCodes()}</div>
       </div>
       <div>
         <Pagination>
           <PaginationContent>
             <PaginationItem>
-              <PaginationPrevious href="#" />
+              <PaginationPrevious
+                href="#"
+                onClick={() => handlePageChange(currentPage - 1)}
+                isActive={currentPage > 1}
+              />
             </PaginationItem>
+            {Array.from({ length: totalPages }).map((_, index) => (
+              <PaginationItem key={index}>
+                <PaginationLink
+                  href="#"
+                  isActive={currentPage === index + 1}
+                  onClick={() => handlePageChange(index + 1)}
+                >
+                  {index + 1}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+            
             <PaginationItem>
-              <PaginationLink href="#">1</PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href="#" isActive>
-                2
-              </PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href="#">3</PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationEllipsis />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationNext href="#" />
+              <PaginationNext
+                href="#"
+                onClick={() => handlePageChange(currentPage + 1)}
+                isActive={currentPage < totalPages}
+              />
             </PaginationItem>
           </PaginationContent>
         </Pagination>

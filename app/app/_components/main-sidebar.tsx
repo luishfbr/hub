@@ -103,7 +103,7 @@ export function MainSidebar({ user }: MainSidebarProps) {
             </DashboardSidebarNavMain>
           </DashboardSidebarNav>
         )}
-        {/* {hasAccessToPIX && (
+        {hasAccessToPIX && (
           <DashboardSidebarNav>
             <DashboardSidebarNavMain>
               <DashboardSidebarNavLink
@@ -114,7 +114,7 @@ export function MainSidebar({ user }: MainSidebarProps) {
               </DashboardSidebarNavLink>
             </DashboardSidebarNavMain>
           </DashboardSidebarNav>
-        )} */}
+        )}
         {userRole?.role === "ADMIN" && (
           <DashboardSidebarNav className="mt-auto">
             <DashboardSidebarNavHeader>

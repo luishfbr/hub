@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,17 +10,20 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { useForm } from "react-hook-form";
+import { useState } from "react";
+import jsQR from "jsqr";
+import qrcode from "qrcode";
 import {
   Table,
-  TableBody,
-  TableHead,
   TableHeader,
   TableRow,
+  TableHead,
+  TableBody,
   TableCell,
 } from "@/components/ui/table";
 
-const InputGroup = [
+const inputGroup = [
   {
     label: "Nome do Beneficiado",
     placeholder: "Nome do Beneficiado",
@@ -41,43 +43,104 @@ const InputGroup = [
     key: "quantidade",
   },
   {
-    label: "Selecione o Arquivo (.pdf ou .jpg/png)",
+    label: "Selecione o Arquivo (.jpg/.png)",
     placeholder: "Selecione o Arquivo",
     type: "file",
     key: "arquivo",
   },
 ];
 
-export const Form = () => {
-  const [formData, setFormData] = useState({
-    nome: "",
-    chave: "",
-    quantidade: "",
-    arquivo: null,
-  });
+interface QRCodeForm {
+  nome: string;
+  chave: string;
+  quantidade: string;
+  arquivo: FileList;
+}
 
-  const [tableData, setTableData] = useState<
-    { nome: string; chave: string; quantidade: string; arquivo: null }[]
-  >([]);
+export const ListQrCodeForms = ({
+  onSubmitForm,
+  onDeleteForm,
+}: {
+  onSubmitForm: (data: {
+    nome: string;
+    chave: string;
+    quantidade: string;
+    qrCodeData: string;
+  }) => void;
+  onDeleteForm: (index: number) => void;
+}) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<QRCodeForm>();
+  const [qrCodeData, setQrCodeData] = useState("");
+  const [formList, setFormList] = useState<QRCodeForm[]>([]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, files } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: files ? files[0] : value,
-    }));
+  const onSubmit = async (data: QRCodeForm) => {
+    const { nome, chave, quantidade, arquivo } = data;
+
+    if (arquivo && arquivo[0]) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const image = new Image();
+        image.src = reader.result as string;
+
+        image.onload = () => {
+          const canvas = document.createElement("canvas");
+          const context = canvas.getContext("2d");
+
+          canvas.width = image.width;
+          canvas.height = image.height;
+
+          if (context) {
+            context.drawImage(image, 0, 0, canvas.width, canvas.height);
+            const imageData = context.getImageData(
+              0,
+              0,
+              canvas.width,
+              canvas.height
+            );
+            const qrCode = jsQR(
+              imageData.data,
+              imageData.width,
+              imageData.height
+            );
+
+            if (qrCode) {
+              qrcode
+                .toDataURL(qrCode.data)
+                .then((qrCodeFormatted) => {
+                  setQrCodeData(qrCodeFormatted);
+                  console.log("QR code gerado:", qrCodeFormatted);
+                  setFormList((prevList) => [
+                    ...prevList,
+                    { nome, chave, quantidade, arquivo },
+                  ]);
+                  onSubmitForm({
+                    nome,
+                    chave,
+                    quantidade,
+                    qrCodeData: qrCodeFormatted,
+                  });
+                })
+                .catch((error) => {
+                  console.error("Erro ao gerar o QR code:", error);
+                  setQrCodeData("Erro ao gerar o QR code.");
+                });
+            } else {
+              setQrCodeData("Nenhum QR code detectado.");
+            }
+          }
+        };
+      };
+      reader.readAsDataURL(arquivo[0]);
+    }
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setTableData((prevData) => [...prevData, formData]);
-    setFormData({
-      nome: "",
-      chave: "",
-      quantidade: "",
-      arquivo: null,
-    });
-    console.log(formData);
+  const handleDelete = (index: number) => {
+    setFormList((prevList) => prevList.filter((_, i) => i !== index));
+    onDeleteForm(index);
   };
 
   return (
@@ -85,17 +148,20 @@ export const Form = () => {
       <CardHeader>
         <CardTitle>Preencha com as informações solicitadas</CardTitle>
         <CardDescription>
-          Ao criar as placas, elas ficarão disponíveis automáticamente para
+          Ao criar as placas, elas ficarão disponíveis automaticamente para
           download e também ao TI.
         </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="flex flex-col gap-6">
-          <form onSubmit={handleSubmit} className="flex flex-col gap-6 w-full">
+          <form
+            className="flex flex-col gap-6 w-full"
+            onSubmit={handleSubmit(onSubmit)}
+          >
             <div className="grid grid-cols-2 gap-6">
-              {InputGroup.map((input, index) => (
+              {inputGroup.map((input) => (
                 <div
-                  key={index}
+                  key={input.key}
                   className="flex flex-col gap-2 items-center justify-center text-center"
                 >
                   <Label className="text-center">{input.label}</Label>
@@ -103,15 +169,20 @@ export const Form = () => {
                     autoComplete="off"
                     type={input.type}
                     placeholder={input.placeholder}
-                    name={input.key}
-                    value={
-                      input.type !== "file"
-                        ? formData[input.key as keyof typeof formData] ?? ""
-                        : ""
+                    {...register(input.key as keyof QRCodeForm, {
+                      required: true,
+                    })}
+                    accept={
+                      input.type === "file"
+                        ? "image/png, image/jpeg"
+                        : undefined
                     }
-                    onChange={handleChange}
-                    className="text-center"
                   />
+                  {errors[input.key as keyof QRCodeForm] && (
+                    <span className="text-red-500">
+                      Este campo é obrigatório
+                    </span>
+                  )}
                 </div>
               ))}
             </div>
@@ -119,44 +190,28 @@ export const Form = () => {
               <Button type="submit">Inserir Placa</Button>
             </div>
           </form>
-          <ScrollArea>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>NOME</TableHead>
-                  <TableHead>CHAVE</TableHead>
-                  <TableHead>ARQUIVO</TableHead>
-                  <TableHead>QUANTIDADE</TableHead>
-                  <TableHead>AÇÕES</TableHead>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Nome</TableHead>
+                <TableHead>Chave</TableHead>
+                <TableHead>Quantidade</TableHead>
+                <TableHead>Ações</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {formList.map((form, index) => (
+                <TableRow key={index}>
+                  <TableCell>{form.nome}</TableCell>
+                  <TableCell>{form.chave}</TableCell>
+                  <TableCell>{form.quantidade}</TableCell>
+                  <TableCell>
+                    <Button onClick={() => handleDelete(index)}>Deletar</Button>
+                  </TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {tableData.map((data, index) => (
-                  <TableRow key={index}>
-                    <TableCell>{data.nome}</TableCell>
-                    <TableCell>{data.chave}</TableCell>
-                    <TableCell>
-                      {data.arquivo
-                        ? (data.arquivo as { name: string }).name
-                        : ""}
-                    </TableCell>
-                    <TableCell>{data.quantidade}</TableCell>
-                    <TableCell>
-                      <Button
-                        onClick={() =>
-                          setTableData((prevData) =>
-                            prevData.filter((_, i) => i !== index)
-                          )
-                        }
-                      >
-                        Remover
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </ScrollArea>
+              ))}
+            </TableBody>
+          </Table>
         </div>
       </CardContent>
     </Card>
