@@ -40,7 +40,7 @@ export function MainSidebar({ user }: MainSidebarProps) {
   useEffect(() => {
     getUserRole();
     getUserSectors();
-  }, []);
+  }, [getUserRole, getUserSectors]);
 
   if (!userRole || !userSectors) {
     return <div>Carregando informações do usuário...</div>;
@@ -69,11 +69,12 @@ export function MainSidebar({ user }: MainSidebarProps) {
     userSectors.some((sector) =>
       allowedSectorsFMS.includes(normalizeString(sector.name))
     );
-  const hasAccessToPIX =
-    userRole.role === "ADMIN" ||
-    userSectors.some((sector) =>
-      allowedSectorsPIX.includes(normalizeString(sector.name))
-    );
+
+  // const hasAccessToPIX =
+  //   userRole.role === "ADMIN" ||
+  //   userSectors.some((sector) =>
+  //     allowedSectorsPIX.includes(normalizeString(sector.name))
+  //   );
 
   return (
     <DashboardSidebar>

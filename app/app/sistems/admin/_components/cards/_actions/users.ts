@@ -1,5 +1,6 @@
 "use server";
 
+import { UpdateRoleUser } from "@/app/types/types";
 import { auth } from "@/services/auth";
 import { prisma } from "@/services/prisma";
 import { genSaltSync, hashSync } from "bcrypt-ts";
@@ -61,12 +62,12 @@ export const getUserByEmail = async (email: string) => {
   });
 };
 
-export const updateUser = async (email: string, data: any) => {
-  await prisma.user.update({
-    where: { email },
-    data,
-  });
-};
+// export const updateUser = async (email: string, data: any) => {
+//   await prisma.user.update({
+//     where: { email },
+//     data,
+//   });
+// };
 
 export const createSector = async (FormData: FormData) => {
   try {
@@ -86,7 +87,7 @@ export const createSector = async (FormData: FormData) => {
   }
 };
 
-export const updateRoleUser = async (email: string, data: any) => {
+export const updateRoleUser = async (email: string, data: UpdateRoleUser) => {
   await prisma.user.update({
     where: { email },
     data: { role: data.role },

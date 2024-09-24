@@ -113,3 +113,36 @@ export interface NewFieldSigle {
   type: FieldType;
   fileTemplateId: string;
 }
+
+export interface FormattedFields {
+  fileTemplateId: string;
+  fieldId: string;
+  value: string | undefined;
+}
+
+enum Role {
+  ADMIN = "ADMIN",
+  USER = "USER",
+  CREATOR = "CREATOR",
+}
+
+export interface UpdateRoleUser {
+  role: Role;
+}
+
+export interface FileData {
+  fileTemplateId: string;
+  fieldId: string;
+  value: string;
+  commonId?: string;
+}
+
+export interface createNewModelByImportingProps {
+  modelName: string;
+  sectorId: string;
+  fields: Field[];
+}
+
+export interface Data {
+  [key: string]: Record<string, unknown>;
+}

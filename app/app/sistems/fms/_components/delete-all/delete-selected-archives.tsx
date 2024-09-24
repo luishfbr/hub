@@ -56,7 +56,7 @@ export function DeleteSelectedArchives({
         <AlertDialogHeader>
           <AlertDialogTitle> Excluir Arquivos Selecionados </AlertDialogTitle>
           <AlertDialogDescription>
-            Ao clicar em "Continuar", você irá excluir todos os arquivos
+            Ao clicar em Continuar, você irá excluir todos os arquivos
             selecionados.
           </AlertDialogDescription>
         </AlertDialogHeader>

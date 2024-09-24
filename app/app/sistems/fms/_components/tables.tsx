@@ -11,9 +11,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { debounce } from "lodash";
-import {
-  getSectorsByUserId,
-} from "../../admin/_components/cards/_actions/users";
+import { getSectorsByUserId } from "../../admin/_components/cards/_actions/users";
 import { TableContainer } from "./table/table-component";
 import { getModelsBySectorId } from "../_actions/fms-actions";
 import { Model, Sector } from "@/app/types/types";
@@ -53,7 +51,7 @@ export const ContainerTables = () => {
         setIsLoading(false);
       }
     },
-    [sectors]
+    [sectors] 
   );
 
   const handleChangeModel = useCallback(

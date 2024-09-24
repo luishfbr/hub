@@ -1,7 +1,9 @@
 "use server";
 
 import {
+  Data,
   FieldType,
+  FileData,
   Model,
   NewFieldSigle,
   NewModelProps,
@@ -131,9 +133,9 @@ export const createNewModel = async (formData: NewModelProps) => {
   }
 };
 
-export const createNewFile = async (data: any) => {
+export const createNewFile = async (data: FileData[]) => {
   const commonId = uuidv4();
-  const dataWithCommonId = data.map((item: any) => ({ ...item, commonId }));
+  const dataWithCommonId = data.map((item) => ({ ...item, commonId }));
   return await prisma.file.createMany({ data: dataWithCommonId });
 };
 
@@ -381,7 +383,7 @@ export const GetFileByCommonId = async (selectedFiles: string[]) => {
 
 export const createNewModelByImporting = async (
   formData: NewModelProps,
-  dataFiles: any
+  dataFiles: Data[]
 ) => {
   const { modelName, sectorId, fields } = formData;
   const newModel = await prisma.fileTemplate.create({
@@ -416,7 +418,7 @@ export const createNewModelByImporting = async (
         const formattedData: DataObject = {};
         for (const key in data) {
           if (data.hasOwnProperty(key)) {
-            const { idRow, ...rest } = data[key] as Record<string, unknown>;
+            const { ...rest } = data[key] as Record<string, unknown>;
             formattedData[key] = rest;
           }
         }

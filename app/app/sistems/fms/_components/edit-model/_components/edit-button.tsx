@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { Model, FieldToEdit, FieldType } from "@/app/types/types";
 import { Button } from "@/components/ui/button";
@@ -61,7 +61,7 @@ export default function EditButton({
       }
     };
     fetchModel();
-  }, [modelId, reset]);
+  }, [modelId, reset, fetchHeaders]);
 
   const onSubmit = async (data: Model) => {
     const response = await UpdateModel(data);
@@ -124,9 +124,12 @@ export default function EditButton({
                 <TableRow key={header.id}>
                   <TableCell>{header.fieldLabel}</TableCell>
                   <TableCell className="flex gap-2 items-center justify-center">
-                    <DeleteAlertDialog id={header.id} onDelete={() => {
-                      setHeaders(headers.filter((h) => h.id !== header.id));
-                    }} />
+                    <DeleteAlertDialog
+                      id={header.id}
+                      onDelete={() => {
+                        setHeaders(headers.filter((h) => h.id !== header.id));
+                      }}
+                    />
                     <DialogEdit id={header.id} onEdit={fetchHeaders} />
                   </TableCell>
                 </TableRow>

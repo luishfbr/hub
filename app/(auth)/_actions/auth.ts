@@ -121,7 +121,7 @@ export async function GenerateQrCode(id: string) {
 }
 
 export async function VerifyQrCode(values: LoginWithCode) {
-  const { email, password, code } = values;
+  const { email, code } = values;
   const user = await prisma.user.findUnique({
     where: {
       email,
@@ -190,10 +190,11 @@ export async function getUserFromDb(email: string, password: string) {
       success: true,
       data: existedUser,
     };
-  } catch (error: any) {
+  } catch (error) {
     return {
       success: false,
-      message: error.message,
+      message:
+        error instanceof Error ? error.message : "An unknown error occurred.",
     };
   }
 }

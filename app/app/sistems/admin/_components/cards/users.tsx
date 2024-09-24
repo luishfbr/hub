@@ -58,7 +58,6 @@ export function CardUsers() {
         </span>
       </div>
 
-      {/* Campo de pesquisa */}
       <div className="flex flex-col gap-4">
         <Input
           type="text"
@@ -68,7 +67,6 @@ export function CardUsers() {
           className="w-full sm:w-auto"
         />
 
-        {/* Tabela responsiva com Scroll */}
         <ScrollArea className="max-h-[50vh] sm:max-h-[60vh] lg:max-h-[70vh] overflow-auto rounded-md border shadow-md">
           <Table className="table-auto min-w-full">
             <TableHeader>

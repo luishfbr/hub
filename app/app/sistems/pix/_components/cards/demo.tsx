@@ -12,6 +12,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 interface GridItemProps {
   children: React.ReactNode;
@@ -64,7 +65,7 @@ export const Demo: React.FC<DemoProps> = ({ qrCodeData }) => {
     return qrCodesToShow.map((_, index) => (
       <GridItem key={index}>
         <div className="w-full h-full flex flex-col items-center justify-center gap-1">
-          <img
+          <Image
             src={qrCodeData.qrCodeData}
             alt="QR Code"
             className="w-[75%] h-[75%] object-contain"
@@ -106,7 +107,7 @@ export const Demo: React.FC<DemoProps> = ({ qrCodeData }) => {
                 </PaginationLink>
               </PaginationItem>
             ))}
-            
+
             <PaginationItem>
               <PaginationNext
                 href="#"
