@@ -81,6 +81,8 @@ CREATE TABLE "Sector" (
 CREATE TABLE "FileTemplate" (
     "id" TEXT NOT NULL,
     "modelName" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
     "sectorId" TEXT NOT NULL,
 
     CONSTRAINT "FileTemplate_pkey" PRIMARY KEY ("id")
@@ -112,6 +114,8 @@ CREATE TABLE "File" (
     "fileTemplateId" TEXT NOT NULL,
     "fieldId" TEXT NOT NULL,
     "commonId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "File_pkey" PRIMARY KEY ("id")
 );

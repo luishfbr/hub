@@ -114,7 +114,7 @@ export const Model = () => {
   };
 
   return (
-    <ScrollArea className="flex flex-col gap-6 w-full h-[890px] p-4 md:p-8">
+    <ScrollArea className="flex flex-col gap-6 w-full h-[80vh] overflow-y-auto sm:h-[60vh] p-4 md:p-8">
       <div className="flex flex-col gap-6 items-center w-full">
         <div className="flex flex-col gap-6 items-center w-full max-w-lg">
           <SectorSelect
@@ -122,18 +122,17 @@ export const Model = () => {
             selectedSector={selectedSector}
             setSelectedSector={setSelectedSector}
           />
-          <Input
-            className="w-full"
-            type="text"
-            placeholder="Nome do modelo"
-            value={modelName}
-            autoComplete="off"
-            onChange={(e) => setModelName(e.target.value)}
-          />
         </div>
         {selectedSector && (
           <div className="flex flex-col gap-6 items-center w-full">
-            {/* Adicionar campos */}
+            <Input
+              className="w-96 text-center"
+              type="text"
+              placeholder="Nome do modelo"
+              value={modelName}
+              autoComplete="off"
+              onChange={(e) => setModelName(e.target.value)}
+            />
             <div className="flex flex-col gap-6 items-center w-full">
               <Card className="flex flex-col gap-6 p-4 w-full max-w-lg">
                 <div className="flex flex-col md:flex-row gap-6 w-full">
@@ -162,7 +161,7 @@ export const Model = () => {
                       </SelectGroup>
                     </SelectContent>
                   </Select>
-                  <Button variant="destructive" onClick={handleAddField}>
+                  <Button variant="destructive" onClick={handleAddField} disabled={!newField.value}>
                     <PlusIcon className="w-5 h-5" />
                   </Button>
                 </div>
@@ -176,7 +175,7 @@ export const Model = () => {
                         value={newOption}
                         onChange={(e) => setNewOption(e.target.value)}
                       />
-                      <Button variant="destructive" onClick={handleAddOption}>
+                      <Button variant="destructive" onClick={handleAddOption} disabled={!newOption}>
                         <PlusIcon className="w-5 h-5" />
                       </Button>
                     </div>
@@ -256,7 +255,7 @@ export const Model = () => {
                   </Table>
                 </ScrollArea>
               )}
-              <Button onClick={handleSubmit}>
+              <Button onClick={handleSubmit} disabled={!modelName || !selectedSector || fields.length === 0}>
                 Salvar Modelo
               </Button>
             </div>

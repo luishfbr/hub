@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/card";
 
 export default function Page() {
+
   return (
     <DashboardPage>
       <DashboardPageHeader>
@@ -47,6 +48,7 @@ export default function Page() {
           </CardHeader>
           <CardContent>
             <div className="flex flex-col gap-6">
+
               <p>
                 Este é um sistema de apoio ao gerenciamento de sistemas da
                 Cooperativa.

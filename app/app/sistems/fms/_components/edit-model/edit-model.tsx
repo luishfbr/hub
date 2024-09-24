@@ -1,11 +1,9 @@
 "use client";
 
-import styles from "@/app/styles/main.module.css";
 import { Model, Sector } from "@/app/types/types";
 import { useEffect, useState } from "react";
 import { getModelsBySectorId, GetSectors } from "../../_actions/fms-actions";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -16,6 +14,7 @@ import {
 } from "@/components/ui/table";
 import EditButton from "./_components/edit-button";
 import { DeleteButton } from "./_components/delete-button";
+import { AddNewFields } from "./_components/add-new-fields";
 
 export default function EditModel() {
   const [sectors, setSectors] = useState<Sector[]>([]);
@@ -45,7 +44,7 @@ export default function EditModel() {
   }, []);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 items-center justify-center">
       <div className="flex items-center justify-center gap-4">
         {sectors.map((sector) => (
           <Button key={sector.id} onClick={() => handleSectorChange(sector)}>
@@ -56,13 +55,13 @@ export default function EditModel() {
 
       {selectedSector ? (
         <div className="mx-10">
-          <Table>
+          <Table className="w-[50vw]">
             <TableHeader>
               <TableRow>
                 <TableHead className="text-center">Nome do Modelo</TableHead>
-
-                <TableHead className="text-center">Editar</TableHead>
-                <TableHead className="text-center">Excluir</TableHead>
+                <TableHead className="text-center">Editar Modelo</TableHead>
+                <TableHead className="text-center">Adicionar Novos Campos</TableHead>
+                <TableHead className="text-center">Deletar Modelo</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -72,7 +71,7 @@ export default function EditModel() {
                     <TableCell className="text-center">
                       {model.modelName}
                     </TableCell>
-                    <TableCell className="text-center">
+                    <TableCell className="text-center flex gap-6 items-center justify-center">
                       <EditButton
                         modelId={model.id}
                         onUpdate={() => handleUpdate()}
@@ -82,6 +81,13 @@ export default function EditModel() {
                       <DeleteButton
                         modelId={model.id}
                         onDelete={() => handleUpdate()}
+                      />
+                    </TableCell>
+
+                    <TableCell className="text-center">
+                      <AddNewFields
+                        modelId={model.id}
+                        onAddField={() => handleUpdate()}
                       />
                     </TableCell>
                   </TableRow>

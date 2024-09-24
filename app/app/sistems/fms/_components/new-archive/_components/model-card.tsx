@@ -62,6 +62,9 @@ export const SelectedModelForm = ({ modelId }: { modelId: string }) => {
     (field: Field) => {
       const mask = maskMap[field.type];
       const label = field.fieldLabel || "Campo de Texto";
+      const isDateField = label === "Data de Criação" || label === "Data de Atualização";
+      const currentDate = new Date().toLocaleDateString("pt-BR");
+
       return (
         <div className="mb-4">
           <Label className="pl-4" htmlFor={field.id}>
@@ -70,7 +73,7 @@ export const SelectedModelForm = ({ modelId }: { modelId: string }) => {
           <Controller
             name={field.id}
             control={control}
-            defaultValue=""
+            defaultValue={isDateField ? currentDate : ""}
             rules={{ required: "Este campo é obrigatório" }}
             render={({ field: { onChange, value } }) => {
               switch (field.type) {
@@ -80,10 +83,11 @@ export const SelectedModelForm = ({ modelId }: { modelId: string }) => {
                       className={styles.inputStyles}
                       id={field.id}
                       mask={mask || ""}
-                      value={value}
+                      value={isDateField ? currentDate : value}
                       onChange={onChange}
                       placeholder={`Digite ${label.toLowerCase()}`}
                       autoComplete="off"
+                      disabled={isDateField}
                     />
                   );
                 case "number":
@@ -145,7 +149,7 @@ export const SelectedModelForm = ({ modelId }: { modelId: string }) => {
     const formattedFields = fields.map((field) => ({
       fileTemplateId: modelId,
       fieldId: field.id,
-      value: data[field.id],
+      value: field.fieldLabel === "Data de Criação" || field.fieldLabel === "Data de Atualização" ? new Date().toLocaleDateString("pt-BR") : data[field.id],
     }));
 
     try {

@@ -85,7 +85,6 @@ export const FieldTypeOptions = [
   { id: "text", value: "Campo de Texto" },
   { id: "number", value: "Campo de Número" },
   { id: "date", value: "Campo de Data" },
-  { id: "checkbox", value: "Checkbox" },
   { id: "select", value: "Campo de Seleção" },
 ];
 
@@ -104,4 +103,13 @@ export type MainSidebarProps = {
 
 export interface UserRole {
   role: string;
+}
+
+export interface NewFieldSigle {
+  fieldLabel: string;
+  id: string;
+  value: string;
+  options?: Option[];
+  type: FieldType;
+  fileTemplateId: string;
 }

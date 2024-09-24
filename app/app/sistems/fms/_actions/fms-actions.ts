@@ -2,8 +2,8 @@
 
 import {
   FieldType,
-  FieldTypeOptions,
   Model,
+  NewFieldSigle,
   NewModelProps,
 } from "@/app/types/types";
 import { auth } from "@/services/auth";
@@ -80,6 +80,8 @@ export const createNewModel = async (formData: NewModelProps) => {
     const standardFields = [
       { fieldType: "text", fieldLabel: "Prateleira" },
       { fieldType: "text", fieldLabel: "Caixa" },
+      { fieldType: "date", fieldLabel: "Data de Criação" },
+      { fieldType: "date", fieldLabel: "Data de Atualização" },
     ];
 
     const allFields = [
@@ -464,4 +466,27 @@ export const EditHeader = async (data: newHeader) => {
     where: { id },
     data: { fieldLabel: fieldLabel },
   });
+};
+
+export const CreateFieldSingle = async (data: NewFieldSigle) => {
+  const field = await prisma.field.create({
+    data: {
+      fieldLabel: data.fieldLabel,
+      fieldType: data.type,
+      fileTemplateId: data.fileTemplateId,
+    },
+  });
+
+  if (data.options && data.options.length > 0) {
+    const options = data.options.map((option) => ({
+      value: option.value,
+      fieldId: field.id,
+    }));
+
+    await prisma.options.createMany({
+      data: options,
+    });
+  }
+
+  return field;
 };
