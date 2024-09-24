@@ -71,7 +71,7 @@ export default function LoginTab() {
       if (result?.message) {
         toast({
           title: result.title,
-          description: result.message,
+          description: globalError,
           variant: result.variant as
             | "destructive"
             | "success"

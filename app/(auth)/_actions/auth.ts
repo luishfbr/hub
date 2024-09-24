@@ -218,7 +218,12 @@ export async function getUserFromDb(email: string, password: string) {
   } catch (error) {
     return {
       success: false,
+<<<<<<< HEAD
       message: "Erro ao buscar usuário.",
+=======
+      message:
+        error instanceof Error ? error.message : "An unknown error occurred.",
+>>>>>>> 14e7d3b14a22d23419913d6d97568134a8567a3b
     };
   }
 }

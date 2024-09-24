@@ -7,18 +7,37 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { Field, FieldType, Option } from "@/app/types/types";
-import { createNewFile, fieldsByFiletemplateId } from "../../../_actions/fms-actions";
+import {
+  createNewFile,
+  fieldsByFiletemplateId,
+} from "../../../_actions/fms-actions";
 import styles from "@/app/styles/main.module.css";
+
+export interface FormData {
+  [key: string]: string;
+}
 
 export const SelectedModelForm = ({ modelId }: { modelId: string }) => {
   const { toast } = useToast();
   const [fields, setFields] = useState<Field[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const { register, handleSubmit, control, formState: { errors }, reset } = useForm<Record<string, string>>();
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { errors },
+    reset,
+  } = useForm<FormData>();
   const router = useRouter();
 
   const loadFields = useCallback(async () => {
@@ -62,7 +81,8 @@ export const SelectedModelForm = ({ modelId }: { modelId: string }) => {
     (field: Field) => {
       const mask = maskMap[field.type];
       const label = field.fieldLabel || "Campo de Texto";
-      const isDateField = label === "Data de Criação" || label === "Data de Atualização";
+      const isDateField =
+        label === "Data de Criação" || label === "Data de Atualização";
       const currentDate = new Date().toLocaleDateString("pt-BR");
 
       return (
@@ -106,7 +126,9 @@ export const SelectedModelForm = ({ modelId }: { modelId: string }) => {
                   return (
                     <Select onValueChange={onChange} value={value}>
                       <SelectTrigger className={styles.inputStyles}>
-                        <SelectValue placeholder={`Selecione ${label.toLowerCase()}`} />
+                        <SelectValue
+                          placeholder={`Selecione ${label.toLowerCase()}`}
+                        />
                       </SelectTrigger>
                       <SelectContent>
                         {field.options?.map((option) => (
@@ -144,12 +166,16 @@ export const SelectedModelForm = ({ modelId }: { modelId: string }) => {
     [control, errors, maskMap, register]
   );
 
-  const onSubmit = async (data: Record<string, string>) => {
+  const onSubmit = async (data: FormData) => {
     setIsLoading(true);
     const formattedFields = fields.map((field) => ({
       fileTemplateId: modelId,
       fieldId: field.id,
-      value: field.fieldLabel === "Data de Criação" || field.fieldLabel === "Data de Atualização" ? new Date().toLocaleDateString("pt-BR") : data[field.id],
+      value:
+        field.fieldLabel === "Data de Criação" ||
+        field.fieldLabel === "Data de Atualização"
+          ? new Date().toLocaleDateString("pt-BR")
+          : data[field.id],
     }));
 
     try {

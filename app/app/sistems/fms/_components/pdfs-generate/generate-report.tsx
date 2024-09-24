@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
   GetFileByCommonId,
   GetHeaders,
@@ -28,7 +28,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import jsPDF from "jspdf";
-import autoTable from 'jspdf-autotable'
+import autoTable from "jspdf-autotable";
 import { CustomHeader, GenerateReportProps } from "@/app/types/types";
 
 export const GenerateReport: React.FC<GenerateReportProps> = ({
@@ -66,7 +66,7 @@ export const GenerateReport: React.FC<GenerateReportProps> = ({
     if (!response) throw new Error("No files found");
 
     setFiles(response);
-  }, [selectedFiles])
+  }, [selectedFiles]);
 
   useEffect(() => {
     fetchFiles();
@@ -74,7 +74,7 @@ export const GenerateReport: React.FC<GenerateReportProps> = ({
   }, [fetchHeaders, fetchFiles]);
 
   const handleGenerateReport = useCallback(() => {
-    const doc = new jsPDF('p', 'mm', 'a4');
+    const doc = new jsPDF("p", "mm", "a4");
     const tableColumn = headers.map((header) => header.fieldLabel);
     const tableRows = files.map((file) =>
       headers.map((header) => file[header.id] || "")
@@ -83,7 +83,7 @@ export const GenerateReport: React.FC<GenerateReportProps> = ({
     autoTable(doc, {
       head: [tableColumn],
       body: tableRows,
-      styles: { fontSize: 8, halign: 'center', valign: 'middle' },
+      styles: { fontSize: 8, halign: "center", valign: "middle" },
     });
 
     doc.save(`relatorio-${new Date().toLocaleDateString()}.pdf`);

@@ -16,7 +16,7 @@ import { TabsContent } from "@/components/ui/tabs";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema } from "@/app/types/zod";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Register } from "@/app/(auth)/_actions/auth";
 

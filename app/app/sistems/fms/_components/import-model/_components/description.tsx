@@ -16,7 +16,7 @@ export function DescriptionHelp() {
       <HoverCardContent className="w-auto">
         <p>
           Os arquivos .xlsx não podem conter espaços em branco. Substitua cada
-          espaço em branco por "null".
+          espaço em branco por null.
         </p>
       </HoverCardContent>
     </HoverCard>
