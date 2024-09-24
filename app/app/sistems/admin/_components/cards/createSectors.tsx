@@ -7,11 +7,13 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
+  DialogDescription,
   DialogFooter,
+  DialogHeader,
+  DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { createSector } from "./_actions/users";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
@@ -35,12 +37,24 @@ export const CreateNewSector: React.FC<CreateButtonProps> = ({
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { isValid },
   } = useForm<FormData>();
+
+  const nameValue = watch("name");
 
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true);
     try {
+      if (!data.name) {
+        toast({
+          title: "Algo deu errado",
+          description: "Refaça o processo, algum erro foi encontrado!",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const formData = new FormData();
       formData.append("name", data.name);
 
@@ -73,30 +87,34 @@ export const CreateNewSector: React.FC<CreateButtonProps> = ({
           Criar novo setor
         </Button>
       </DialogTrigger>
-      <DialogContent className="w-full max-w-lg p-4 sm:p-6">
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="mb-6">
-            <Label htmlFor="name">Nome do Setor</Label>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <DialogContent className="w-96">
+          <DialogHeader>
+            <DialogTitle>Crie um novo setor</DialogTitle>
+            <DialogDescription>Insira o nome do novo setor.</DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col items-center justify-center gap-6">
             <Input
               type="text"
               required
               {...register("name")}
+              placeholder="Qual o nome do setor?"
               className="w-full"
             />
           </div>
           <DialogFooter>
             <DialogClose>
               <Button
+                className="flex items-center justify-center"
                 type="submit"
-                disabled={isSubmitting || !isValid}
-                className="w-full sm:w-auto"
+                disabled={isSubmitting || !isValid || !nameValue}
               >
                 {isSubmitting ? "Criando..." : "Criar Setor"}
               </Button>
             </DialogClose>
           </DialogFooter>
-        </form>
-      </DialogContent>
+        </DialogContent>
+      </form>
     </Dialog>
   );
 };

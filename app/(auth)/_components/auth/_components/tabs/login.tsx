@@ -1,11 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -15,12 +13,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema } from "@/app/types/zod";
 import { LoginForm } from "@/app/types/types";
 import { useToast } from "@/hooks/use-toast";
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSeparator,
-  InputOTPSlot,
-} from "@/components/ui/input-otp";
 
 import {
   Form,
@@ -33,7 +25,7 @@ import {
 import { z } from "zod";
 import { Input } from "@/components/ui/input";
 import LoadingButton from "../../../loading-button";
-import { Login, VerifyUser } from "@/app/(auth)/_actions/auth";
+import { VerifyUser } from "@/app/(auth)/_actions/auth";
 import { useState } from "react";
 import { QrCodeForm } from "../qrcode/qrcode-form";
 
@@ -56,7 +48,6 @@ export interface PrivateUser {
 }
 
 export default function LoginTab() {
-  const [globalError, setGlobalError] = useState<string>("");
   const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
   const { toast } = useToast();
   const [user, setUser] = useState<PrivateUser | null>(null);
@@ -74,9 +65,10 @@ export default function LoginTab() {
       const result = await VerifyUser(values);
       if (result?.qrCodeUrl) {
         setQrCodeUrl(result.qrCodeUrl);
+      } else {
+        setQrCodeUrl("...");
       }
       if (result?.message) {
-        setGlobalError(result.message);
         toast({
           title: result.title,
           description: result.message,

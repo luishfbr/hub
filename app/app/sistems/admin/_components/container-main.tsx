@@ -3,7 +3,7 @@ import { CardUsers } from "./cards/users";
 
 export const ContainerAdmin = () => {
   return (
-    <div className="h-full max-h-screen grid grid-cols-1 md:grid-cols-2 gap-6 p-0.5">
+    <div className="xl:max-h-[85vh] lg:max-h-[75vh] sm:max-h-[65vh] grid grid-cols-1 lg:grid-cols-2 gap-6">
       <CardUsers />
       <CardSectors />
     </div>

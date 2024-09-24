@@ -139,34 +139,34 @@ export const CardSectors = () => {
   }, []);
 
   return (
-    <div className="flex flex-col gap-6 h-full ">
+    <div className="flex flex-col gap-6">
       <div className="flex flex-col text-center gap-2">
-        <h1 className="text-2xl font-bold">Lista de Setores Cadastrados</h1>
-        <span className="text-center text-sm text-muted-foreground">
-          Gerencie os setores e seus usuários aqui.
+        <h1 className="text-lg sm:text-2xl font-bold">
+          Lista de Setores Cadastrados
+        </h1>
+        <span className="text-xs sm:text-sm text-muted-foreground">
+          Gerencie os setores da sua organização.
         </span>
       </div>
       <div className="flex flex-col gap-6">
-        <ScrollArea className="max-h-[800px] rounded-md border shadow-md">
-          <div className="overflow-x-auto">
-            <Table
-              className={`${styles.table} min-w-full divide-y divide-gray-200`}
-            >
+        <ScrollArea className="md:h-[25vh] lg:h-[74vh] overflow-auto rounded-md border shadow-md">
+          <div className="min-w-full">
+            <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-center">Setor</TableHead>
-                  <TableHead className="text-center">Usuários</TableHead>
-                  <TableHead className="text-center">Ações</TableHead>
+                  <TableHead className={styles.head}>Setor</TableHead>
+                  <TableHead className={styles.head}>Usuários</TableHead>
+                  <TableHead className={styles.head}>Ações</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {sectors.length > 0 ? (
                   sectors.map((sector) => (
                     <TableRow key={sector.id}>
-                      <TableCell className="text-center">
+                      <TableCell className={styles.head}>
                         <span>{sector.name}</span>
                       </TableCell>
-                      <TableCell className="text-center">
+                      <TableCell className={styles.head}>
                         {/* Exclusão de usuários do setor */}
                         <Dialog>
                           <DialogTrigger asChild>
@@ -290,9 +290,8 @@ export const CardSectors = () => {
                             <DialogFooter></DialogFooter>
                           </DialogContent>
                         </Dialog>
-
                       </TableCell>
-                      <TableCell className="text-center">
+                      <TableCell className={styles.head}>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" className="h-8 w-8 p-0">

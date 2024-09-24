@@ -81,7 +81,13 @@ export function QrCodeForm({
     <form onSubmit={form.handleSubmit(onSubmit)}>
       <CardFooter className="flex flex-col justify-center gap-4">
         <div className="mt-4">
-          <Image src={qrCodeUrl} alt="QR Code" width={250} height={250} />
+          {qrCodeUrl === "..." ? (
+            <div className="flex justify-center items-center">
+              <Loader2 className="animate-spin w-4 h-4" />
+            </div>
+          ) : (
+            <Image src={qrCodeUrl} alt="QR Code" width={250} height={250} />
+          )}
         </div>
         <InputOTP
           maxLength={6}

@@ -31,12 +31,7 @@ export const ChangeRole: React.FC<ChangeRoleProps> = ({
   onChangeSuccess,
 }) => {
   const { toast } = useToast();
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setValue,
-  } = useForm<UserFormData>({
+  const { handleSubmit, setValue } = useForm<UserFormData>({
     defaultValues: {
       role: "user",
     },
@@ -92,7 +87,7 @@ export const ChangeRole: React.FC<ChangeRoleProps> = ({
         </div>
         <div className="grid">
           <span className="text-center text-sm text-muted-foreground">
-            Setor selecionado: {roleSelected}
+            Permissão selecionada: {roleSelected}
           </span>
         </div>
         <form onSubmit={handleSubmit(onSubmit)}>

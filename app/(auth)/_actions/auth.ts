@@ -64,40 +64,65 @@ export async function Login({
 }
 
 export async function VerifyUser(values: LoginForm) {
-  const { email, password } = values;
-  const user = await prisma.user.findUnique({
-    where: {
-      email,
-    },
-  });
+  try {
+    const { email, password } = values;
+    const user = await prisma.user.findUnique({
+      where: {
+        email,
+      },
+    });
 
-  if (!user) {
+    if (!user) {
+      return {
+        title: "Email não encontrado",
+        message: "Verifique o email digitado e tente novamente.",
+        variant: "destructive",
+      };
+    }
+
+    const isPasswordMatches = compareSync(password, user.password as string);
+
+    if (!isPasswordMatches) {
+      return {
+        title: "Senha incorreta",
+        message: "Verifique a senha digitada e tente novamente.",
+        variant: "destructive",
+      };
+    }
+
+    const id = user.id as string;
+
+    if (user.otpEnabled === false) {
+      await prisma.user.update({
+        where: {
+          id,
+        },
+        data: {
+          otpEnabled: true,
+        },
+      });
+      
+      const qrCodeUrl = await GenerateQrCode(id);
+      return {
+        qrCodeUrl,
+        title: "Usuário encontrado",
+        message: "Verifique o código QR e insira o código de verificação.",
+        variant: "success",
+      };
+    } else {
+      return {
+        title: "Usuário encontrado",
+        message: "Insira o código de verificação.",
+        variant: "success",
+      };
+    }
+  } catch (error) {
     return {
-      title: "Email não encontrado",
-      message: "Verifique o email digitado e tente novamente.",
+      title: "Problemas com o servidor",
+      message: "Ocorreu um erro inesperado. Por favor, tente novamente.",
       variant: "destructive",
     };
   }
-
-  const isPasswordMatches = compareSync(password, user.password as string);
-
-  if (!isPasswordMatches) {
-    return {
-      title: "Senha incorreta",
-      message: "Verifique a senha digitada e tente novamente.",
-      variant: "destructive",
-    };
-  }
-
-  const id = user.id as string;
-
-  const qrCodeUrl = await GenerateQrCode(id);
-  return {
-    qrCodeUrl,
-    title: "Usuário encontrado",
-    message: "Verifique o código QR e insira o código de verificação.",
-    variant: "success",
-  };
 }
 
 export async function GenerateQrCode(id: string) {
@@ -121,7 +146,7 @@ export async function GenerateQrCode(id: string) {
 }
 
 export async function VerifyQrCode(values: LoginWithCode) {
-  const { email, password, code } = values;
+  const { email, code } = values;
   const user = await prisma.user.findUnique({
     where: {
       email,
@@ -190,10 +215,10 @@ export async function getUserFromDb(email: string, password: string) {
       success: true,
       data: existedUser,
     };
-  } catch (error: any) {
+  } catch (error) {
     return {
       success: false,
-      message: error.message,
+      message: "Erro ao buscar usuário.",
     };
   }
 }
