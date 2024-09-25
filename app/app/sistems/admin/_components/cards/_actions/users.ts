@@ -1,6 +1,6 @@
 "use server";
 
-import { UpdateRoleUser } from "@/app/types/types";
+import { NewSector, UpdateRoleUser } from "@/app/types/types";
 import { auth } from "@/services/auth";
 import { prisma } from "@/services/prisma";
 import { genSaltSync, hashSync } from "bcrypt-ts";
@@ -69,20 +69,16 @@ export const getUserByEmail = async (email: string) => {
 //   });
 // };
 
-export const createSector = async (FormData: FormData) => {
-  try {
-    const name = FormData.get("name") as string;
+export const CreateSector = async (data: NewSector) => {
+  const name = data.name;
 
-    const createSector = await prisma.sector.create({
-      data: { name },
-    });
+  const response = await prisma.sector.create({
+    data: { name },
+  });
 
-    if (!createSector) {
-      throw new Error("Erro ao criar setor");
-    }
+  if (response) {
     return true;
-  } catch (error) {
-    console.error("Erro:", error);
+  } else {
     return false;
   }
 };

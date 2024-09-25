@@ -61,7 +61,7 @@ export const CreateNewUser: React.FC<CreateButtonProps> = ({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="w-full sm:w-auto">Criar novo usuário</Button>
+        <Button className="w-auto mr-2">Criar novo usuário</Button>
       </DialogTrigger>
       <DialogContent className="w-full max-w-lg p-4 sm:p-6">
         <DialogHeader></DialogHeader>

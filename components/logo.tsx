@@ -6,7 +6,7 @@ export function Logo() {
       <div className="bg-primary h-8 w-8 flex items-center justify-center rounded-md">
         <Computer className="w-6 h-6 text-primary-foreground" />
       </div>
-      <p className="font-bold text-xl text-primary">HUB DeVfont</p>
+      <p className="font-bold text-xl text-primary">HUB Sicoob Uberaba</p>
     </div>
   );
 }

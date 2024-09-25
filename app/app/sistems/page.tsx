@@ -1,20 +1,26 @@
 "use client";
 
+// import { Logout } from "@/app/(auth)/_actions/auth";
 import {
   DashboardPage,
   DashboardPageHeader,
   DashboardPageHeaderTitle,
   DashboardPageMain,
 } from "@/components/dashboard/page";
+// import { Button } from "@/components/ui/button";
 import {
   Card,
   CardHeader,
   CardTitle,
   CardContent,
   CardDescription,
+  // CardFooter,
 } from "@/components/ui/card";
 
 export default function Page() {
+  // const handleLogout = async () => {
+  //   await Logout();
+  // };
   return (
     <DashboardPage>
       <DashboardPageHeader>
@@ -29,16 +35,6 @@ export default function Page() {
               Seja bem-vindo ao Hub de Sistemas do Sicoob Uberaba
             </CardTitle>
             <CardDescription className="flex flex-col gap-2">
-              <div>
-                Criado por{" "}
-                <a
-                  href="https://www.linkedin.com/in/luishenriquedev/"
-                  target="_blank"
-                  className="text-primary underline hover:text-primary/80"
-                >
-                  Luis Henrique Fonte Boa Romualdo
-                </a>
-              </div>
               <span>Precisa de ajuda? Me chame no Teams. </span>
               <span>3178 - Luis Henrique Fonte Boa Romualdo</span>
             </CardDescription>
@@ -57,6 +53,11 @@ export default function Page() {
               </span>
             </div>
           </CardContent>
+          {/* <CardFooter>
+            <Button onClick={handleLogout} variant={"link"}>
+              Sair...
+            </Button>
+          </CardFooter> */}
         </Card>
       </DashboardPageMain>
     </DashboardPage>

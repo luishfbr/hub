@@ -146,3 +146,7 @@ export interface createNewModelByImportingProps {
 export interface Data {
   [key: string]: Record<string, unknown>;
 }
+
+export interface NewSector {
+  name: string;
+}

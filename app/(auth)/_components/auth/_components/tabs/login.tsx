@@ -63,25 +63,31 @@ export default function LoginTab() {
     try {
       setUser(values);
       const result = await VerifyUser(values);
-      if (result?.qrCodeUrl) {
-        setQrCodeUrl(result.qrCodeUrl);
-      } else {
-        setQrCodeUrl("...");
+
+      if (!result) {
+        throw new Error("Resposta inesperada do servidor");
       }
-      if (result?.message) {
-        toast({
-          title: result.title,
-          description: globalError,
-          variant: result.variant as
-            | "destructive"
-            | "success"
-            | "default"
-            | null
-            | undefined,
-        });
-      }
+
+      setQrCodeUrl(result.qrCodeUrl || "...");
+      console.log(qrCodeUrl);
+
+      toast({
+        title: result.title,
+        description: result.message,
+        variant: result.variant as
+          | "destructive"
+          | "success"
+          | "default"
+          | null
+          | undefined,
+      });
     } catch (error) {
-      console.log("Ocorreu um erro inesperado. Por favor, tente novamente.");
+      console.error("Erro durante a verificação do usuário:", error);
+      toast({
+        title: "Erro",
+        description: "Ocorreu um erro inesperado. Por favor, tente novamente.",
+        variant: "destructive",
+      });
     }
   };
 

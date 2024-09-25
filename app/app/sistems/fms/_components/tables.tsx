@@ -15,6 +15,7 @@ import { getSectorsByUserId } from "../../admin/_components/cards/_actions/users
 import { TableContainer } from "./table/table-component";
 import { getModelsBySectorId } from "../_actions/fms-actions";
 import { Model, Sector } from "@/app/types/types";
+import { Progress } from "@/components/ui/progress";
 
 export const ContainerTables = () => {
   const [sectors, setSectors] = useState<Sector[]>([]);
@@ -23,6 +24,7 @@ export const ContainerTables = () => {
   const [selectedModel, setSelectedModel] = useState<Model | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [progress, setProgress] = useState(13);
 
   const fetchSectors = useCallback(async () => {
     try {
@@ -51,7 +53,7 @@ export const ContainerTables = () => {
         setIsLoading(false);
       }
     },
-    [sectors] 
+    [sectors]
   );
 
   const handleChangeModel = useCallback(
@@ -62,12 +64,13 @@ export const ContainerTables = () => {
     [models]
   );
 
-  const debouncedSearch = useCallback(
-    debounce((value: string) => {
-      setSearchTerm(value);
-    }, 300),
-    []
-  );
+  const debouncedSearch = useCallback((value: string) => {
+    const delayedSearch = debounce((searchValue: string) => {
+      setSearchTerm(searchValue);
+    }, 300);
+
+    delayedSearch(value);
+  }, []);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     debouncedSearch(event.target.value);
@@ -77,13 +80,22 @@ export const ContainerTables = () => {
     fetchSectors();
   }, [fetchSectors]);
 
+  useEffect(() => {
+    const timer = setTimeout(() => setProgress(90), 500);
+    return () => clearTimeout(timer);
+  }, []);
+
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="w-full h-[80vh] flex items-center justify-center">
+        <Progress value={progress} className="w-[30%]" />
+      </div>
+    );
   }
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col md:flex-row justify-center items-center gap-6">
+      <div className="flex flex-col md:flex-row justify-center items-center gap-6 p-2">
         <Select
           onValueChange={handleChangeSector}
           value={selectedSector?.id || ""}

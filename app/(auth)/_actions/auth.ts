@@ -64,65 +64,71 @@ export async function Login({
 }
 
 export async function VerifyUser(values: LoginForm) {
+  const { email, password } = values;
+
   try {
-    const { email, password } = values;
     const user = await prisma.user.findUnique({
-      where: {
-        email,
-      },
+      where: { email },
     });
 
     if (!user) {
-      return {
-        title: "Email não encontrado",
-        message: "Verifique o email digitado e tente novamente.",
-        variant: "destructive",
-      };
+      return createResponse(
+        "Email não encontrado",
+        "Verifique o email digitado e tente novamente.",
+        "destructive"
+      );
     }
 
     const isPasswordMatches = compareSync(password, user.password as string);
 
     if (!isPasswordMatches) {
-      return {
-        title: "Senha incorreta",
-        message: "Verifique a senha digitada e tente novamente.",
-        variant: "destructive",
-      };
+      return createResponse(
+        "Senha incorreta",
+        "Verifique a senha digitada e tente novamente.",
+        "destructive"
+      );
     }
 
-    const id = user.id as string;
-
-    if (user.otpEnabled === false) {
-      await prisma.user.update({
-        where: {
-          id,
-        },
-        data: {
-          otpEnabled: true,
-        },
-      });
-
-      const qrCodeUrl = await GenerateQrCode(id);
-      return {
-        qrCodeUrl,
-        title: "Usuário encontrado",
-        message: "Verifique o código QR e insira o código de verificação.",
-        variant: "success",
-      };
-    } else {
-      return {
-        title: "Usuário encontrado",
-        message: "Insira o código de verificação.",
-        variant: "success",
-      };
+    if (!user.otpEnabled) {
+      await enableOtpForUser(user.id as string);
+      const qrCodeUrl = await GenerateQrCode(user.id as string);
+      return createResponse(
+        "Usuário encontrado",
+        "Verifique o código QR e insira o código de verificação.",
+        "success",
+        qrCodeUrl
+      );
     }
+
+    return createResponse(
+      "Usuário encontrado",
+      "Insira o código de verificação.",
+      "success"
+    );
   } catch (error) {
-    return {
-      title: "Problemas com o servidor",
-      message: "Ocorreu um erro inesperado. Por favor, tente novamente.",
-      variant: "destructive",
-    };
+    console.error("Erro durante a verificação do usuário:", error);
+    return createResponse(
+      "Problemas com o servidor",
+      "Ocorreu um erro inesperado. Por favor, tente novamente.",
+      "destructive"
+    );
   }
+}
+
+async function enableOtpForUser(userId: string) {
+  await prisma.user.update({
+    where: { id: userId },
+    data: { otpEnabled: true },
+  });
+}
+
+function createResponse(
+  title: string,
+  message: string,
+  variant: "destructive" | "success" | "default" | null | undefined,
+  qrCodeUrl: string = ""
+) {
+  return { title, message, variant, qrCodeUrl };
 }
 
 export async function GenerateQrCode(id: string) {

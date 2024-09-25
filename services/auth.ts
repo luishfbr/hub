@@ -49,45 +49,37 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   callbacks: {
-    // Callback para manipular o token JWT
     async jwt({ token, user }) {
       if (user) {
-        // Adiciona o id e email do usuário ao token
         token.id = user.id;
         token.email = user.email;
       }
       return token;
     },
-    // Callback para manipular a sessão
     async session({ session, token }) {
       if (token) {
-        // Adiciona o id e email do token à sessão do usuário
         session.user.id = token.id as string;
         session.user.email = token.email as string;
       }
       return session;
     },
-    // Callback para autorização de rotas
+
     authorized({ request: { nextUrl }, auth }) {
       const isLoggedIn = !!auth?.user;
       const { pathname } = nextUrl;
 
-      // Lógica para rotas de autenticação (/)
       if (pathname.startsWith("/")) {
         if (isLoggedIn) {
-          // Redireciona usuários logados para /app
           return Response.redirect(new URL("/app/sistems", nextUrl));
         }
-        return true; // Permite acesso a / para usuários não logados
+        return true;
       }
 
-      // Lógica para outras rotas
       if (!isLoggedIn && !pathname.startsWith("/")) {
-        // Redireciona usuários não logados para /
         return Response.redirect(new URL("/", nextUrl));
       }
 
-      return true; // Permite acesso para usuários logados
+      return true;
     },
   },
   pages: {
@@ -98,5 +90,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   session: {
     strategy: "jwt",
+    maxAge: 120 * 60,
+    updateAge: 60 * 60,
+  },
+  jwt: {
+    maxAge: 120 * 60,
   },
 });

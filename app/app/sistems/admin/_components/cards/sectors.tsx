@@ -30,7 +30,6 @@ import {
   DialogClose,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -47,6 +46,7 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import { useEffect, useState } from "react";
+import { Input } from "@/components/ui/input";
 
 export type Sector = {
   id: string;
@@ -148,183 +148,174 @@ export const CardSectors = () => {
           Gerencie os setores da sua organização.
         </span>
       </div>
-      <div className="flex flex-col gap-6">
-        <ScrollArea className="md:h-[25vh] lg:h-[74vh] overflow-auto rounded-md border shadow-md">
-          <div className="min-w-full">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className={styles.head}>Setor</TableHead>
-                  <TableHead className={styles.head}>Usuários</TableHead>
-                  <TableHead className={styles.head}>Ações</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {sectors.length > 0 ? (
-                  sectors.map((sector) => (
-                    <TableRow key={sector.id}>
-                      <TableCell className={styles.head}>
-                        <span>{sector.name}</span>
-                      </TableCell>
-                      <TableCell className={styles.head}>
-                        {/* Exclusão de usuários do setor */}
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <Button
-                              onClick={() => fetchUsersHave(sector.id)}
-                              variant={"ghost"}
-                            >
-                              <BadgeMinus className="h-5 w-5" />
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent className="sm:max-w-[425px]">
-                            <DialogHeader>
-                              <DialogTitle>
-                                Exclua um usuário por vez do setor:
-                              </DialogTitle>
-                              <DialogDescription>
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center justify-center">
+          <CreateNewSector onCreateSuccess={fetchData} />
+          <Input type="text" placeholder="Pesquisar..." />
+        </div>
+
+        <Table>
+          <ScrollArea className="sm:h-[23vh] md:h-[23vh] lg:h-[72vh] w-full">
+            <TableHeader>
+              <TableRow>
+                <TableHead className={styles.head}>Setor</TableHead>
+                <TableHead className={styles.head}>Usuários</TableHead>
+                <TableHead className={styles.head}>Ações</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody className="overflow-auto">
+              {sectors.length > 0 ? (
+                sectors.map((sector) => (
+                  <TableRow key={sector.id}>
+                    <TableCell className={styles.head}>
+                      <span>{sector.name}</span>
+                    </TableCell>
+                    <TableCell className={styles.head}>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button
+                            onClick={() => fetchUsersHave(sector.id)}
+                            variant={"ghost"}
+                          >
+                            <BadgeMinus className="h-5 w-5" />
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[425px]">
+                          <DialogHeader>
+                            <DialogTitle>
+                              Exclua um usuário por vez do setor:
+                            </DialogTitle>
+                            <DialogDescription>{sector.name}</DialogDescription>
+                          </DialogHeader>
+                          <div className="flex flex-col text-center gap-0.5">
+                            {usersHave.length > 0 ? (
+                              usersHave.map((user, index) => (
+                                <DialogClose key={index}>
+                                  <Button
+                                    variant={"outline"}
+                                    className="text-sm text-muted-foreground"
+                                    onClick={() =>
+                                      excludeUserToSector(user.id, sector.id)
+                                    }
+                                  >
+                                    {user.name}
+                                  </Button>
+                                </DialogClose>
+                              ))
+                            ) : (
+                              <span className="text-sm text-muted-foreground text-center">
+                                Nenhum usuário cadastrado no setor.
+                              </span>
+                            )}
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            onClick={() => getUsersOnSector(sector.id)}
+                            variant={"ghost"}
+                          >
+                            <Eye className="h-5 w-5" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto">
+                          <ScrollArea>
+                            <div>
+                              <h4 className="mb-4 text-center text-sm text-muted-foreground">
+                                Usuários presentes no setor: <br />
                                 {sector.name}
-                              </DialogDescription>
-                            </DialogHeader>
-                            <div className="flex flex-col text-center gap-0.5">
-                              {usersHave.length > 0 ? (
-                                usersHave.map((user, index) => (
-                                  <DialogClose key={index}>
-                                    <Button
-                                      variant={"outline"}
+                              </h4>
+                              <DropdownMenuSeparator />
+                              <div className="flex flex-col text-center gap-0.5">
+                                {usersOnSector.length > 0 ? (
+                                  usersOnSector.map((name, index) => (
+                                    <span
                                       className="text-sm text-muted-foreground"
-                                      onClick={() =>
-                                        excludeUserToSector(user.id, sector.id)
-                                      }
+                                      key={index}
                                     >
-                                      {user.name}
-                                    </Button>
-                                  </DialogClose>
-                                ))
-                              ) : (
-                                <span className="text-sm text-muted-foreground text-center">
-                                  Nenhum usuário cadastrado no setor.
-                                </span>
-                              )}
-                            </div>
-                          </DialogContent>
-                        </Dialog>
-                        {/* Visualização de usuários do setor */}
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <Button
-                              onClick={() => getUsersOnSector(sector.id)}
-                              variant={"ghost"}
-                            >
-                              <Eye className="h-5 w-5" />
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto">
-                            <ScrollArea>
-                              <div>
-                                <h4 className="mb-4 text-center text-sm text-muted-foreground">
-                                  Usuários presentes no setor: <br />
-                                  {sector.name}
-                                </h4>
-                                <DropdownMenuSeparator />
-                                <div className="flex flex-col text-center gap-0.5">
-                                  {usersOnSector.length > 0 ? (
-                                    usersOnSector.map((name, index) => (
-                                      <span
-                                        className="text-sm text-muted-foreground"
-                                        key={index}
-                                      >
-                                        {name}
-                                      </span>
-                                    ))
-                                  ) : (
-                                    <span className="text-sm text-muted-foreground text-center">
-                                      Nenhum usuário encontrado.
+                                      {name}
                                     </span>
-                                  )}
-                                </div>
+                                  ))
+                                ) : (
+                                  <span className="text-sm text-muted-foreground text-center">
+                                    Nenhum usuário encontrado.
+                                  </span>
+                                )}
                               </div>
-                            </ScrollArea>
-                          </PopoverContent>
-                        </Popover>
-                        {/* Inclusão de usuários do setor */}
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <Button
-                              onClick={() => fetchUsersNonHave(sector.id)}
-                              variant={"ghost"}
-                            >
-                              <BadgePlus className="h-5 w-5" />
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent className="sm:max-w-[425px]">
-                            <DialogHeader>
-                              <DialogTitle>
-                                Adicione um usuário por vez ao setor:
-                              </DialogTitle>
-                              <DialogDescription>
-                                {sector.name}
-                              </DialogDescription>
-                            </DialogHeader>
-                            <div className="flex flex-col text-center gap-0.5">
-                              {users.length > 0 ? (
-                                users.map((user, index) => (
-                                  <DialogClose key={index}>
-                                    <Button
-                                      variant={"outline"}
-                                      className="text-sm text-muted-foreground"
-                                      onClick={() =>
-                                        includeUserToSector(user.id, sector.id)
-                                      }
-                                    >
-                                      {user.name}
-                                    </Button>
-                                  </DialogClose>
-                                ))
-                              ) : (
-                                <span className="text-sm text-muted-foreground text-center">
-                                  Todos os usuários estão cadastrados no setor.
-                                </span>
-                              )}
                             </div>
-                            <DialogFooter></DialogFooter>
-                          </DialogContent>
-                        </Dialog>
-                      </TableCell>
-                      <TableCell className={styles.head}>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                              <span className="sr-only">Abrir Menu</span>
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="center">
-                            <DeleteButton
-                              id={sector.id}
-                              onSuccess={fetchData}
-                            />
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell
-                      colSpan={4}
-                      className="px-6 py-4 text-center text-sm text-gray-500"
-                    >
-                      Nenhum setor encontrado.
+                          </ScrollArea>
+                        </PopoverContent>
+                      </Popover>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button
+                            onClick={() => fetchUsersNonHave(sector.id)}
+                            variant={"ghost"}
+                          >
+                            <BadgePlus className="h-5 w-5" />
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[425px]">
+                          <DialogHeader>
+                            <DialogTitle>
+                              Adicione um usuário por vez ao setor:
+                            </DialogTitle>
+                            <DialogDescription>{sector.name}</DialogDescription>
+                          </DialogHeader>
+                          <div className="flex flex-col text-center gap-0.5">
+                            {users.length > 0 ? (
+                              users.map((user, index) => (
+                                <DialogClose key={index}>
+                                  <Button
+                                    variant={"outline"}
+                                    className="text-sm text-muted-foreground"
+                                    onClick={() =>
+                                      includeUserToSector(user.id, sector.id)
+                                    }
+                                  >
+                                    {user.name}
+                                  </Button>
+                                </DialogClose>
+                              ))
+                            ) : (
+                              <span className="text-sm text-muted-foreground text-center">
+                                Todos os usuários estão cadastrados no setor.
+                              </span>
+                            )}
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+                    </TableCell>
+                    <TableCell className={styles.head}>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" className="h-8 w-8 p-0">
+                            <span className="sr-only">Abrir Menu</span>
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="center">
+                          <DeleteButton id={sector.id} onSuccess={fetchData} />
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </TableCell>
                   </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </div>
-        </ScrollArea>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={4}
+                    className="px-6 py-4 text-center text-sm text-gray-500"
+                  >
+                    Nenhum setor encontrado.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </ScrollArea>
+        </Table>
       </div>
-      <CreateNewSector onCreateSuccess={fetchData} />
     </div>
   );
 };

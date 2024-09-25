@@ -59,90 +59,36 @@ export function CardUsers() {
         </span>
       </div>
 
-<<<<<<< HEAD
-      <div className="flex flex-col gap-6">
-=======
       <div className="flex flex-col gap-4">
->>>>>>> 14e7d3b14a22d23419913d6d97568134a8567a3b
-        <Input
-          type="text"
-          placeholder="Pesquisar..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
+        <div className="flex items-center justify-center">
+          <CreateNewUser onCreateSuccess={fetchData} />
+          <Input
+            type="text"
+            placeholder="Pesquisar..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
 
-<<<<<<< HEAD
-        <ScrollArea className="md:h-[25vh] lg:h-[68vh] overflow-x-auto rounded-md border shadow-md">
-          <div className="overflow-x-auto">
-            <Table className="min-w-full">
-              <TableHeader>
-                <TableRow>
-                  <TableHead className={styles.head}>Nome</TableHead>
-                  <TableHead className={styles.head}>Email</TableHead>
-                  <TableHead className={styles.head}>Permissão</TableHead>
-                  <TableHead className={styles.head}></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredUsers.length > 0 ? (
-                  filteredUsers.map((user) => (
-                    <TableRow key={user.email}>
-                      <TableCell className={styles.head}>{user.name}</TableCell>
-                      <TableCell className={styles.head}>
-                        {user.email}
-                      </TableCell>
-                      <TableCell className={styles.head}>{user.role}</TableCell>
-                      <TableCell className={styles.head}>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild className="flex">
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                              <span className="sr-only">Abrir Menu</span>
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="center">
-                            <DeleteButton
-                              email={user.email}
-                              onDeleteSuccess={fetchData}
-                            />
-                            <DropdownMenuSeparator />
-                            <ChangeRole
-                              email={user.email}
-                              onChangeSuccess={fetchData}
-                            />
-                            <DropdownMenuSeparator />
-                            <EditButton email={user.email} />
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell
-                      colSpan={4}
-                      className="px-6 py-4 text-center text-sm text-gray-500"
-                    >
-                      Nenhum usuário encontrado.
-=======
-        <ScrollArea className="max-h-[50vh] sm:max-h-[60vh] lg:max-h-[70vh] overflow-auto rounded-md border shadow-md">
-          <Table className="table-auto min-w-full">
+        <Table>
+          <ScrollArea className="sm:h-[23vh] md:h-[23vh] lg:h-[72vh] w-full">
             <TableHeader>
               <TableRow>
-                <TableHead className="text-center">Nome</TableHead>
-                <TableHead className="text-center">Email</TableHead>
-                <TableHead className="text-center">Permissão</TableHead>
-                <TableHead className="text-center"></TableHead>
+                <TableHead className={styles.head}>Nome</TableHead>
+                <TableHead className={styles.head}>Email</TableHead>
+                <TableHead className={styles.head}>Permissão</TableHead>
+                <TableHead className={styles.head}></TableHead>
               </TableRow>
             </TableHeader>
-            <TableBody>
+
+            <TableBody className="overflow-auto">
               {filteredUsers.length > 0 ? (
                 filteredUsers.map((user) => (
                   <TableRow key={user.email}>
-                    <TableCell className="text-center">{user.name}</TableCell>
-                    <TableCell className="text-center">{user.email}</TableCell>
-                    <TableCell className="text-center">{user.role}</TableCell>
-                    <TableCell className="text-center">
+                    <TableCell className={styles.head}>{user.name}</TableCell>
+                    <TableCell className={styles.head}>{user.email}</TableCell>
+                    <TableCell className={styles.head}>{user.role}</TableCell>
+                    <TableCell className={styles.head}>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild className="flex">
                           <Button variant="ghost" className="h-8 w-8 p-0">
@@ -164,16 +110,23 @@ export function CardUsers() {
                           <EditButton email={user.email} />
                         </DropdownMenuContent>
                       </DropdownMenu>
->>>>>>> 14e7d3b14a22d23419913d6d97568134a8567a3b
                     </TableCell>
                   </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </div>
-        </ScrollArea>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={4}
+                    className="px-6 py-4 text-center text-sm text-muted-foreground"
+                  >
+                    Nenhum usuário encontrado.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </ScrollArea>
+        </Table>
       </div>
-      <CreateNewUser onCreateSuccess={fetchData} />
     </div>
   );
 }

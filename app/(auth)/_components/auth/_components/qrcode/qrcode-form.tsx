@@ -16,9 +16,9 @@ import { z } from "zod";
 import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
 import { Login, VerifyQrCode } from "@/app/(auth)/_actions/auth";
 import { useToast } from "@/hooks/use-toast";
+import { Loader2 } from "lucide-react";
 
 export function QrCodeForm({
   qrCodeUrl,
@@ -60,6 +60,7 @@ export function QrCodeForm({
         });
       }
     } catch (error) {
+      console.error("Erro ao verificar QR Code:", error);
       toast({
         title: "Erro",
         description: "Ocorreu um erro ao processar sua solicitação",
@@ -80,11 +81,12 @@ export function QrCodeForm({
   return (
     <form onSubmit={form.handleSubmit(onSubmit)}>
       <CardFooter className="flex flex-col justify-center gap-4">
-        <div className="mt-4">
+        <div>
           {qrCodeUrl === "..." ? (
-            <div className="flex justify-center items-center">
-              <Loader2 className="animate-spin w-4 h-4" />
-            </div>
+            <span className="text-center flex items-center justify-center text-sm">
+              Insira o código de 6 dígitos gerado no seu aplicativo Microsft
+              Authenticator.
+            </span>
           ) : (
             <Image src={qrCodeUrl} alt="QR Code" width={250} height={250} />
           )}
