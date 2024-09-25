@@ -72,46 +72,51 @@ export async function VerifyUser(values: LoginForm) {
     });
 
     if (!user) {
-      return createResponse(
-        "Email não encontrado",
-        "Verifique o email digitado e tente novamente.",
-        "destructive"
-      );
+      return {
+        title: "Email não encontrado",
+        message: "Verifique o email digitado e tente novamente.",
+        variant: "destructive",
+        status: "error",
+      };
     }
 
     const isPasswordMatches = compareSync(password, user.password as string);
 
     if (!isPasswordMatches) {
-      return createResponse(
-        "Senha incorreta",
-        "Verifique a senha digitada e tente novamente.",
-        "destructive"
-      );
+      return {
+        title: "Senha incorreta",
+        message: "Verifique a senha digitada e tente novamente.",
+        variant: "destructive",
+        status: "error",
+      };
     }
 
     if (!user.otpEnabled) {
       await enableOtpForUser(user.id as string);
       const qrCodeUrl = await GenerateQrCode(user.id as string);
-      return createResponse(
-        "Usuário encontrado",
-        "Verifique o código QR e insira o código de verificação.",
-        "success",
-        qrCodeUrl
-      );
+      return {
+        title: "Usuário encontrado",
+        message: "Verifique o código QR e insira o código de verificação.",
+        variant: "success",
+        qrCodeUrl,
+        status: "success",
+      };
     }
 
-    return createResponse(
-      "Usuário encontrado",
-      "Insira o código de verificação.",
-      "success"
-    );
+    return {
+      title: "Usuário encontrado",
+      message: "Insira o código de verificação.",
+      variant: "success",
+      status: "success",
+    };
   } catch (error) {
     console.error("Erro durante a verificação do usuário:", error);
-    return createResponse(
-      "Problemas com o servidor",
-      "Ocorreu um erro inesperado. Por favor, tente novamente.",
-      "destructive"
-    );
+    return {
+      title: "Problemas com o servidor",
+      message: "Ocorreu um erro inesperado. Por favor, tente novamente.",
+      variant: "destructive",
+      status: "error",
+    };
   }
 }
 

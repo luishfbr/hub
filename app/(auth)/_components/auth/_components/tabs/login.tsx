@@ -68,9 +68,10 @@ export default function LoginTab() {
         throw new Error("Resposta inesperada do servidor");
       }
 
-      setQrCodeUrl(result.qrCodeUrl || "...");
-      console.log(qrCodeUrl);
-
+      if (result.status === "success") {
+        setQrCodeUrl(result.qrCodeUrl || "...");
+      }
+      
       toast({
         title: result.title,
         description: result.message,
@@ -82,7 +83,6 @@ export default function LoginTab() {
           | undefined,
       });
     } catch (error) {
-      console.error("Erro durante a verificação do usuário:", error);
       toast({
         title: "Erro",
         description: "Ocorreu um erro inesperado. Por favor, tente novamente.",
