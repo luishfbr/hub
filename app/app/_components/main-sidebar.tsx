@@ -38,9 +38,11 @@ export function MainSidebar({ user }: MainSidebarProps) {
   }
 
   useEffect(() => {
-    getUserRole();
-    getUserSectors();
-  }, [getUserRole, getUserSectors]);
+    if (id) {
+      getUserRole();
+      getUserSectors();
+    }
+  }, [id]);
 
   if (!userRole || !userSectors) {
     return <div>Carregando informações do usuário...</div>;
@@ -55,8 +57,6 @@ export function MainSidebar({ user }: MainSidebarProps) {
     "cadastro",
   ];
 
-  const allowedSectorsPIX = ["tecnologiadainformacao", "linhadefrente"];
-
   const normalizeString = (str: string) =>
     str
       .normalize("NFD")
@@ -69,12 +69,6 @@ export function MainSidebar({ user }: MainSidebarProps) {
     userSectors.some((sector) =>
       allowedSectorsFMS.includes(normalizeString(sector.name))
     );
-
-  // const hasAccessToPIX =
-  //   userRole.role === "ADMIN" ||
-  //   userSectors.some((sector) =>
-  //     allowedSectorsPIX.includes(normalizeString(sector.name))
-  //   );
 
   return (
     <DashboardSidebar>
@@ -104,18 +98,6 @@ export function MainSidebar({ user }: MainSidebarProps) {
             </DashboardSidebarNavMain>
           </DashboardSidebarNav>
         )}
-        {/* {hasAccessToPIX && (
-          <DashboardSidebarNav>
-            <DashboardSidebarNavMain>
-              <DashboardSidebarNavLink
-                href="/app/sistems/pix"
-                active={isActive("/app/sistems/pix")}
-              >
-                Gerador de Placa Pix
-              </DashboardSidebarNavLink>
-            </DashboardSidebarNavMain>
-          </DashboardSidebarNav>
-        )} */}
         {userRole?.role === "ADMIN" && (
           <DashboardSidebarNav className="mt-auto">
             <DashboardSidebarNavHeader>
