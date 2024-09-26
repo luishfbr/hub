@@ -22,6 +22,7 @@ import { GenerateReport } from "../pdfs-generate/generate-report";
 import { GenerateLabels } from "../pdfs-generate/generate-labels";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { DeleteSelectedArchives } from "../delete-all/delete-selected-archives";
+import styles from "@/app/styles/main.module.css";
 
 export interface Field {
   id: string;
@@ -143,25 +144,24 @@ export const TableContainer = ({
   }
 
   return (
-    <div className="max-h-[69vh] overflow-y-auto">
-      <div className="flex justify-center mb-4">
-        {selectedFiles.length > 0 && (
-          <div className="flex gap-6">
-            <GenerateReport selectedFiles={selectedFiles} />
-            <DeleteSelectedArchives
-              selectedFiles={selectedFiles}
-              onDelete={attDataResetSelectedFiles}
-            />
-            <GenerateLabels selectedFiles={selectedFiles} />
-          </div>
-        )}
-      </div>
-      <ScrollArea className="w-full overflow-auto">
-        <div className="min-w-max">
-          <Table>
+    <div className="flex flex-col gap-6">
+      {selectedFiles.length > 0 && (
+        <div className="flex flex-wrap gap-6 justify-center items-center">
+          <GenerateReport selectedFiles={selectedFiles} />
+          <DeleteSelectedArchives
+            selectedFiles={selectedFiles}
+            onDelete={attDataResetSelectedFiles}
+          />
+          <GenerateLabels selectedFiles={selectedFiles} />
+        </div>
+      )}
+
+      <div className="w-full overflow-auto">
+        <ScrollArea className="h-[37vh] md:h-[59vh] lg:h-[63vh] xl:h-[69vh]">
+          <Table className="w-full">
             <TableHeader>
               <TableRow>
-                <TableHead className="text-center sticky left-0 bg-background z-20">
+                <TableHead className={`${styles.head} sticky left-0 z-10`}>
                   <Checkbox
                     checked={selectedFiles.length === filteredFiles.length}
                     onCheckedChange={(checked) =>
@@ -176,24 +176,20 @@ export const TableContainer = ({
                   />
                 </TableHead>
                 {fields.map((field) => (
-                  <TableHead
-                    className="text-center whitespace-nowrap"
-                    key={field.id}
-                  >
+                  <TableHead className={styles.head} key={field.id}>
                     {field.fieldLabel}
                   </TableHead>
                 ))}
-                <TableHead className="text-center sticky right-0 bg-background z-20">
-                  Ações
-                </TableHead>
+                <TableHead className={styles.head}>Ações</TableHead>
               </TableRow>
             </TableHeader>
-            <TableBody>
+
+            <TableBody className="overflow-auto">
               {filteredFiles.length === 0 ? (
                 <TableRow>
                   <TableCell
                     colSpan={fields.length + 2}
-                    className="text-center"
+                    className="text-muted-foreground text-center"
                   >
                     Nenhum resultado encontrado
                   </TableCell>
@@ -210,10 +206,7 @@ export const TableContainer = ({
                       />
                     </TableCell>
                     {fields.map((field) => (
-                      <TableCell
-                        key={field.id}
-                        className="text-center whitespace-nowrap"
-                      >
+                      <TableCell key={field.id} className={styles.head}>
                         {fileRow[field.id] || "-"}
                       </TableCell>
                     ))}
@@ -230,8 +223,8 @@ export const TableContainer = ({
               )}
             </TableBody>
           </Table>
-        </div>
-      </ScrollArea>
+        </ScrollArea>
+      </div>
     </div>
   );
 };

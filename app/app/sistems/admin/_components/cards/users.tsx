@@ -92,11 +92,10 @@ export function CardUsers() {
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild className="flex">
                           <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Abrir Menu</span>
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="center">
+                        <DropdownMenuContent align="start">
                           <DeleteButton
                             email={user.email}
                             onDeleteSuccess={fetchData}

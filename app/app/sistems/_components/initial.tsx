@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { getName } from "../_actions/initial";
 import { Rocket } from 'lucide-react';
-import { useRouter } from "next/navigation";
 
 export function InitialPage() {
     const [name, setName] = useState<string | null>(null);

@@ -6,13 +6,6 @@ import {
   DashboardPageHeaderTitle,
   DashboardPageMain,
 } from "@/components/dashboard/page";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardDescription,
-} from "@/components/ui/card";
 import { InitialPage } from "./_components/initial";
 
 export default function Page() {
