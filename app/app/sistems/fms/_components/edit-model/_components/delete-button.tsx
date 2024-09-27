@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Trash } from "lucide-react";
 import { deleteModel } from "../../../_actions/fms-actions";
 import { useToast } from "@/hooks/use-toast";
+import { useCallback } from "react";
 
 export function DeleteButton({
   modelId,
@@ -23,23 +24,27 @@ export function DeleteButton({
 }) {
   const { toast } = useToast();
 
-  const handleDelete = async () => {
-    const response = await deleteModel(modelId);
-    if (response) {
+  const handleDelete = useCallback(async () => {
+    try {
+      const response = await deleteModel(modelId);
+      if (response) {
+        toast({
+          title: "Modelo deletado com sucesso",
+          description: "O modelo foi deletado com sucesso",
+          variant: "success",
+        });
+        onDelete();
+      } else {
+        throw new Error("Erro ao deletar o modelo");
+      }
+    } catch (error) {
       toast({
-        title: "Modelo deletado com sucesso",
-        description: "O modelo foi deletado com sucesso",
-        variant: "success",
-      });
-      onDelete();
-    } else {
-      toast({
-        title: "Erro ao deletar o modelo",
-        description: "Ocorreu um erro ao deletar o modelo",
+        title: "Erro",
+        description: "Erro ao deletar o modelo",
         variant: "destructive",
       });
     }
-  };
+  }, [modelId, onDelete, toast]);
 
   return (
     <AlertDialog>

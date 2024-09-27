@@ -9,7 +9,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Edit } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   GetHeadersByFileTemplateId,
   GetModelsById,
@@ -40,7 +40,7 @@ export default function EditButton({
   const [headers, setHeaders] = useState<FieldToEdit[]>([]);
   const { register, handleSubmit, reset } = useForm<Model>();
 
-  const fetchHeaders = async () => {
+  const fetchHeaders = useCallback(async () => {
     const headers = await GetHeadersByFileTemplateId(modelId);
     setHeaders(
       headers.map((h) => ({
@@ -49,7 +49,7 @@ export default function EditButton({
         type: h.fieldType as FieldType,
       }))
     );
-  };
+  }, [modelId]);
 
   useEffect(() => {
     const fetchModel = async () => {

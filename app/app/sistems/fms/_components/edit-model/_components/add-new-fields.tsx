@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { FieldType, FieldTypeOptions, NewFieldSigle, Option } from "@/app/types/types";
 import { Button } from "@/components/ui/button";
@@ -52,6 +52,14 @@ export function AddNewFields({
             });
             onAddField(fieldData);
             reset();
+            setNewField({
+                fieldLabel: "",
+                type: "text",
+                id: "",
+                value: "",
+                options: [],
+                fileTemplateId: modelId,
+            });
         } else {
             toast({
                 title: "Erro ao adicionar o campo",
@@ -59,18 +67,24 @@ export function AddNewFields({
                 variant: "destructive",
             });
         }
-    }
+    };
 
     const handleAddOption = () => {
         if (newOption) {
             const option: Option = { id: newOption, value: newOption };
-            setNewField({ ...newField, options: [...(newField.options || []), option] });
+            setNewField((prevField) => ({
+                ...prevField,
+                options: [...(prevField.options || []), option],
+            }));
             setNewOption("");
         }
     };
 
     const handleDeleteOption = (id: string) => {
-        setNewField({ ...newField, options: newField.options?.filter((option) => option.id !== id) });
+        setNewField((prevField) => ({
+            ...prevField,
+            options: prevField.options?.filter((option) => option.id !== id),
+        }));
     };
 
     return (
@@ -84,7 +98,11 @@ export function AddNewFields({
                 <div className="flex flex-col gap-6">
                     <h1>Adicione um novo campo</h1>
                     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2">
-                        <Input placeholder="Nome do campo" type="text" {...register("fieldLabel", { required: true })} />
+                        <Input
+                            placeholder="Nome do campo"
+                            type="text"
+                            {...register("fieldLabel", { required: true })}
+                        />
                         <Select
                             required
                             value={newField.type}
@@ -103,7 +121,7 @@ export function AddNewFields({
                                 </SelectGroup>
                             </SelectContent>
                         </Select>
-                        {newField.type === 'select' && (
+                        {newField.type === "select" && (
                             <div className="flex flex-col gap-6 w-full">
                                 <div className="flex flex-col md:flex-row gap-6">
                                     <Input
@@ -113,7 +131,11 @@ export function AddNewFields({
                                         value={newOption}
                                         onChange={(e) => setNewOption(e.target.value)}
                                     />
-                                    <Button variant="destructive" onClick={handleAddOption} disabled={!newOption}>
+                                    <Button
+                                        variant="destructive"
+                                        onClick={handleAddOption}
+                                        disabled={!newOption}
+                                    >
                                         <PlusIcon className="w-5 h-5" />
                                     </Button>
                                 </div>
@@ -131,7 +153,10 @@ export function AddNewFields({
                                                     <TableRow key={option.id}>
                                                         <TableCell>{option.value}</TableCell>
                                                         <TableCell>
-                                                            <Button variant="ghost" onClick={() => handleDeleteOption(option.id)}>
+                                                            <Button
+                                                                variant="ghost"
+                                                                onClick={() => handleDeleteOption(option.id)}
+                                                            >
                                                                 <TrashIcon className="w-5 h-5" />
                                                             </Button>
                                                         </TableCell>
@@ -143,7 +168,9 @@ export function AddNewFields({
                                 )}
                             </div>
                         )}
-                        <Button type="submit" variant="default">Adicionar Campo</Button>
+                        <Button type="submit" variant="default">
+                            Adicionar Campo
+                        </Button>
                     </form>
                 </div>
             </PopoverContent>

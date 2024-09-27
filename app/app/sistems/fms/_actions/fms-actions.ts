@@ -140,10 +140,20 @@ export const createNewFile = async (data: FileData[]) => {
 };
 
 export const getModelsBySectorId = async (sectorId: string) => {
-  return await prisma.fileTemplate.findMany({
-    where: { sectorId },
-    select: { id: true, modelName: true },
+  const models = await prisma.fileTemplate.findMany({
+    where: {
+      sectorId: sectorId,
+    },
+    select: {
+      id: true,
+      modelName: true,
+    },
   });
+  if (models) {
+    return models;
+  } else {
+    return null;
+  }
 };
 
 export const fieldsByFiletemplateId = async (fileTemplateId: string) => {
