@@ -74,7 +74,7 @@ export function Archive() {
   );
 
   return (
-    <div className="flex flex-col gap-6 max-h-[85vh] h-[80vh] overflow-y-auto">
+    <div className="flex flex-col gap-6 max-h-[85vh] h-[80vh]">
       <div className="flex flex-col gap-2 text-center items-center justify-center">
         <h1 className="text-2xl font-bold">Crie seu novo arquivo</h1>
         <span className="text-sm text-muted-foreground">

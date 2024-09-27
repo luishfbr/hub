@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogFooter,
   DialogHeader,
@@ -45,14 +44,21 @@ export const CreateNewUser: React.FC<CreateButtonProps> = ({
     setIsSubmitting(true);
     try {
       const response = await Register(data);
-      if (response) {
-        onCreateSuccess();
+      if (response.status === "success") {
         reset();
-        toast({
-          title: "Sucesso",
-          description: "Usuário registrado com sucesso!",
-        });
+        onCreateSuccess();
       }
+
+      toast({
+        title: response.title,
+        description: response.message,
+        variant: response.variant as
+          | "destructive"
+          | "success"
+          | "default"
+          | null
+          | undefined,
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -123,11 +129,9 @@ export const CreateNewUser: React.FC<CreateButtonProps> = ({
             </div>
           </div>
           <DialogFooter className="mt-6">
-            <DialogClose>
-              <Button type="submit" disabled={isSubmitting || !isValid}>
-                {isSubmitting ? "Carregando..." : "Registrar"}
-              </Button>
-            </DialogClose>
+            <Button type="submit" disabled={isSubmitting || !isValid}>
+              {isSubmitting ? "Carregando..." : "Registrar"}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

@@ -15,24 +15,35 @@ const saltRounds = 10;
 export async function Register(data: RegisterForm) {
   const { name, email, password } = data;
 
-  const secretBuffer = randomBytes(20);
-  const otpSecret = base32.encode(secretBuffer).replace(/=/g, "");
-  const hashedPassword = await hash(password, saltRounds);
+  try {
+    const secretBuffer = randomBytes(20);
+    const otpSecret = base32.encode(secretBuffer).replace(/=/g, "");
+    const hashedPassword = await hash(password, saltRounds);
 
-  const user = await prisma.user.create({
-    data: {
-      name,
-      email,
-      password: hashedPassword,
-      otpSecret,
-    },
-  });
+    await prisma.user.create({
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+        otpSecret,
+      },
+    });
 
-  if (!user) {
-    throw new Error("User not created");
+    return {
+      title: "Usuário registrado com sucesso!",
+      message: "Faça o login, com as credenciais.",
+      variant: "success",
+      status: "success",
+    };
+  } catch (error) {
+    console.error("Error registering user:", error);
+    return {
+      title: "Usuário não registrado",
+      message: "Verifique o email digitado e tente novamente.",
+      variant: "destructive",
+      status: "error",
+    };
   }
-
-  return user;
 }
 
 export async function Login({
