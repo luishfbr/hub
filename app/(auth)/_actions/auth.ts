@@ -138,15 +138,6 @@ async function enableOtpForUser(userId: string) {
   });
 }
 
-function createResponse(
-  title: string,
-  message: string,
-  variant: "destructive" | "success" | "default" | null | undefined,
-  qrCodeUrl: string = ""
-) {
-  return { title, message, variant, qrCodeUrl };
-}
-
 export async function GenerateQrCode(id: string) {
   const user = await prisma.user.findUnique({
     where: {
@@ -160,7 +151,7 @@ export async function GenerateQrCode(id: string) {
 
   const email = user?.email?.split("@")[0];
   const otpSecret = user?.otpSecret;
-  const issuer = "FMS";
+  const issuer = "Hub Sicoob Uberaba";
 
   const otpUrl = `otpauth://totp/${issuer}:${email}?secret=${otpSecret}&issuer=${issuer}&algorithm=SHA1&digits=6&period=30`;
 
