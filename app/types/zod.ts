@@ -42,3 +42,9 @@ export const editPasswordSchema = z
     message: "As senhas não coincidem",
     path: ["confirmPassword"],
   });
+
+export const DateFormSchema = z.object({
+  dob: z.date({
+    required_error: "Escolha uma data para prosseguir...",
+  }),
+});

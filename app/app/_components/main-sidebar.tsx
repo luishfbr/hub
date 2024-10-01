@@ -98,6 +98,16 @@ export function MainSidebar({ user }: MainSidebarProps) {
             </DashboardSidebarNavMain>
           </DashboardSidebarNav>
         )}
+        <DashboardSidebarNav>
+          <DashboardSidebarNavMain>
+            <DashboardSidebarNavLink
+              href="/app/sistems/direx"
+              active={isActive("/app/sistems/direx")}
+            >
+              Reuniões Direx
+            </DashboardSidebarNavLink>
+          </DashboardSidebarNavMain>
+        </DashboardSidebarNav>
         {userRole?.role === "ADMIN" && (
           <DashboardSidebarNav className="mt-auto">
             <DashboardSidebarNavHeader>

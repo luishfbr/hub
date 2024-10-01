@@ -111,8 +111,8 @@ export default function RegisterTab() {
               </div>
             ))}
           </CardContent>
-          <CardFooter>
-            <Button type="submit" disabled={isLoading}>
+          <CardFooter className="flex justify-center items-center">
+            <Button className="w-full" type="submit" disabled={isLoading}>
               {isLoading ? "Registrando..." : "Registrar"}
             </Button>
           </CardFooter>
