@@ -48,3 +48,11 @@ export const DateFormSchema = z.object({
     required_error: "Escolha uma data para prosseguir...",
   }),
 });
+
+export const MeetingFormSchema = z.object({
+  name: z.string().min(1, "O nome é obrigatório"),
+  date: z.date({
+    required_error: "Escolha uma data para prosseguir...",
+  }),
+  users: z.array(z.object({ name: z.string() })),
+})

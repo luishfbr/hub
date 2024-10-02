@@ -11,7 +11,7 @@ export function DashComponent() {
     <DashboardPage>
       <DashboardPageHeader>
         <DashboardPageHeaderTitle>
-          Bem-vindo ao controle de reuniões da direx
+          Bem-vindo ao controle de reuniões
         </DashboardPageHeaderTitle>
       </DashboardPageHeader>
       <DashboardPageMain>

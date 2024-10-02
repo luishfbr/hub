@@ -18,6 +18,12 @@ export type User = {
   role: string;
 };
 
+export type UserToMeeting = {
+  name: string;
+  userId: string;
+  meetingId: string;
+};
+
 export type EditPasswordForm = {
   password: string;
   confirmPassword: string;
@@ -149,4 +155,19 @@ export interface Data {
 
 export interface NewSector {
   name: string;
+}
+
+export interface NewMeeting {
+  name: string;
+  date: string;
+  users: UserToMeeting[];
+  createdBy: string;
+}
+
+export interface Meeting {
+  id: string;
+  name: string;
+  date: string;
+  createdBy: string;
+  users: UserToMeeting[];
 }

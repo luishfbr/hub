@@ -101,10 +101,10 @@ export function MainSidebar({ user }: MainSidebarProps) {
         <DashboardSidebarNav>
           <DashboardSidebarNavMain>
             <DashboardSidebarNavLink
-              href="/app/sistems/direx"
-              active={isActive("/app/sistems/direx")}
+              href="/app/sistems/meetings"
+              active={isActive("/app/sistems/meetings")}
             >
-              Reuniões Direx
+              Reuniões
             </DashboardSidebarNavLink>
           </DashboardSidebarNavMain>
         </DashboardSidebarNav>

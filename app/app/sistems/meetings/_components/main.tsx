@@ -9,14 +9,24 @@ import {
 } from "@/components/ui/card";
 import { CalendarSection } from "./_calendar/calendar-section";
 import { useState } from "react";
+import { FormNewMeeting } from "./forms/form";
+import { ListMeetings } from "./meetings/meetings";
 
 export function Main() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [meetingName, setMeetingName] = useState<string>("");
+  const [refreshMeetings, setRefreshMeetings] = useState<boolean>(false);
 
   const handleDateSelect = (date: Date) => {
     setSelectedDate(date);
-    console.log("Data selecionada:", date);
-    console.log(selectedDate);
+  };
+
+  const handleSetName = (name: string) => {
+    setMeetingName(name);
+  };
+
+  const triggerRefreshMeetings = () => {
+    setRefreshMeetings((prev) => !prev);
   };
 
   return (
@@ -30,19 +40,17 @@ export function Main() {
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-6">
-        <div className="grid grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 gap-6">
           <CalendarSection onDateSelect={handleDateSelect} />
-          <CalendarSection onDateSelect={handleDateSelect} />
-          <CalendarSection onDateSelect={handleDateSelect} />
+          <FormNewMeeting
+            meetingCreated={triggerRefreshMeetings}
+            selectedDate={selectedDate}
+            onSetName={handleSetName}
+          />
         </div>
-        <div className="grid grid-cols-3 gap-6">
-          <Card className="h-[50vh]">
-            <CardHeader>
-              <CardTitle>Lista de Reuniões</CardTitle>
-              <CardDescription>Inclua acima uma nova reunião.</CardDescription>
-            </CardHeader>
-          </Card>
-          <Card className="h-[50vh] col-span-2"></Card>
+        <div className="grid grid-cols-2 gap-6">
+          <ListMeetings refreshMeetings={refreshMeetings} />{" "}
+          <Card className="h-[50vh]"></Card>
         </div>
       </CardContent>
     </Card>
