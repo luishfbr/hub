@@ -57,7 +57,9 @@ export const CreateMeeting = ({
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant="default">Criar reunião</Button>
+        <Button disabled={!data.name} variant="default">
+          Criar reunião
+        </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
@@ -93,7 +95,6 @@ export const CreateMeeting = ({
                 {data.users.map((user, index) => (
                   <div key={index}>
                     <span className="text-muted-foreground">{user.name}</span>
-                    <span className="text-muted-foreground"></span>
                   </div>
                 ))}
               </CardContent>

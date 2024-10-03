@@ -20,8 +20,7 @@ export type User = {
 
 export type UserToMeeting = {
   name: string;
-  userId: string;
-  meetingId: string;
+  id: string;
 };
 
 export type EditPasswordForm = {
@@ -169,5 +168,4 @@ export interface Meeting {
   name: string;
   date: string;
   createdBy: string;
-  users: UserToMeeting[];
 }

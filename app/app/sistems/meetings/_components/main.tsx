@@ -23,6 +23,7 @@ export function Main() {
 
   const handleSetName = (name: string) => {
     setMeetingName(name);
+    console.log(meetingName);
   };
 
   const triggerRefreshMeetings = () => {
