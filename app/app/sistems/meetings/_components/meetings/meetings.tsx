@@ -26,12 +26,9 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Trash } from "lucide-react";
 import { ReportList } from "./_components/report-list";
+import { Skeleton } from "@/components/ui/skeleton";
 
-interface ListMeetingsProps {
-  refreshMeetings: boolean;
-}
-
-export const ListMeetings = ({ refreshMeetings }: ListMeetingsProps) => {
+export const ListMeetings = () => {
   const { toast } = useToast();
   const [meetings, setMeetings] = useState<Meeting[]>([]);
 
@@ -62,7 +59,7 @@ export const ListMeetings = ({ refreshMeetings }: ListMeetingsProps) => {
 
   useEffect(() => {
     AllMeetings();
-  }, [refreshMeetings]);
+  });
 
   return (
     <Card>
@@ -70,42 +67,51 @@ export const ListMeetings = ({ refreshMeetings }: ListMeetingsProps) => {
         <CardTitle>Lista de Reuniões</CardTitle>
         <CardDescription>Inclua acima uma nova reunião.</CardDescription>
       </CardHeader>
-      <ScrollArea>
-        <CardContent className="flex flex-col gap-2">
-          {meetings.map((meeting, index) => (
-            <div key={index} className="w-full flex gap-2">
-              {/* Lista de Reuniões */}
-              <ReportList meetingId={meeting.id} />
-
-              {/* Deletar Reunião selecionada */}
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button variant="ghost" size={"icon"}>
-                    <Trash className="w-4 h-4 hover:text-muted-foreground" />
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>
-                      Você tem certeza que deseja excluir a reunião?
-                    </AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Ao clicar em Confirmar, a reunião será excluída
-                      permanentemente.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                    <AlertDialogAction onClick={() => handleDelete(meeting.id)}>
-                      Confirmar
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </div>
-          ))}
+      {meetings.length > 0 ? (
+        <ScrollArea>
+          <CardContent className="flex flex-col gap-2">
+            {meetings.map((meeting, index) => (
+              <div key={index} className="w-full flex gap-2">
+                <ReportList meetingId={meeting.id} onUpdate={AllMeetings} />
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="ghost" size={"icon"}>
+                      <Trash className="w-4 h-4 hover:text-muted-foreground" />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        Você tem certeza que deseja excluir a reunião?
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Ao clicar em Confirmar, a reunião será excluída
+                        permanentemente.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => handleDelete(meeting.id)}
+                      >
+                        Confirmar
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
+            ))}
+          </CardContent>
+        </ScrollArea>
+      ) : (
+        <CardContent className="flex flex-col justify-center items-center">
+          <Skeleton className="h-10 w-full rounded-xl" />
+          <Skeleton className="h-10 w-full rounded-xl" />
+          <Skeleton className="h-10 w-full rounded-xl" />
+          <Skeleton className="h-10 w-full rounded-xl" />
+          <Skeleton className="h-10 w-full rounded-xl" />
         </CardContent>
-      </ScrollArea>
+      )}
     </Card>
   );
 };

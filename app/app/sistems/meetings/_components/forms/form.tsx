@@ -20,13 +20,21 @@ interface FormNewMeetingProps {
   selectedDate: Date | null;
   onSetName: (name: string) => void;
   meetingCreated: () => void;
+  onDate: () => void;
 }
 
 export const FormNewMeeting = ({
   selectedDate,
   onSetName,
   meetingCreated,
+  onDate,
 }: FormNewMeetingProps) => {
+  const date = selectedDate?.toLocaleDateString("pt-BR", {
+    weekday: "long",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
   const [meetingName, setMeetingName] = useState<string>("");
   const [selectedUsers, setSelectedUsers] = useState<UserToMeeting[]>([]);
   const [id, setId] = useState<string | null>(null);
@@ -40,16 +48,9 @@ export const FormNewMeeting = ({
     }
   };
 
-  const formattedDate = selectedDate?.toLocaleDateString("pt-BR", {
-    weekday: "long",
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  });
-
   const data = {
     name: meetingName,
-    date: formattedDate || "",
+    date: date || "",
     users: selectedUsers,
     createdBy: id || "",
   };
@@ -63,6 +64,8 @@ export const FormNewMeeting = ({
   }, []);
 
   const onMeetingCreated = () => {
+    onDate();
+    setSelectedUsers([]);
     setMeetingName("");
     meetingCreated();
   };
@@ -99,7 +102,7 @@ export const FormNewMeeting = ({
       </CardHeader>
       <CardContent>
         <div className="flex flex-col gap-2">
-          <Input type="text" value={formattedDate || ""} disabled />
+          <Input type="text" value={date || ""} disabled />
           <Input
             name="meetingName"
             value={meetingName}

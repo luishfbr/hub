@@ -35,39 +35,52 @@ export const SelectUsersAgain = ({
   const { toast } = useToast();
   const [allUsers, setAllUsers] = useState<UserToMeeting[]>([]);
   const [selectedUsers, setSelectedUsers] = useState<UserToMeeting[]>([]);
-  // const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState<string>("");
 
+  // Obtém todos os usuários e define o estado
   const getAllUsers = async () => {
     const users = await getUsers();
-    if (users) setAllUsers(users);
+    if (users) {
+      const formattedUsers = users.map((user) => ({
+        ...user,
+        name: user.name || "Usuário Desconhecido",
+      }));
+      setAllUsers(formattedUsers);
+    }
   };
 
+  // Alterna a seleção de um usuário
   const handleSelectUser = (user: UserToMeeting) => {
-    setSelectedUsers((prev) => {
-      const newSelectedUsers = prev.some((u) => u.id === user.id)
+    setSelectedUsers((prev) =>
+      prev.some((u) => u.id === user.id)
         ? prev.filter((u) => u.id !== user.id)
-        : [...prev, user];
-      return newSelectedUsers;
-    });
+        : [...prev, user]
+    );
   };
 
+  // Atualiza os usuários na reunião
   const handleUpdateUsersOnMeeting = async () => {
     const res = await updateUsersOnMeeting(meetingId, selectedUsers);
     if (res === true) {
       toast({
         title: "Usuários atualizados com sucesso!",
-        description: "Verifique sua caixa de email...",
+        description: "Termine as configurações...",
         variant: "success",
       });
       onUpdate(meetingId);
     } else {
       toast({
-        title: "Ocorreu um erro ao atualizar os usuários",
+        title: "Erro ao atualizar os usuários",
         description: "Tente novamente...",
         variant: "destructive",
       });
     }
   };
+
+  // Filtra os usuários com base no termo de busca
+  const filteredUsers = allUsers.filter((user) =>
+    user.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   useEffect(() => {
     getAllUsers();
@@ -88,15 +101,19 @@ export const SelectUsersAgain = ({
           </DialogDescription>
         </DialogHeader>
 
+        {/* Campo de pesquisa */}
         <Input
           type="text"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
           className="w-full"
           placeholder="Pesquisar usuário..."
         />
 
+        {/* Área de rolagem com a lista de usuários */}
         <ScrollArea className="w-full h-[20vh] overflow-y-auto">
           <div className="flex flex-col w-full gap-2 px-6 py-2">
-            {allUsers.map((user) => (
+            {filteredUsers.map((user) => (
               <div key={user.id} className="flex items-center gap-2">
                 <Checkbox
                   checked={selectedUsers.some((u) => u.id === user.id)}
@@ -111,7 +128,7 @@ export const SelectUsersAgain = ({
         <DialogFooter>
           <DialogClose>
             <Button
-              type="submit"
+              type="button"
               onClick={handleUpdateUsersOnMeeting}
               className="w-full"
             >

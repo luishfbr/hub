@@ -19,7 +19,7 @@ export type User = {
 };
 
 export type UserToMeeting = {
-  name: string;
+  name: string | null;
   id: string;
 };
 
@@ -168,4 +168,10 @@ export interface Meeting {
   name: string;
   date: string;
   createdBy: string;
+}
+
+export interface UpdateMeeting {
+  id: string;
+  name: string;
+  date: string;
 }

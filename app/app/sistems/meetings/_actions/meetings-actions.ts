@@ -1,8 +1,17 @@
 "use server";
 
-import type { NewMeeting, UserToMeeting } from "@/app/types/types";
+import type {
+  NewMeeting,
+  UpdateMeeting,
+  UserToMeeting,
+} from "@/app/types/types";
 import { auth } from "@/services/auth";
 import { prisma } from "@/services/prisma";
+
+const GetSession = async () => {
+  const session = await auth();
+  return session;
+};
 
 export const getUserId = async () => {
   const session = await auth();
@@ -18,6 +27,23 @@ export const getUserId = async () => {
 
     return UserID?.id;
   }
+};
+
+export const User = async () => {
+  const session = await auth();
+  const id = session?.user?.id as string;
+
+  const user = await prisma.user.findUnique({
+    where: {
+      id: id,
+    },
+    select: {
+      id: true,
+      name: true,
+    },
+  });
+
+  return user;
 };
 
 export const getUsers = async () => {
@@ -163,6 +189,72 @@ export const getMeetingById = async (id: string) => {
   });
   if (meeting) {
     return meeting;
+  } else {
+    return null;
+  }
+};
+
+export const updateMeeting = async (data: UpdateMeeting) => {
+  const { id, name, date } = data;
+  const res = await prisma.meeting.update({
+    where: { id: id },
+    data: { name: name, date: date },
+  });
+
+  if (res) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
+export const MeetingsByUserId = async (id: string) => {
+  const meetings = await prisma.meeting.findMany({
+    where: { createdBy: id },
+    select: { name: true, date: true, createdBy: true, id: true },
+  });
+
+  if (meetings) {
+    return meetings;
+  } else {
+    return [];
+  }
+};
+
+export const getAllInfo = async () => {
+  try {
+    const session = await GetSession();
+    if (session) {
+      const user = {
+        id: session?.user?.id as string,
+        name: session?.user?.name as string,
+      };
+
+      const meetings = await prisma.meeting.findMany({
+        where: { createdBy: user?.id },
+        select: { name: true, date: true, createdBy: true, id: true },
+      });
+
+      return {
+        user,
+        meetings: meetings || [],
+      };
+    }
+    return { user: null, meetings: [] };
+  } catch (error) {
+    console.error("Erro ao buscar informações do usuário e reuniões", error);
+    throw new Error("Falha ao carregar dados");
+  }
+};
+
+export const getUserById = async (id: string) => {
+  const user = await prisma.user.findUnique({
+    where: { id: id },
+    select: { name: true, id: true },
+  });
+
+  if (user) {
+    return user;
   } else {
     return null;
   }

@@ -1,3 +1,5 @@
+"use client";
+
 import type { Meeting, UserToMeeting } from "@/app/types/types";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,18 +17,31 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   getMeetingById,
   getUsersOnMeeting,
+  updateMeeting,
 } from "../../../_actions/meetings-actions";
 import { useEffect, useState } from "react";
 import { DeleteUser } from "./delete-user";
 import { SelectUsersAgain } from "./select-users-again";
+import { useForm } from "react-hook-form";
+import { useToast } from "@/hooks/use-toast";
+import { CalendarForUpdate } from "./calendar";
 
 interface ReportListProps {
   meetingId: string;
+  onUpdate: () => void;
 }
 
-export const ReportList = ({ meetingId }: ReportListProps) => {
+interface ReportListForm {
+  date: string;
+  name: string;
+}
+
+export const ReportList = ({ meetingId, onUpdate }: ReportListProps) => {
+  const { register, handleSubmit, reset } = useForm<ReportListForm>();
   const [meeting, setMeeting] = useState<Meeting>();
   const [usersOnMeeting, setUsersOnMeeting] = useState<UserToMeeting[]>([]);
+  const { toast } = useToast();
+  const [date, setDate] = useState<Date>();
 
   const getMeeting = async () => {
     const meeting = await getMeetingById(meetingId);
@@ -48,9 +63,57 @@ export const ReportList = ({ meetingId }: ReportListProps) => {
     }
   };
 
+  const onSubmit = async (data: ReportListForm) => {
+    if (!data.name) {
+      toast({
+        title: "Preencha o nome da reunião...",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const formattingDate = date?.toLocaleDateString("pt-BR", {
+      weekday: "long",
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+
+    const formattedDate = {
+      ...data,
+      id: meetingId as string,
+      date: formattingDate || "",
+    };
+
+    if (!formattedDate.date) {
+      toast({
+        title: "Preencha a data da reunião...",
+        variant: "destructive",
+      });
+    }
+
+    const res = await updateMeeting(formattedDate);
+
+    if (res === true) {
+      toast({
+        title: "Reunião atualizada com sucesso",
+        description: "Verifique sua caixa de email...",
+        variant: "success",
+      });
+      onUpdate();
+      reset();
+    } else {
+      toast({
+        title: "Ocorreu um erro ao atualizar a reunião",
+        description: "Tente novamente...",
+        variant: "destructive",
+      });
+    }
+  };
+
   useEffect(() => {
     getMeeting();
-  }, []);
+  });
 
   return (
     <Dialog>
@@ -76,15 +139,17 @@ export const ReportList = ({ meetingId }: ReportListProps) => {
             relatório gerado pelo sistema.
           </DialogDescription>
         </DialogHeader>
-        <form action="" className="flex flex-col gap-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
           <div className="grid grid-cols-2 gap-2">
-            <div>
-              <Label className="pl-2">Data da reunião</Label>
-              <Input type="text" defaultValue={meeting?.date} />
-            </div>
-            <div>
+            <CalendarForUpdate onDateSelect={setDate} />
+            <div className="flex flex-col gap-2">
               <Label className="pl-2">Nome da reunião</Label>
-              <Input type="text" defaultValue={meeting?.name} />
+              <Input
+                type="text"
+                placeholder={`Atual: ${meeting?.name}`}
+                {...register("name")}
+                autoComplete="off"
+              />
             </div>
           </div>
           <SelectUsersAgain
@@ -104,7 +169,7 @@ export const ReportList = ({ meetingId }: ReportListProps) => {
             </div>
           </ScrollArea>
           <DialogFooter>
-            <Button variant={"default"} className="w-full">
+            <Button variant={"default"} type="submit" className="w-full">
               Salvar alteranças
             </Button>
           </DialogFooter>

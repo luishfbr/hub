@@ -10,15 +10,18 @@ import {
 import { CalendarSection } from "./_calendar/calendar-section";
 import { useState } from "react";
 import { FormNewMeeting } from "./forms/form";
-import { ListMeetings } from "./meetings/meetings";
+import { MyMeetings } from "./my-meetings/my-meetings";
 
 export function Main() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [meetingName, setMeetingName] = useState<string>("");
-  const [refreshMeetings, setRefreshMeetings] = useState<boolean>(false);
 
   const handleDateSelect = (date: Date) => {
     setSelectedDate(date);
+  };
+
+  const handleDate = () => {
+    setSelectedDate(null);
   };
 
   const handleSetName = (name: string) => {
@@ -26,8 +29,8 @@ export function Main() {
     console.log(meetingName);
   };
 
-  const triggerRefreshMeetings = () => {
-    setRefreshMeetings((prev) => !prev);
+  const triggerRefreshMeetings = async () => {
+    console.log("triggerRefreshMeetings");
   };
 
   return (
@@ -47,12 +50,10 @@ export function Main() {
             meetingCreated={triggerRefreshMeetings}
             selectedDate={selectedDate}
             onSetName={handleSetName}
+            onDate={handleDate}
           />
         </div>
-        <div className="grid grid-cols-2 gap-6">
-          <ListMeetings refreshMeetings={refreshMeetings} />{" "}
-          <Card className="h-[50vh]"></Card>
-        </div>
+        <MyMeetings />
       </CardContent>
     </Card>
   );
