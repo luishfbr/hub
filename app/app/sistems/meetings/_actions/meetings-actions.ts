@@ -259,3 +259,32 @@ export const getUserById = async (id: string) => {
     return null;
   }
 };
+
+export const GetCompleteUser = async () => {
+  const session = await auth();
+  const user = await prisma.user.findUnique({
+    where: { id: session?.user?.id },
+    select: { name: true, email: true, role: true, id: true, sectors: true },
+  });
+  console.log(user);
+  return user;
+};
+
+export const getMeetingsByUserId = async (id: string) => {
+  const user = await prisma.user.findUnique({
+    where: { id: id },
+    select: { name: true, id: true },
+  });
+
+  const meetings = await prisma.meeting.findMany({
+    where: { createdBy: id },
+    select: { name: true, date: true, createdBy: true, id: true },
+  });
+
+  const data = {
+    user,
+    meetings: meetings || [],
+  };
+
+  return data;
+};

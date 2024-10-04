@@ -175,3 +175,11 @@ export interface UpdateMeeting {
   name: string;
   date: string;
 }
+
+export interface AllInfoUser {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  sectors: Sector[] | null;
+}
