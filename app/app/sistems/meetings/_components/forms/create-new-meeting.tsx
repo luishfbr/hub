@@ -86,7 +86,7 @@ export const CreateNewMeetingForm = ({
     year: "numeric",
   });
   return (
-    <Sheet>
+    <Sheet >
       <SheetTrigger asChild>
         <Button>Crie uma nova reunião</Button>
       </SheetTrigger>

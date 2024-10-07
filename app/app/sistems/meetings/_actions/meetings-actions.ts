@@ -288,3 +288,22 @@ export const getMeetingsByUserId = async (id: string) => {
 
   return data;
 };
+
+export const getMeetingsPartingUser = async (id: string) => {
+  const meetings = await prisma.meetingUser.findMany({
+    where: { userId: id },
+    select: { meetingId: true },
+  });
+
+  if (meetings) {
+    const meetingIds = meetings.map((meeting) => meeting.meetingId);
+    const meetingsData = await prisma.meeting.findMany({
+      where: { id: { in: meetingIds } },
+      select: { name: true, date: true, createdBy: true, id: true },
+    });
+
+    return meetingsData;
+  } else {
+    return [];
+  }
+};
