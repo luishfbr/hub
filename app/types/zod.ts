@@ -55,4 +55,12 @@ export const MeetingFormSchema = z.object({
     required_error: "Escolha uma data para prosseguir...",
   }),
   users: z.array(z.object({ name: z.string() })),
-})
+});
+
+export const passwordSchemaReset = z
+  .string()
+  .min(8, "A senha deve ter pelo menos 8 caracteres")
+  .regex(/[A-Z]/, "A senha deve conter pelo menos uma letra maiúscula")
+  .regex(/[a-z]/, "A senha deve conter pelo menos uma letra minúscula")
+  .regex(/\d/, "A senha deve conter pelo menos um número")
+  .regex(/[\W_]/, "A senha deve conter pelo menos um caractere especial");

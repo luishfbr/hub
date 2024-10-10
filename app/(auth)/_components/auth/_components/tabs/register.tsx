@@ -19,6 +19,7 @@ import { registerSchema } from "@/app/types/zod";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Register } from "@/app/(auth)/_actions/auth";
+import { Loader2 } from "lucide-react";
 
 const registerInputs = [
   {
@@ -111,9 +112,9 @@ export default function RegisterTab() {
               </div>
             ))}
           </CardContent>
-          <CardFooter className="flex justify-center items-center">
+          <CardFooter className="flex justify-center items-center mt-6">
             <Button className="w-full" type="submit" disabled={isLoading}>
-              {isLoading ? "Registrando..." : "Registrar"}
+              {isLoading ? <Loader2 className="animate-spin w-5 h-5" /> : "Registrar"}
             </Button>
           </CardFooter>
         </form>

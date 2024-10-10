@@ -1,6 +1,12 @@
 "use server";
 
-import { LoginForm, LoginWithCode, RegisterForm } from "@/app/types/types";
+import {
+  ChangePasswordForm,
+  LoginForm,
+  LoginWithCode,
+  RegisterForm,
+  ResetFormValues,
+} from "@/app/types/types";
 import { signIn, signOut } from "@/services/auth";
 import { prisma } from "@/services/prisma";
 import { compareSync, hash } from "bcrypt-ts";
@@ -235,3 +241,49 @@ export async function getUserFromDb(email: string, password: string) {
     };
   }
 }
+
+export const VerifyForReset = async (values: ResetFormValues) => {
+  const { email, code } = values;
+
+  const user = await prisma.user.findUnique({
+    where: {
+      email,
+    },
+    select: {
+      id: true,
+      otpSecret: true,
+    },
+  });
+
+  if (user) {
+    const verifyCode = authenticator.verify({
+      token: code,
+      secret: user.otpSecret as string,
+    });
+
+    if (verifyCode) {
+      return true;
+    }
+  }
+  return false;
+};
+
+export const ChangePassword = async (data: ChangePasswordForm) => {
+  const { password, email } = data;
+
+  const hashedPassword = await hash(password, saltRounds);
+
+  const res = await prisma.user.update({
+    where: {
+      email: email,
+    },
+    data: {
+      password: hashedPassword,
+    },
+  });
+
+  if (res) {
+    return true;
+  }
+  return false;
+};

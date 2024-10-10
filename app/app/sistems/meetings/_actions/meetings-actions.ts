@@ -2,6 +2,7 @@
 
 import type {
   NewMeeting,
+  RegisterMeetings,
   UpdateMeeting,
   UserToMeeting,
 } from "@/app/types/types";
@@ -115,6 +116,8 @@ export const getMeetings = async () => {
 
 export const deleteMeeting = async (id: string) => {
   const meetingId = id as string;
+
+  console.log(meetingId);
 
   const res = await prisma.meeting.delete({
     where: { id: meetingId },
@@ -266,7 +269,6 @@ export const GetCompleteUser = async () => {
     where: { id: session?.user?.id },
     select: { name: true, email: true, role: true, id: true, sectors: true },
   });
-  console.log(user);
   return user;
 };
 
@@ -289,20 +291,103 @@ export const getMeetingsByUserId = async (id: string) => {
   return data;
 };
 
-export const getMeetingsPartingUser = async (id: string) => {
+export const getMeetingsPartingUser = async (userId: string) => {
   const meetings = await prisma.meetingUser.findMany({
-    where: { userId: id },
+    where: { userId },
     select: { meetingId: true },
   });
 
-  if (meetings) {
+  if (meetings.length > 0) {
     const meetingIds = meetings.map((meeting) => meeting.meetingId);
     const meetingsData = await prisma.meeting.findMany({
       where: { id: { in: meetingIds } },
-      select: { name: true, date: true, createdBy: true, id: true },
+      select: {
+        name: true,
+        date: true,
+        createdBy: true,
+        id: true,
+        createdAt: true,
+      },
     });
 
-    return meetingsData;
+    const formatDate = (date: Date) => {
+      const day = String(date.getDate()).padStart(2, "0");
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const year = date.getFullYear();
+      return `${day}/${month}/${year}`;
+    };
+
+    const formattedMeetingsData = meetingsData.map((meeting) => ({
+      ...meeting,
+      createdAt: formatDate(new Date(meeting.createdAt)),
+    }));
+
+    return formattedMeetingsData;
+  }
+};
+
+export const registerArchives = async (data: RegisterMeetings) => {
+  console.log(data.data);
+
+  const urls = data.data.split(",");
+
+  const files = urls.map((url) => {
+    return {
+      meetingId: data.meetingId,
+      createdBy: data.createdBy,
+      data: url.trim(),
+    };
+  });
+
+  const res = await prisma.archives.createMany({
+    data: files,
+  });
+
+  return res;
+};
+
+export const findCreator = async (id: string) => {
+  const name = await prisma.user.findUnique({
+    where: { id: id },
+    select: { name: true },
+  });
+  return name;
+};
+
+export const getArchivesOnMeeting = async (
+  meetingId: string,
+  userId: string
+) => {
+  const archives = await prisma.archives.findMany({
+    where: { meetingId: meetingId, createdBy: userId },
+    select: { data: true, id: true },
+  });
+
+  return archives;
+};
+
+export const deleteArchive = async (archiveId: string) => {
+  const res = await prisma.archives.delete({
+    where: {
+      id: archiveId,
+    },
+  });
+  return res;
+};
+
+export const MeetingsByCreatedBy = async (id: string) => {
+  const res = await prisma.meeting.findMany({
+    where: {
+      createdBy: id,
+    },
+    select: {
+      name: true,
+      id: true,
+    },
+  });
+
+  if (res) {
+    return res;
   } else {
     return [];
   }

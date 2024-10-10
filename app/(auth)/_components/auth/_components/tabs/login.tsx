@@ -24,10 +24,12 @@ import {
 } from "@/components/ui/form";
 import { z } from "zod";
 import { Input } from "@/components/ui/input";
-import LoadingButton from "../../../loading-button";
 import { VerifyUser } from "@/app/(auth)/_actions/auth";
 import { useState } from "react";
 import { QrCodeForm } from "../qrcode/qrcode-form";
+import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
+import { ResetForm } from "../reset/reset";
 
 const inputs = [
   {
@@ -58,8 +60,11 @@ export default function LoginTab() {
       password: "",
     },
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const [haveQrCode, setHaveQrCode] = useState(false);
 
   const onSubmit = async (values: z.infer<typeof loginSchema>) => {
+    setIsLoading(true);
     try {
       setUser(values);
       const result = await VerifyUser(values);
@@ -70,8 +75,9 @@ export default function LoginTab() {
 
       if (result.status === "success") {
         setQrCodeUrl(result.qrCodeUrl || "...");
+        setHaveQrCode(true);
       }
-      
+
       toast({
         title: result.title,
         description: result.message,
@@ -88,6 +94,8 @@ export default function LoginTab() {
         description: "Ocorreu um erro inesperado. Por favor, tente novamente.",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -119,11 +127,13 @@ export default function LoginTab() {
                   )}
                 />
               ))}
-              <div className="mt-4">
-                <LoadingButton
-                  pending={form.formState.isSubmitting}
-                  disabled={!!qrCodeUrl}
-                />
+              <div className="flex items-center justify-center">
+                <ResetForm />
+              </div>
+              <div className="mt-6">
+                <Button className="w-full" type="submit" disabled={isLoading || haveQrCode}>
+                  {isLoading ? <Loader2 className="animate-spin w-5 h-5" /> : "Login"}
+                </Button>
               </div>
             </form>
           </Form>

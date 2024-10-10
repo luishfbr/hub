@@ -16,7 +16,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Hub de Sistemas",
+  title: "Hub Sicoob Uberaba",
   description: "Hub de Sistemas",
 };
 

@@ -88,7 +88,10 @@ export function QrCodeForm({
               Authenticator.
             </span>
           ) : (
-            <Image src={qrCodeUrl} alt="QR Code" width={250} height={250} />
+            <div className="flex flex-col gap-6 items-center justify-center text-center">
+              <span className="text-sm text-muted-foreground">Leia o código QR com seu aplicativo Microsoft Authenticator <br /> e insira o código no campo abaixo.</span>
+              <Image src={qrCodeUrl} alt="QR Code" width={250} height={250} />
+            </div>
           )}
         </div>
         <InputOTP

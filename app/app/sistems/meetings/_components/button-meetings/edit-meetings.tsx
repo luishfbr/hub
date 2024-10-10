@@ -1,4 +1,6 @@
-import { Meeting, UserToMeeting } from "@/app/types/types";
+"use client"
+
+import { MeetingMod, UserToMeeting } from "@/app/types/types";
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
@@ -26,7 +28,7 @@ interface EditMeetingsProps {
 
 export function EditMeetings({ id, onUpdate }: EditMeetingsProps) {
     const { toast } = useToast();
-    const [meeting, setMeeting] = useState<Meeting | null>(null);
+    const [meeting, setMeeting] = useState<MeetingMod | null>(null);
     const [date, setDate] = useState<Date | undefined>(new Date());
     const [name, setName] = useState<string>("");
     const [selectedUsers, setSelectedUsers] = useState<UserToMeeting[]>([]);

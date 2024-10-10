@@ -13,6 +13,7 @@ import type { AllInfoUser } from "@/app/types/types";
 import { GetCompleteUser } from "../_actions/meetings-actions";
 import { Loader2 } from "lucide-react";
 import { CreateNewMeetingForm } from "./forms/create-new-meeting";
+import { ActionsAdmin } from "./button-meetings/actions";
 
 export function DashComponent() {
   const [user, setUser] = useState<AllInfoUser | null>(null);
@@ -28,7 +29,6 @@ export function DashComponent() {
     setTimeout(() => {
       setUpdateMeetings(false);
     }, 1000);
-    console.log("update meetings", updateMeetings);
   };
 
   const allowedSectorsMeetings = ["tecnologiadainformacao", "secretaria"];
@@ -56,7 +56,8 @@ export function DashComponent() {
           Bem-vindo ao controle de reuniões
         </DashboardPageHeaderTitle>
         {hasAccessToMeetings && (
-          <DashboardPageHeaderNav>
+          <DashboardPageHeaderNav className="flex gap-2 items-center">
+            <ActionsAdmin />
             <CreateNewMeetingForm
               id={user?.id as string}
               onUpdate={handleUpdateMeetings}

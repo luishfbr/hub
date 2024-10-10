@@ -14,9 +14,10 @@ import {
 import { usePathname } from "next/navigation";
 import { Logo } from "@/components/logo";
 import { UserDropdown } from "./user-dropdown";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { GetRoleById, GetSectorsByUserId } from "../_actions/app-actions";
 import { MainSidebarProps, Sector, UserRole } from "@/app/types/types";
+import { Loader2 } from "lucide-react";
 
 export function MainSidebar({ user }: MainSidebarProps) {
   const [userRole, setUserRole] = useState<UserRole | null>(null);
@@ -25,27 +26,29 @@ export function MainSidebar({ user }: MainSidebarProps) {
   const pathname = usePathname();
   const isActive = (path: string) => pathname === path;
 
-  async function getUserRole() {
+  const getUserRole = useCallback(async () => {
     const role = await GetRoleById(id);
     setUserRole(role);
-  }
+  }, [id])
 
-  async function getUserSectors() {
+  const getUserSectors = useCallback(async () => {
     const sectors = await GetSectorsByUserId(id);
     if (sectors) {
       setUserSectors(sectors.sectors);
     }
-  }
+  }, [id])
 
   useEffect(() => {
-    if (id) {
-      getUserRole();
-      getUserSectors();
-    }
-  }, [id]);
+    getUserRole();
+    getUserSectors();
+  }, [id, getUserRole, getUserSectors]);
 
   if (!userRole || !userSectors) {
-    return <div>Carregando informações do usuário...</div>;
+    return (
+      <div className="fixed inset-0 bg-white flex justify-center items-center">
+        <Loader2 className="animate-spin w-12 h-12" />
+      </div>
+    )
   }
 
   const allowedSectorsFMS = [

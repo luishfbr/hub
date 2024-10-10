@@ -147,6 +147,7 @@ model Meeting {
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
   MeetingUser MeetingUser[]
+  Archives    Archives[]
 }
 
 model MeetingUser {
@@ -163,8 +164,10 @@ model MeetingUser {
 
 model Archives {
   id        String   @id @default(cuid())
-  name      String
-  type      String
-  data      Bytes
+  createdBy String
+  data      String
+  meetingId String
   createdAt DateTime @default(now())
+
+  meeting Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
 }

@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { getName } from "../_actions/initial";
-import { Rocket } from 'lucide-react';
 
 export function InitialPage() {
     const [name, setName] = useState<string | null>(null);
@@ -17,11 +16,10 @@ export function InitialPage() {
 
     return (
         <div className="flex flex-col gap-12 w-full">
-            <div className="flex justify-center items-center gap-2">
-                <Rocket className="w-8 h-8 text-primary" />
+            <div className="flex flex-col justify-center items-center text-center">
                 <h1 className="text-2xl font-bold text-primary">Seja bem-vindo(a), {name}</h1>
+                <span className="text-muted-foreground">Bem-vindo(a) ao Hub de Sistemas do Sicoob Uberaba, um aglomerado de sistemas em um só lugar. Veja os exemplos e dicas abaixo.</span>
             </div>
-            <div></div>
         </div>
     );
 }

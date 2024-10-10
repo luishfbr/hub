@@ -16,12 +16,6 @@ import {
 import { useState } from "react";
 import { CheckboxUsers } from "./_components/checkbox-users";
 import type { UserToMeeting } from "@/app/types/types";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-} from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { createNewMeeting } from "../../_actions/meetings-actions";
@@ -108,11 +102,11 @@ export const CreateNewMeetingForm = ({
                 date.getTime() < new Date().setHours(0, 0, 0, 0)
               }
             />
-            <div className="flex flex-col items-center justify-center gap-4">
+            <div className="flex flex-col items-center justify-center gap-2">
               <Label>Dia selecionado:</Label>
-              <span className="text-muted-foreground">{dateFormat}</span>
+              <span className="text-muted-foreground text-sm">{dateFormat}</span>
             </div>
-            <div className="flex flex-col items-center justify-center gap-4 w-full">
+            <div className="flex flex-col items-center justify-center gap-2 w-full">
               <Label>Nome da Reunião:</Label>
               <Input
                 type="text"
@@ -129,29 +123,24 @@ export const CreateNewMeetingForm = ({
                 onSelectUser={handleSelectUser}
               />
             ) : (
-              <div className="flex flex-col items-center justify-center gap-4 w-full">
+              <div className="flex flex-col items-center justify-center gap-2 w-full">
                 <span className="text-sm text-muted-foreground text-center">
                   Escreva o nome da reunião para que apareça os usuários.
                 </span>
               </div>
             )}
             {selectedUsers.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardDescription>Selecionados:</CardDescription>
-                </CardHeader>
-                <ScrollArea className="w-full h-[15vh] overflow-y-auto">
-                  <CardContent className="flex flex-col gap-2 text-center">
-                    {selectedUsers.map((user, index) => (
-                      <div key={index}>
-                        <span className="text-muted-foreground">
-                          {user.name}
-                        </span>
-                      </div>
-                    ))}
-                  </CardContent>
-                </ScrollArea>
-              </Card>
+              <ScrollArea className="w-full xl:h-[25vh] lg:h-[20vh] md:h-[15vh] sm:h-[10vh] overflow-y-auto">
+                <div className="flex flex-col gap-2 text-center">
+                  {selectedUsers.map((user, index) => (
+                    <div key={index}>
+                      <span className="text-muted-foreground">
+                        {user.name}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
             )}
           </div>
           <SheetFooter>

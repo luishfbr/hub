@@ -1,12 +1,30 @@
-import { Computer } from 'lucide-react';
+import Image from 'next/image';
+import { useTheme } from 'next-themes';
+import darkLogo from '@/components/assets/logo-for-dark.png';
+import lightLogo from '@/components/assets/logo-for-light.png';
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
 
 export function Logo() {
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
+  const logoSrc = resolvedTheme === 'dark' ? darkLogo : lightLogo;
+
   return (
-    <div className="flex justify-center items-center text-center gap-2">
-      <div className="bg-primary h-8 w-8 flex items-center justify-center rounded-md">
-        <Computer className="w-6 h-6 text-primary-foreground" />
-      </div>
-      <p className="font-bold text-xl text-primary">HUB Sicoob Uberaba</p>
-    </div>
+    <Link href={'/app/sistems'}>
+      <Image
+        src={logoSrc}
+        width={220}
+        height={220}
+        alt="Logo Sicoob Uberaba"
+      />
+    </Link>
   );
 }

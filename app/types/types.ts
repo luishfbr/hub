@@ -18,6 +18,11 @@ export type User = {
   role: string;
 };
 
+export type ResetFormValues = {
+  email: string;
+  code: string;
+};
+
 export type UserToMeeting = {
   name: string | null;
   id: string;
@@ -26,6 +31,11 @@ export type UserToMeeting = {
 export type EditPasswordForm = {
   password: string;
   confirmPassword: string;
+};
+
+export type ChangePasswordForm = {
+  password: string;
+  email: string;
 };
 
 export type Sector = {
@@ -168,6 +178,19 @@ export interface Meeting {
   name: string;
   date: string;
   createdBy: string;
+  createdAt: string;
+}
+
+export interface MeetingMod {
+  id: string;
+  name: string;
+  date: string;
+  createdBy: string;
+}
+
+export interface MeetingToAction {
+  name: string;
+  id: string;
 }
 
 export interface UpdateMeeting {
@@ -182,4 +205,15 @@ export interface AllInfoUser {
   email: string;
   role: string;
   sectors: Sector[] | null;
+}
+
+export interface RegisterMeetings {
+  meetingId: string;
+  createdBy: string;
+  data: string;
+}
+
+export interface ArchivesToShow {
+  data: string;
+  id: string;
 }
