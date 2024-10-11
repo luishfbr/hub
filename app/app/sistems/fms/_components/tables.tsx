@@ -15,7 +15,7 @@ import { getSectorsByUserId } from "../../admin/_components/cards/_actions/users
 import { TableContainer } from "./table/table-component";
 import { getModelsBySectorId } from "../_actions/fms-actions";
 import { Model, Sector } from "@/app/types/types";
-import { Progress } from "@/components/ui/progress";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const ContainerTables = () => {
   const [sectors, setSectors] = useState<Sector[]>([]);
@@ -23,18 +23,14 @@ export const ContainerTables = () => {
   const [models, setModels] = useState<Model[]>([]);
   const [selectedModel, setSelectedModel] = useState<Model | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [progress, setProgress] = useState(13);
 
   const fetchSectors = useCallback(async () => {
     try {
-      setIsLoading(true);
       const response = await getSectorsByUserId();
       setSectors(response?.sectors ?? []);
     } catch (error) {
       console.error("Error fetching sectors:", error);
     } finally {
-      setIsLoading(false);
     }
   }, []);
 
@@ -44,13 +40,12 @@ export const ContainerTables = () => {
       setSelectedSector(sector);
       setSelectedModel(null);
       try {
-        setIsLoading(true);
         const models = await getModelsBySectorId(sectorId);
-        setModels(models.filter((model) => model.modelName !== null));
+        if (models) {
+          setModels(models.filter((model) => model.modelName !== null));
+        }
       } catch (error) {
         console.error("Error fetching models:", error);
-      } finally {
-        setIsLoading(false);
       }
     },
     [sectors]
@@ -80,19 +75,6 @@ export const ContainerTables = () => {
     fetchSectors();
   }, [fetchSectors]);
 
-  useEffect(() => {
-    const timer = setTimeout(() => setProgress(90), 500);
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (isLoading) {
-    return (
-      <div className="w-full h-[80vh] flex items-center justify-center">
-        <Progress value={progress} className="w-[30%]" />
-      </div>
-    );
-  }
-
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col md:flex-row justify-center items-center gap-6 p-2">
@@ -100,7 +82,7 @@ export const ContainerTables = () => {
           onValueChange={handleChangeSector}
           value={selectedSector?.id || ""}
         >
-          <SelectTrigger className="w-full md:w-[200px]">
+          <SelectTrigger className="w-auto">
             <SelectValue placeholder="Selecione o Setor" />
           </SelectTrigger>
           <SelectContent>
@@ -119,7 +101,7 @@ export const ContainerTables = () => {
             onValueChange={handleChangeModel}
             value={selectedModel?.id || ""}
           >
-            <SelectTrigger className="w-full md:w-[200px]">
+            <SelectTrigger className="w-auto">
               <SelectValue placeholder="Selecione o Modelo" />
             </SelectTrigger>
             <SelectContent>
@@ -142,8 +124,16 @@ export const ContainerTables = () => {
         />
       </div>
 
-      {selectedModel && (
+      {selectedModel ? (
         <TableContainer modelId={selectedModel.id} searchTerm={searchTerm} />
+      ) : (
+        <div className="flex flex-col gap-2 items-center text-center">
+          <span className="text-muted-foreground">
+            Selecione um setor e um modelo para visualizar a tabela de arquivos
+            arquivos
+          </span>
+          <Skeleton className="w-full h-80" />
+        </div>
       )}
     </div>
   );

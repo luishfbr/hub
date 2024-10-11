@@ -24,6 +24,7 @@ export function Logo() {
         width={220}
         height={220}
         alt="Logo Sicoob Uberaba"
+        className='p-2'
       />
     </Link>
   );

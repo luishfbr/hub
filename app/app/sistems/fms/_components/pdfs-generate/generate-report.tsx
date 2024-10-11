@@ -30,6 +30,7 @@ import { useToast } from "@/hooks/use-toast";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { CustomHeader, GenerateReportProps } from "@/app/types/types";
+import { Loader2 } from "lucide-react";
 
 export const GenerateReport: React.FC<GenerateReportProps> = ({
   selectedFiles,
@@ -96,7 +97,11 @@ export const GenerateReport: React.FC<GenerateReportProps> = ({
   }, [headers, files, toast]);
 
   if (isLoading) {
-    return <div>Carregando...</div>;
+    return (
+      <Button variant={"ghost"} size={"icon"} disabled>
+        <Loader2 className="animate-spin"/>
+      </Button>
+    );
   }
 
   return (

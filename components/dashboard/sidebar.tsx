@@ -30,7 +30,7 @@ export function DashboardSidebarHeader({
   return (
     <header
       className={cn([
-        "px-6 h-14  flex justify-center items-center border-b border-border",
+        "h-14 flex justify-center gap-4 items-center border-b border-border p-4",
         className,
       ])}
     >
@@ -105,7 +105,7 @@ export function DashboardSidebarNavLink({
     <Link
       href={href}
       className={cn([
-        "flex items-center text-sm px-4 py-3 rounded-md text-primary",
+        "flex items-center text-sm px-5 py-3 rounded-md text-primary",
         active && "bg-primary text-secondary",
         className,
       ])}

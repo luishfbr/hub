@@ -5,6 +5,7 @@ import {
   GetFilesByFieldIds,
   GetHeadersByFileTemplateId,
   GetModelsById,
+  GetUser,
 } from "@/app/app/sistems/fms/_actions/fms-actions";
 import {
   Table,
@@ -14,15 +15,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { MenuComponent } from "../menu/menu-component";
 import { GenerateReport } from "../pdfs-generate/generate-report";
 import { GenerateLabels } from "../pdfs-generate/generate-labels";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { DeleteSelectedArchives } from "../delete-all/delete-selected-archives";
-import styles from "@/app/styles/main.module.css";
+import { Loader2 } from "lucide-react";
 
 export interface Field {
   id: string;
@@ -42,6 +41,14 @@ export const TableContainer = ({
   const [files, setFiles] = useState<Record<string, string | undefined>[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
+  const [role, setRole] = useState<string>("");
+
+  const fetchRole = useCallback(async () => {
+    const res = await GetUser();
+    if (res) {
+      setRole(res.role);
+    }
+  }, []);
 
   const getModel = useCallback(async () => {
     try {
@@ -116,7 +123,8 @@ export const TableContainer = ({
 
   useEffect(() => {
     fetchData();
-  }, [modelId, fetchData]);
+    fetchRole();
+  }, [modelId, fetchData, fetchRole]);
 
   const filteredFiles = useMemo(() => {
     return files.filter((fileRow) =>
@@ -140,7 +148,11 @@ export const TableContainer = ({
   };
 
   if (isLoading) {
-    return <Skeleton className="w-full h-64" />;
+    return (
+      <div className="flex justify-center items-center w-full h-[50vh]">
+        <Loader2 className="animate-spin w-8 h-8" />
+      </div>
+    );
   }
 
   return (
@@ -148,83 +160,81 @@ export const TableContainer = ({
       {selectedFiles.length > 0 && (
         <div className="flex flex-wrap gap-6 justify-center items-center">
           <GenerateReport selectedFiles={selectedFiles} />
-          <DeleteSelectedArchives
-            selectedFiles={selectedFiles}
-            onDelete={attDataResetSelectedFiles}
-          />
+          {role === "CREATOR" || role === "ADMIN" ? (
+            <DeleteSelectedArchives
+              selectedFiles={selectedFiles}
+              onDelete={attDataResetSelectedFiles}
+            />
+          ) : null}
           <GenerateLabels selectedFiles={selectedFiles} />
         </div>
       )}
 
-      <div className="w-full overflow-auto">
-        <ScrollArea className="h-[37vh] md:h-[59vh] lg:h-[63vh] xl:h-[69vh]">
-          <Table className="w-full">
-            <TableHeader>
-              <TableRow>
-                <TableHead className={`${styles.head} sticky left-0 z-10`}>
-                  <Checkbox
-                    checked={selectedFiles.length === filteredFiles.length}
-                    onCheckedChange={(checked) =>
-                      setSelectedFiles(
-                        checked
-                          ? filteredFiles
-                              .map((file) => file.id)
-                              .filter((id): id is string => id !== undefined)
-                          : []
-                      )
-                    }
-                  />
-                </TableHead>
-                {fields.map((field) => (
-                  <TableHead className={styles.head} key={field.id}>
-                    {field.fieldLabel}
-                  </TableHead>
-                ))}
-                <TableHead className={styles.head}>Ações</TableHead>
-              </TableRow>
-            </TableHeader>
+      <Table className="w-full">
+        <TableHeader>
+          <TableRow>
+            <TableHead>
+              <Checkbox
+                checked={selectedFiles.length === filteredFiles.length}
+                onCheckedChange={(checked) =>
+                  setSelectedFiles(
+                    checked
+                      ? filteredFiles
+                          .map((file) => file.id)
+                          .filter((id): id is string => id !== undefined)
+                      : []
+                  )
+                }
+              />
+            </TableHead>
+            {fields.map((field) => (
+              <TableHead key={field.id}>{field.fieldLabel}</TableHead>
+            ))}
+            {role === "CREATOR" || role === "ADMIN" ? (
+              <TableHead>Ações</TableHead>
+            ) : null}
+          </TableRow>
+        </TableHeader>
 
-            <TableBody className="overflow-auto">
-              {filteredFiles.length === 0 ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={fields.length + 2}
-                    className="text-muted-foreground text-center"
-                  >
-                    Nenhum resultado encontrado
+        <TableBody>
+          {filteredFiles.length === 0 ? (
+            <TableRow>
+              <TableCell
+                colSpan={fields.length + 2}
+                className="text-muted-foreground text-center"
+              >
+                Nenhum resultado encontrado
+              </TableCell>
+            </TableRow>
+          ) : (
+            filteredFiles.map((fileRow, rowIndex) => (
+              <TableRow key={rowIndex}>
+                <TableCell className="text-center sticky left-0 bg-background z-10">
+                  <Checkbox
+                    checked={selectedFiles.includes(fileRow.id || "")}
+                    onCheckedChange={() => handleSelectFile(fileRow.id || "")}
+                  />
+                </TableCell>
+                {fields.map((field) => (
+                  <TableCell key={field.id}>
+                    {fileRow[field.id] || "-"}
                   </TableCell>
-                </TableRow>
-              ) : (
-                filteredFiles.map((fileRow, rowIndex) => (
-                  <TableRow key={rowIndex}>
-                    <TableCell className="text-center sticky left-0 bg-background z-10">
-                      <Checkbox
-                        checked={selectedFiles.includes(fileRow.id || "")}
-                        onCheckedChange={() =>
-                          handleSelectFile(fileRow.id || "")
-                        }
+                ))}
+                {role === "CREATOR" || role === "ADMIN" ? (
+                  <TableCell className="sticky right-0 bg-background z-10">
+                    <div className="flex justify-center items-center">
+                      <MenuComponent
+                        fileId={fileRow.id || ""}
+                        onUpdate={fetchData}
                       />
-                    </TableCell>
-                    {fields.map((field) => (
-                      <TableCell key={field.id} className={styles.head}>
-                        {fileRow[field.id] || "-"}
-                      </TableCell>
-                    ))}
-                    <TableCell className="sticky right-0 bg-background z-10">
-                      <div className="flex justify-center items-center">
-                        <MenuComponent
-                          fileId={fileRow.id || ""}
-                          onUpdate={fetchData}
-                        />
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </ScrollArea>
-      </div>
+                    </div>
+                  </TableCell>
+                ) : null}
+              </TableRow>
+            ))
+          )}
+        </TableBody>
+      </Table>
     </div>
   );
 };

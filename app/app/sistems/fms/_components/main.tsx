@@ -1,11 +1,12 @@
 "use client";
 
+import { ScrollArea } from "@/components/ui/scroll-area";
 import ContainerTabs from "./container";
 
 export default function Main() {
   return (
-    <div className="bg-background h-full overflow-hidden">
+    <ScrollArea className="h-[88vh] w-full">
       <ContainerTabs />
-    </div>
+    </ScrollArea>
   );
 }

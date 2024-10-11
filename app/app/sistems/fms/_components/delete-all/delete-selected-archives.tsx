@@ -1,3 +1,5 @@
+"use client";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,7 +28,8 @@ export function DeleteSelectedArchives({
       if (selectedFiles.length > 10) {
         toast({
           title: "Aviso",
-          description: "Deletando muitos arquivos, isso pode levar algum tempo.",
+          description:
+            "Deletando muitos arquivos, isso pode levar algum tempo.",
           variant: "edit",
         });
       }

@@ -165,201 +165,193 @@ export const Model = () => {
   };
 
   return (
-    <Card className="h-[60vh] md:h-[73vh] lg:h-[78vh] xl:h-[83vh] w-full flex flex-col justify-around">
-      <CardHeader>
-        <CardTitle>Crie novos modelos</CardTitle>
-        <CardDescription>
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-2 text-justify">
+        <h1 className="text-2xl font-bold text-primary">Crie novos modelos</h1>
+        <span className="text-muted-foreground">
           Aqui você consegue criar com base em suas necessidades. Selecione um
           setor e insira o nome do modelo.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Card className="h-[30vh] md:h-[40vh] lg:h-[50vh] xl:h-[60vh] grid grid-cols-2">
-          <div>
-            <CardHeader>
-              <CardTitle>Preencha os campos</CardTitle>
-              <CardDescription>
-                Selecione o setor e insira o nome do modelo para ter acesso às
-                opções.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-6 items-center justify-center">
-              <SectorSelect
-                sectors={sectors}
-                selectedSector={selectedSector}
-                setSelectedSector={setSelectedSector}
-              />
-              {selectedSector && (
-                <Input
-                  className="w-96 text-center"
-                  type="text"
-                  placeholder="Nome do modelo"
-                  value={modelName}
-                  autoComplete="off"
-                  onChange={(e) => setModelName(e.target.value)}
-                />
-              )}
-            </CardContent>
-            {modelName && (
-              <CardFooter className="w-full items-center justify-center">
-                <div className="flex flex-col gap-6 p-4 w-full">
-                  <div className="text-center">
-                    <span className="text-sm text-center text-muted-foreground">
-                      Escolha os valores com base em suas necessidades, fique
-                      atento ao tipo de campo que você escolher. No tipo
-                      SELEÇÃO, é necessário adicionar opções.
-                    </span>
-                  </div>
-                  <div className="flex flex-col md:flex-row gap-6 w-full">
+        </span>
+      </div>
+      <div>
+        <div className="flex flex-col gap-6">
+          <div className="flex flex-row gap-2 items-center">
+            <span className="text-muted-foreground font-bold">Setor:</span>
+            <SectorSelect
+              sectors={sectors}
+              selectedSector={selectedSector}
+              setSelectedSector={setSelectedSector}
+            />
+          </div>
+          {selectedSector && (
+            <Input
+              className="w-auto text-center"
+              type="text"
+              placeholder="Nome do modelo"
+              value={modelName}
+              autoComplete="off"
+              onChange={(e) => setModelName(e.target.value)}
+            />
+          )}
+          {modelName && (
+            <CardFooter className="w-full items-center justify-center">
+              <div className="flex flex-col gap-6 p-4 w-full">
+                <div className="text-center">
+                  <span className="text-sm text-center text-muted-foreground">
+                    Escolha os valores com base em suas necessidades, fique
+                    atento ao tipo de campo que você escolher. No tipo SELEÇÃO,
+                    é necessário adicionar opções.
+                  </span>
+                </div>
+                <div className="flex flex-col md:flex-row gap-6 w-full">
+                  <Input
+                    className="w-96"
+                    type="text"
+                    placeholder="Nome do campo"
+                    value={newField.value}
+                    onChange={(e) =>
+                      setNewField({ ...newField, value: e.target.value })
+                    }
+                  />
+                  <Select
+                    required
+                    value={newField.type}
+                    onValueChange={(value: FieldType) =>
+                      setNewField({ ...newField, type: value })
+                    }
+                  >
+                    <SelectTrigger className="w-96">
+                      <SelectValue placeholder="Tipo do campo" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        {FieldTypeOptions.map((type) => (
+                          <SelectItem key={type.id} value={type.id}>
+                            {type.value}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                  <Button onClick={handleAddField} disabled={!newField.value}>
+                    <PlusIcon className="w-5 h-5" />
+                  </Button>
+                </div>
+                {newField.type !== "select" && (
+                  <span className="text-sm text-center text-muted-foreground">
+                    Escolha o campo de seleção para que habilite as opções.
+                  </span>
+                )}
+                <div
+                  className="flex flex-col gap-6 w-full"
+                  aria-disabled={newField.type !== "select"}
+                >
+                  <div className="flex flex-col md:flex-row gap-6">
                     <Input
-                      className="w-96"
                       type="text"
-                      placeholder="Nome do campo"
-                      value={newField.value}
-                      onChange={(e) =>
-                        setNewField({ ...newField, value: e.target.value })
-                      }
+                      placeholder="Adicionar opção"
+                      value={newOption}
+                      onChange={(e) => setNewOption(e.target.value)}
+                      disabled={newField.type !== "select"}
                     />
-                    <Select
-                      required
-                      value={newField.type}
-                      onValueChange={(value: FieldType) =>
-                        setNewField({ ...newField, type: value })
-                      }
+                    <Button
+                      onClick={handleAddOption}
+                      disabled={!newOption || newField.type !== "select"}
                     >
-                      <SelectTrigger className="w-96">
-                        <SelectValue placeholder="Tipo do campo" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          {FieldTypeOptions.map((type) => (
-                            <SelectItem key={type.id} value={type.id}>
-                              {type.value}
-                            </SelectItem>
-                          ))}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                    <Button onClick={handleAddField} disabled={!newField.value}>
                       <PlusIcon className="w-5 h-5" />
                     </Button>
                   </div>
-                  {newField.type !== "select" && (
-                    <span className="text-sm text-center text-muted-foreground">
-                      Escolha o campo de seleção para que habilite as opções.
-                    </span>
-                  )}
-                  <div
-                    className="flex flex-col gap-6 w-full"
-                    aria-disabled={newField.type !== "select"}
-                  >
-                    <div className="flex flex-col md:flex-row gap-6">
-                      <Input
-                        type="text"
-                        placeholder="Adicionar opção"
-                        value={newOption}
-                        onChange={(e) => setNewOption(e.target.value)}
-                        disabled={newField.type !== "select"}
-                      />
-                      <Button
-                        onClick={handleAddOption}
-                        disabled={!newOption || newField.type !== "select"}
-                      >
-                        <PlusIcon className="w-5 h-5" />
-                      </Button>
-                    </div>
-                    <ScrollArea className="w-full h-[15vh] md:h-[10vh] sm:h-[] overflow-y-auto">
-                      <Table className="w-full">
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>Opção</TableHead>
-                            <TableHead>Excluir</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {newField.options?.map((option) => (
-                            <TableRow key={option.id}>
-                              <TableCell>{option.value}</TableCell>
-                              <TableCell>
-                                <Button
-                                  variant="ghost"
-                                  onClick={() => handleDeleteOption(option.id)}
-                                >
-                                  <TrashIcon className="w-5 h-5" />
-                                </Button>
-                              </TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </ScrollArea>
-                  </div>
-                </div>
-              </CardFooter>
-            )}
-          </div>
-          <Card className="h-[55vh] m-6">
-            {modelName && (
-              <CardContent>
-                <div className="flex flex-col gap-6 w-full">
-                  <ScrollArea className="w-full h-[50vh] overflow-y-auto">
+                  <ScrollArea className="w-full h-[15vh] md:h-[10vh] sm:h-[] overflow-y-auto">
                     <Table className="w-full">
                       <TableHeader>
                         <TableRow>
-                          <TableHead>Campo</TableHead>
-                          <TableHead>Tipo</TableHead>
+                          <TableHead>Opção</TableHead>
                           <TableHead>Excluir</TableHead>
-                          {fields.some((field) => field.type === "select") && (
-                            <TableHead>Opções</TableHead>
-                          )}
                         </TableRow>
                       </TableHeader>
-
                       <TableBody>
-                        {fields.map((field) => (
-                          <TableRow key={field.id}>
-                            <TableCell>{field.value}</TableCell>
-                            <TableCell>{field.type}</TableCell>
+                        {newField.options?.map((option) => (
+                          <TableRow key={option.id}>
+                            <TableCell>{option.value}</TableCell>
                             <TableCell>
                               <Button
                                 variant="ghost"
-                                onClick={() => handleDeleteField(field.id)}
+                                onClick={() => handleDeleteOption(option.id)}
                               >
                                 <TrashIcon className="w-5 h-5" />
                               </Button>
                             </TableCell>
-                            {field.type === "select" && (
-                              <TableCell>
-                                <Select>
-                                  <SelectTrigger className="w-full">
-                                    <SelectValue placeholder="Opções" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectGroup>
-                                      {field.options?.map((option) => (
-                                        <SelectItem
-                                          key={option.id}
-                                          value={option.value}
-                                        >
-                                          {option.value}
-                                        </SelectItem>
-                                      ))}
-                                    </SelectGroup>
-                                  </SelectContent>
-                                </Select>
-                              </TableCell>
-                            )}
                           </TableRow>
                         ))}
                       </TableBody>
                     </Table>
                   </ScrollArea>
                 </div>
-              </CardContent>
-            )}
-          </Card>
+              </div>
+            </CardFooter>
+          )}
+        </div>
+        <Card className="h-[55vh] m-6">
+          {modelName && (
+            <CardContent>
+              <div className="flex flex-col gap-6 w-full">
+                <ScrollArea className="w-full h-[50vh] overflow-y-auto">
+                  <Table className="w-full">
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Campo</TableHead>
+                        <TableHead>Tipo</TableHead>
+                        <TableHead>Excluir</TableHead>
+                        {fields.some((field) => field.type === "select") && (
+                          <TableHead>Opções</TableHead>
+                        )}
+                      </TableRow>
+                    </TableHeader>
+
+                    <TableBody>
+                      {fields.map((field) => (
+                        <TableRow key={field.id}>
+                          <TableCell>{field.value}</TableCell>
+                          <TableCell>{field.type}</TableCell>
+                          <TableCell>
+                            <Button
+                              variant="ghost"
+                              onClick={() => handleDeleteField(field.id)}
+                            >
+                              <TrashIcon className="w-5 h-5" />
+                            </Button>
+                          </TableCell>
+                          {field.type === "select" && (
+                            <TableCell>
+                              <Select>
+                                <SelectTrigger className="w-full">
+                                  <SelectValue placeholder="Opções" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectGroup>
+                                    {field.options?.map((option) => (
+                                      <SelectItem
+                                        key={option.id}
+                                        value={option.value}
+                                      >
+                                        {option.value}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectGroup>
+                                </SelectContent>
+                              </Select>
+                            </TableCell>
+                          )}
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </ScrollArea>
+              </div>
+            </CardContent>
+          )}
         </Card>
-      </CardContent>
+      </div>
       <CardFooter className="flex flex-col gap-6 items-center justify-center">
         <span className="text-sm text-muted-foreground text-center">
           Ao clicar em salvar, você estará criando um modelo com os dados
@@ -372,6 +364,6 @@ export const Model = () => {
           Salvar Modelo
         </Button>
       </CardFooter>
-    </Card>
+    </div>
   );
 };

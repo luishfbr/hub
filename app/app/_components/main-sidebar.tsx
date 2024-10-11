@@ -17,7 +17,22 @@ import { UserDropdown } from "./user-dropdown";
 import { useCallback, useEffect, useState } from "react";
 import { GetRoleById, GetSectorsByUserId } from "../_actions/app-actions";
 import { MainSidebarProps, Sector, UserRole } from "@/app/types/types";
-import { Loader2 } from "lucide-react";
+import {
+  Loader2,
+  ArrowLeftToLine,
+  ArrowRightFromLine,
+  Wrench,
+  HomeIcon,
+  File,
+  Presentation,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export function MainSidebar({ user }: MainSidebarProps) {
   const [userRole, setUserRole] = useState<UserRole | null>(null);
@@ -25,18 +40,19 @@ export function MainSidebar({ user }: MainSidebarProps) {
   const id = user?.id as string;
   const pathname = usePathname();
   const isActive = (path: string) => pathname === path;
+  const [expanded, setExpanded] = useState(true);
 
   const getUserRole = useCallback(async () => {
     const role = await GetRoleById(id);
     setUserRole(role);
-  }, [id])
+  }, [id]);
 
   const getUserSectors = useCallback(async () => {
     const sectors = await GetSectorsByUserId(id);
     if (sectors) {
       setUserSectors(sectors.sectors);
     }
-  }, [id])
+  }, [id]);
 
   useEffect(() => {
     getUserRole();
@@ -48,7 +64,7 @@ export function MainSidebar({ user }: MainSidebarProps) {
       <div className="fixed inset-0 bg-white flex justify-center items-center">
         <Loader2 className="animate-spin w-12 h-12" />
       </div>
-    )
+    );
   }
 
   const allowedSectorsFMS = [
@@ -76,7 +92,14 @@ export function MainSidebar({ user }: MainSidebarProps) {
   return (
     <DashboardSidebar>
       <DashboardSidebarHeader>
-        <Logo />
+        {expanded ? <Logo /> : null}
+        <Button
+          variant={"ghost"}
+          size={"icon"}
+          onClick={() => setExpanded((curr) => !curr)}
+        >
+          {expanded ? <ArrowLeftToLine /> : <ArrowRightFromLine />}
+        </Button>
       </DashboardSidebarHeader>
       <DashboardSidebarMain className="flex flex-col flex-grow">
         <DashboardSidebarNav>
@@ -85,7 +108,20 @@ export function MainSidebar({ user }: MainSidebarProps) {
               href="/app/sistems"
               active={isActive("/app/sistems")}
             >
-              Página Inicial
+              {expanded ? (
+                "Página Inicial"
+              ) : (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <HomeIcon className="w-5 h-5" />
+                    </TooltipTrigger>
+                    <TooltipContent side="left">
+                      <p>Página Inicial</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              )}
             </DashboardSidebarNavLink>
           </DashboardSidebarNavMain>
         </DashboardSidebarNav>
@@ -96,7 +132,20 @@ export function MainSidebar({ user }: MainSidebarProps) {
                 href="/app/sistems/fms"
                 active={isActive("/app/sistems/fms")}
               >
-                Tabela de Arquivos
+                {expanded ? (
+                  "Tabela de Arquivos"
+                ) : (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <File className="w-5 h-5" />
+                      </TooltipTrigger>
+                      <TooltipContent side="left">
+                        <p>Tabela de Arquivos</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )}
               </DashboardSidebarNavLink>
             </DashboardSidebarNavMain>
           </DashboardSidebarNav>
@@ -107,7 +156,20 @@ export function MainSidebar({ user }: MainSidebarProps) {
               href="/app/sistems/meetings"
               active={isActive("/app/sistems/meetings")}
             >
-              Reuniões
+              {expanded ? (
+                "Reuniões"
+              ) : (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Presentation className="w-5 h-5" />
+                    </TooltipTrigger>
+                    <TooltipContent side="left">
+                      <p>Reuniões</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              )}
             </DashboardSidebarNavLink>
           </DashboardSidebarNavMain>
         </DashboardSidebarNav>
@@ -115,7 +177,7 @@ export function MainSidebar({ user }: MainSidebarProps) {
           <DashboardSidebarNav className="mt-auto">
             <DashboardSidebarNavHeader>
               <DashboardSidebarNavHeaderTitle>
-                Somente Administrador
+                {expanded ? "Somente Administrador" : null}
               </DashboardSidebarNavHeaderTitle>
             </DashboardSidebarNavHeader>
             <DashboardSidebarNavMain>
@@ -123,14 +185,27 @@ export function MainSidebar({ user }: MainSidebarProps) {
                 href="/app/sistems/admin"
                 active={isActive("/app/sistems/admin")}
               >
-                Painel de Administração
+                {expanded ? (
+                  "Painel de Administração"
+                ) : (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Wrench className="w-5 h-5" />
+                      </TooltipTrigger>
+                      <TooltipContent side="left">
+                        <p>Painel de Administração</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )}
               </DashboardSidebarNavLink>
             </DashboardSidebarNavMain>
           </DashboardSidebarNav>
         )}
       </DashboardSidebarMain>
       <DashboardSidebarFooter>
-        <UserDropdown user={user} />
+        <UserDropdown user={user} isExpanded={expanded} />
       </DashboardSidebarFooter>
     </DashboardSidebar>
   );
