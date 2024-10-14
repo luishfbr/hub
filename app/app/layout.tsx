@@ -1,8 +1,8 @@
 "use client";
 
-import { PropsWithChildren, useEffect, useState } from "react";
+import { PropsWithChildren, useCallback, useEffect, useState } from "react";
 import styles from "@/app/styles/main.module.css";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { MainSidebar } from "./_components/main-sidebar";
 import type { User } from "next-auth";
 import { LoadingScreen } from "./_components/loading-screen";
@@ -17,33 +17,34 @@ export default function Layout({ children }: PropsWithChildren) {
   const [role, setRole] = useState<string>("");
   const [sectors, setSectors] = useState<Sector[]>([]);
   const [user, setUser] = useState<User>();
+  const router = useRouter();
 
-  const UserSession = async () => {
+  const UserSession = useCallback(async () => {
     try {
       setIsLoading(true);
       const session = await GetUserSession();
-      if (!session?.user) {
-        redirect("/");
-      } else {
+
+      if (session?.user) {
         setUser(session?.user);
-        const res = await GetRoleAndSectorsByUserId(
-          session?.user?.id as string
-        );
+        const id = session?.user?.id as string;
+        const res = await GetRoleAndSectorsByUserId(id);
         if (res) {
           setRole(res.role);
           setSectors(res.sectors);
         }
+      } else {
+        router.push("/");
       }
     } catch (error) {
       console.log(error);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [router]);
 
   useEffect(() => {
     UserSession();
-  }, []);
+  }, [UserSession]);
 
   if (isLoading) {
     return <LoadingScreen />;
