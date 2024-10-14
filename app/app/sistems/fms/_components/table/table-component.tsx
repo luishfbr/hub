@@ -156,7 +156,7 @@ export const TableContainer = ({
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 items-center justify-center">
       {selectedFiles.length > 0 && (
         <div className="flex flex-wrap gap-6 justify-center items-center">
           <GenerateReport selectedFiles={selectedFiles} />
@@ -170,71 +170,77 @@ export const TableContainer = ({
         </div>
       )}
 
-      <Table className="w-full">
-        <TableHeader>
-          <TableRow>
-            <TableHead>
-              <Checkbox
-                checked={selectedFiles.length === filteredFiles.length}
-                onCheckedChange={(checked) =>
-                  setSelectedFiles(
-                    checked
-                      ? filteredFiles
-                          .map((file) => file.id)
-                          .filter((id): id is string => id !== undefined)
-                      : []
-                  )
-                }
-              />
-            </TableHead>
-            {fields.map((field) => (
-              <TableHead key={field.id}>{field.fieldLabel}</TableHead>
-            ))}
-            {role === "CREATOR" || role === "ADMIN" ? (
-              <TableHead>Ações</TableHead>
-            ) : null}
-          </TableRow>
-        </TableHeader>
-
-        <TableBody>
-          {filteredFiles.length === 0 ? (
+      <div className="overflow-auto xl:w-[89vw] lg:w-[85vw] md:w-[80vw] w-[70vw]">
+        <Table className="w-full overflow-x-auto">
+          <TableHeader>
             <TableRow>
-              <TableCell
-                colSpan={fields.length + 2}
-                className="text-muted-foreground text-center"
-              >
-                Nenhum resultado encontrado
-              </TableCell>
+              <TableHead className=" left-0 bg-background z-10">
+                <Checkbox
+                  checked={selectedFiles.length === filteredFiles.length}
+                  onCheckedChange={(checked) =>
+                    setSelectedFiles(
+                      checked
+                        ? filteredFiles
+                            .map((file) => file.id)
+                            .filter((id): id is string => id !== undefined)
+                        : []
+                    )
+                  }
+                />
+              </TableHead>
+              {fields.map((field) => (
+                <TableHead key={field.id} className="text-nowrap">
+                  {field.fieldLabel}
+                </TableHead>
+              ))}
+              {role === "CREATOR" || role === "ADMIN" ? (
+                <TableHead className=" right-0 bg-background z-10">
+                  Ações
+                </TableHead>
+              ) : null}
             </TableRow>
-          ) : (
-            filteredFiles.map((fileRow, rowIndex) => (
-              <TableRow key={rowIndex}>
-                <TableCell className="text-center sticky left-0 bg-background z-10">
-                  <Checkbox
-                    checked={selectedFiles.includes(fileRow.id || "")}
-                    onCheckedChange={() => handleSelectFile(fileRow.id || "")}
-                  />
+          </TableHeader>
+
+          <TableBody>
+            {filteredFiles.length === 0 ? (
+              <TableRow>
+                <TableCell
+                  colSpan={fields.length + 2}
+                  className="text-muted-foreground text-center"
+                >
+                  Nenhum resultado encontrado
                 </TableCell>
-                {fields.map((field) => (
-                  <TableCell key={field.id}>
-                    {fileRow[field.id] || "-"}
-                  </TableCell>
-                ))}
-                {role === "CREATOR" || role === "ADMIN" ? (
-                  <TableCell className="sticky right-0 bg-background z-10">
-                    <div className="flex justify-center items-center">
-                      <MenuComponent
-                        fileId={fileRow.id || ""}
-                        onUpdate={fetchData}
-                      />
-                    </div>
-                  </TableCell>
-                ) : null}
               </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
+            ) : (
+              filteredFiles.map((fileRow, rowIndex) => (
+                <TableRow key={rowIndex}>
+                  <TableCell className="text-center  left-0 bg-background z-10">
+                    <Checkbox
+                      checked={selectedFiles.includes(fileRow.id || "")}
+                      onCheckedChange={() => handleSelectFile(fileRow.id || "")}
+                    />
+                  </TableCell>
+                  {fields.map((field) => (
+                    <TableCell className="text-nowrap" key={field.id}>
+                      {fileRow[field.id] || "-"}
+                    </TableCell>
+                  ))}
+                  {role === "CREATOR" || role === "ADMIN" ? (
+                    <TableCell className=" right-0 bg-background z-10">
+                      <div className="flex justify-center items-center">
+                        <MenuComponent
+                          fileId={fileRow.id || ""}
+                          onUpdate={fetchData}
+                        />
+                      </div>
+                    </TableCell>
+                  ) : null}
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 };

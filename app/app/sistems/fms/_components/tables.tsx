@@ -77,7 +77,7 @@ export const ContainerTables = () => {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col md:flex-row justify-center items-center gap-6 p-2">
+      <div className="flex flex-col lg:flex-row justify-center items-center gap-6 p-2">
         <Select
           onValueChange={handleChangeSector}
           value={selectedSector?.id || ""}

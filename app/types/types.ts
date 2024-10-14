@@ -114,6 +114,8 @@ export interface CustomHeader {
 
 export type MainSidebarProps = {
   user: Session["user"];
+  role: UserRole["role"];
+  sectors: Sector[];
 };
 
 export interface UserRole {

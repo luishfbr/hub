@@ -1,3 +1,5 @@
+"use server";
+
 import { auth } from "@/services/auth";
 
 import { redirect } from "next/navigation";

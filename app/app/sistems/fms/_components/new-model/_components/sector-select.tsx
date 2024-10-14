@@ -25,8 +25,8 @@ export const SectorSelect: React.FC<SectorSelectProps> = ({
       onValueChange={setSelectedSector}
       value={selectedSector || undefined}
     >
-      <SelectTrigger className="w-auto">
-        <SelectValue placeholder="Selecione um Setor" />
+      <SelectTrigger className="w-72">
+        <SelectValue placeholder="Selecionar" />
       </SelectTrigger>
       <SelectContent>
         {sortedSectors.map((sector) => (

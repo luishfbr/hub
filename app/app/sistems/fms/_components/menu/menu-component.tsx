@@ -127,6 +127,7 @@ export function MenuComponent({ fileId, onUpdate }: MenuComponentProps) {
       toast({
         title: "Sucesso",
         description: "Alterações salvas com sucesso",
+        variant: "success",
       });
     } catch (error) {
       toast({

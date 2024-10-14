@@ -137,7 +137,7 @@ export const GenerateLabels: React.FC<GenerateReportProps> = ({
 
   if (isLoading) {
     return (
-      <Button variant={"ghost"} size={"icon"} disabled>
+      <Button disabled>
         <Loader2 className="animate-spin" />
       </Button>
     );

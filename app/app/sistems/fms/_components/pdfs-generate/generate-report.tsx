@@ -98,8 +98,8 @@ export const GenerateReport: React.FC<GenerateReportProps> = ({
 
   if (isLoading) {
     return (
-      <Button variant={"ghost"} size={"icon"} disabled>
-        <Loader2 className="animate-spin"/>
+      <Button disabled>
+        <Loader2 className="animate-spin" />
       </Button>
     );
   }
