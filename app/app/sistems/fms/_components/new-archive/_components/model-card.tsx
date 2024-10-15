@@ -22,7 +22,6 @@ import {
   fieldsByFiletemplateId,
 } from "../../../_actions/fms-actions";
 import styles from "@/app/styles/main.module.css";
-import { ScrollArea } from "@radix-ui/react-scroll-area";
 
 export interface FormData {
   [key: string]: string;
@@ -204,17 +203,15 @@ export const SelectedModelForm = ({ modelId }: { modelId: string }) => {
   }
 
   return (
-    <ScrollArea className="w-full h-[35vh] md:h-[50vh] sm:h-[35vh] lg:h-[50vh] xl:h-[60vh] overflow-y-auto">
-      <div className="w-full max-w-2xl mx-auto">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {fields.map((field) => (
-            <div key={field.id}>{renderInput(field)}</div>
-          ))}
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Criando..." : "Criar"}
-          </Button>
-        </form>
-      </div>
-    </ScrollArea>
+    <div className="w-full max-w-2xl mx-auto">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        {fields.map((field) => (
+          <div key={field.id}>{renderInput(field)}</div>
+        ))}
+        <Button type="submit" className="w-full" disabled={isLoading}>
+          {isLoading ? "Criando..." : "Criar"}
+        </Button>
+      </form>
+    </div>
   );
 };

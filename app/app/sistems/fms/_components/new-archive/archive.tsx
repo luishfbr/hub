@@ -58,7 +58,10 @@ export function Archive() {
         setSelectedSector(selected);
         if (selected) {
           const response = await getModelsBySectorId(selected.id);
-          setModels(response.filter((model) => model.modelName !== null));
+          const modelNameTest = response?.filter(
+            (model) => model.modelName !== null
+          );
+          setModels(modelNameTest || []);
         }
       } catch (err) {
         toast({
@@ -74,14 +77,18 @@ export function Archive() {
   );
 
   return (
-    <div className="flex flex-col gap-6 max-h-[85vh] h-[80vh]">
-      <div className="flex flex-col gap-2 text-center items-center justify-center">
-        <h1 className="text-2xl font-bold">Crie seu novo arquivo</h1>
+    <div className="w-full flex flex-col gap-6">
+      <div className="flex flex-col gap-2 text-justify">
+        <h1 className="text-2xl font-bold">Painel de criação de arquivos</h1>
         <span className="text-sm text-muted-foreground">
-          Selecione o setor e o modelo que deseja criar.
+          Adicione novos arquivos aos modelos existentes, fique atento ao modelo
+          selecionado, os modelos aparecem com base no setor que você pertence.
         </span>
       </div>
-      <div className="flex flex-col gap-6 items-center justify-center">
+      <div className="flex flex-col md:flex-row gap-4 items-center">
+        <span className="text-muted-foreground">
+          Primeiramente selecione o setor:
+        </span>
         <Select onValueChange={handleChangeSector} disabled={isLoading}>
           <SelectTrigger className="w-auto">
             <SelectValue
@@ -96,7 +103,6 @@ export function Archive() {
             ))}
           </SelectContent>
         </Select>
-
         {selectedSector && (
           <Select onValueChange={handleChangeModel} disabled={isLoading}>
             <SelectTrigger className="w-auto">

@@ -51,13 +51,13 @@ export default function EditModel() {
   }, []);
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Editar Modelo</CardTitle>
-        <CardDescription>
+    <div className="flex flex-col gap-6 w-full">
+      <div className="flex flex-col gap-2 text-justify">
+        <h1 className="text-2xl font-bold">Editar Modelo</h1>
+        <span className="text-sm text-muted-foreground">
           Selecione o setor e o modelo que deseja editar.
-        </CardDescription>
-      </CardHeader>
+        </span>
+      </div>
       <CardContent>
         <div className="flex flex-col gap-6 items-center justify-center">
           <div className="flex items-center justify-center gap-4">
@@ -122,6 +122,6 @@ export default function EditModel() {
           )}
         </div>
       </CardContent>
-    </Card>
+    </div>
   );
 }
